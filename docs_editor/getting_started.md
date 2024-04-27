@@ -139,7 +139,7 @@ Contains all the images in the atlas. You can add new images here.
 
 # Create a New Project
 
-https://github.com/Insality/panthera/assets/3294627/48b6817a-b1b1-4874-b5a1-437d7f680cf8
+https://github.com/Insality/panthera/assets/3294627/cf59240b-2279-4791-843f-3ea6ebcbc813
 
 To create a new project, follow these steps:
 
@@ -153,7 +153,7 @@ The project will be created and opened in the Panthera Editor.
 
 # Create a Scene Layout
 
-https://github.com/Insality/panthera/assets/3294627/ef80e271-f024-490c-9e88-6df7b298f87a
+https://github.com/Insality/panthera/assets/3294627/cb3115ab-e43f-44f6-abb2-c4df2d1b55b4
 
 You can create a scene layout by adding nodes to the scene. Here's several ways to add nodes:
 
@@ -177,7 +177,7 @@ The node will be added inside as a child of the selected node. The font can't be
 
 # Import Image Assets
 
-https://github.com/Insality/panthera/assets/3294627/6e553e41-b92d-4cea-80e5-8a18822b5d92
+https://github.com/Insality/panthera/assets/3294627/9d956f0a-b62d-4132-bbce-cf05b818ebb9
 
 To import image assets, follow these steps:
 
@@ -200,7 +200,7 @@ You can add images from the Image Picker in Animation Editor scene.
 
 ## Bind Defold Atlas
 
-https://github.com/Insality/panthera/assets/3294627/2ed75d1f-334e-45d7-b40b-fc7c382aedac
+https://github.com/Insality/panthera/assets/3294627/c7b7e0a8-91bf-42be-b15b-3c13041a168a
 
 You can bind the Defold atlas to the Atlas project. All images from the Defold atlas will be imported to the Atlas project. The atlas project file should be placed inside your Defold project folder.
 
@@ -211,7 +211,7 @@ You can bind the Defold atlas to the Atlas project. All images from the Defold a
 
 # Create an Animation
 
-https://github.com/Insality/panthera/assets/3294627/9f4d2be3-9be8-4d12-8013-d4c6ff0cab23
+https://github.com/Insality/panthera/assets/3294627/b31f4ba0-4989-485d-a05b-6a0888689fae
 
 To create an animation, follow these steps:
 
@@ -247,7 +247,7 @@ All created keys will be displayed and selected in the Timeline panel.
 
 ## Animation Initial State
 
-https://github.com/Insality/panthera/assets/3294627/7ae5f5d2-d6c1-422d-b0ba-f0c75d5a2b3b
+https://github.com/Insality/panthera/assets/3294627/d9654d70-d82a-4b47-9e6a-b3b6c903333b
 
 The animation's initial state by default is the layout state. However, you can choose a different animation to set as the initial state via the Properties panel. In this case, the chosen animation's end state will be used as the initial state.
 
@@ -263,7 +263,7 @@ You can adjust the animation preview speed and zoom in the Timeline panel. These
 
 # Export Animation Data
 
-https://github.com/Insality/panthera/assets/3294627/65e97472-aac0-49c0-8d80-bbc3e915ceae
+https://github.com/Insality/panthera/assets/3294627/867e4116-2015-4de8-ad3b-b464bbdca50a
 
 <!-- File used in Panthera editor is the same for runtime -->
 
@@ -279,7 +279,7 @@ The file will be opened in the file explorer window.
 # Import Defold GUI Layout
 <!-- animation file should be placed inside your Defold Project folder -->
 
-https://github.com/Insality/panthera/assets/3294627/01bb37db-e0f6-4ce4-938e-dc1951cbdf6a
+https://github.com/Insality/panthera/assets/3294627/ed082b26-cfaf-4567-93ac-41d2169b2444
 
 You can import the Defold GUI layout to the Panthera Editor. The animation file should be placed inside your Defold project folder to correct reloading in the future.
 
@@ -299,7 +299,7 @@ At Home page, project list with file icon (📁) is a external file, without ico
 
 # Working with Node Properties
 
-https://github.com/Insality/panthera/assets/3294627/d4d1c796-7fa7-4fe7-bdc6-031ef62364b3
+https://github.com/Insality/panthera/assets/3294627/2e4483c1-004c-4736-a70a-a29e8ae5f4df
 
 ## Copy and Paste Properties
 
@@ -326,7 +326,7 @@ To discard changes in the Properties panel, follow these steps:
 
 # Working with Timeline Keys
 
-https://github.com/Insality/panthera/assets/3294627/d654b29d-dbbb-46c1-9ca7-cd2bedc5cca0
+https://github.com/Insality/panthera/assets/3294627/6f026870-1a44-49f5-8612-c54bb79590f2
 
 ## Select and Modify Keys
 
@@ -370,7 +370,7 @@ The overlapping keys is valid. The previous key will be applied until the next k
 
 # Working with Events
 
-https://github.com/Insality/panthera/assets/3294627/32d654fb-7101-4a05-8c33-5f382b9a627d
+https://github.com/Insality/panthera/assets/3294627/2e1bbf3a-7882-400e-bf03-125845df003d
 
 Events is a type of key that can be used to trigger custom actions in the Panthera Runtime. The events can be added to the timeline keys for specific nodes or animations.
 
@@ -392,7 +392,7 @@ The event keys can have a duration. The event will be triggered at the start of 
 
 # Working with Nested Animations
 
-https://github.com/Insality/panthera/assets/3294627/2d6f541e-8ed7-4b7f-b2b2-eb205c7c47d2
+https://github.com/Insality/panthera/assets/3294627/7b31c66e-ed65-4df9-b4e0-3f43f55cba5f
 
 ## Add Nested Animation
 
@@ -409,7 +409,7 @@ In the current version, the cyclic references are not protected. The cyclic refe
 
 # Adjust Gizmo Settings
 
-https://github.com/Insality/panthera/assets/3294627/8e2d6c29-3ad1-490d-aea6-aa181170b4dc
+https://github.com/Insality/panthera/assets/3294627/53b1de58-84eb-4a20-800f-c4bcf13cc78b
 
 **Gizmo** - is a manipulator that allows you to move, rotate, and scale the nodes or timeline keys in the scene. You can adjust the gizmo settings in the Editor View.
 
