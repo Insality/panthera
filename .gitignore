@@ -1,0 +1,12 @@
+/.internal
+/build
+.DS_Store
+Thumbs.db
+manifest.private.der
+manifest.public.der
+dist
+
+deployer_build_stats.csv
+deployer_version_settings.txt
+
+.cache_deployer

@@ -1,0 +1,161 @@
+local log = require("log.log")
+local panthera = require("panthera.panthera")
+
+local logger = log.get_logger("example")
+
+---@class example.gui_script
+---@field animation panthera.animation.state
+---@field animation_list string[] @Except "appear" and "stop"
+---@field button node
+---@field animation_control_zone node
+---@field progress_fill node
+---@field progress_size vector3
+---@field text_animation_id string
+---@field is_dragging boolean
+
+
+---@param event_id string
+---@param node node
+---@param string_value string
+---@param number_value number
+local function print_callback_event(event_id, node, string_value, number_value)
+	logger:info("Event", {
+		event_id = event_id,
+		node = node,
+		string_value = string_value,
+		number_value = number_value,
+	})
+end
+
+
+---@param self example.gui_script
+local function get_animation_list(self)
+	local animation_list = panthera.get_animations(self.animation)
+
+	for index = #animation_list, 1, -1 do
+		local id = animation_list[index]
+		if id == "appear" or id == "stop" or id == "button_stop" or id == "preview" then
+			table.remove(animation_list, index)
+		end
+	end
+
+	return animation_list
+end
+
+
+---@param self example.gui_script
+function init(self)
+	-- Set logger
+	panthera.set_logger(log.get_logger("panthera"))
+
+	-- Load and play animation
+	self.animation = panthera.create_gui("/resources/example.json") --[[@as panthera.animation.state]]
+
+	panthera.play(self.animation, "appear", {
+		callback_event = print_callback_event,
+	})
+
+	-- Display animation list
+	self.animation_list = get_animation_list(self)
+	local text_animation_list = gui.get_node("text_animations")
+	gui.set_text(text_animation_list, "Animation List: \n\n" .. table.concat(self.animation_list, "\n"))
+
+	-- Get nodes
+	self.button = gui.get_node("button")
+	self.animation_control_zone = gui.get_node("animation_control_zone")
+	self.progress_fill = gui.get_node("progress_fill")
+	self.progress_size = gui.get_size(self.progress_fill)
+	self.text_animation_id = gui.get_node("text_animation_id")
+	gui.set_text(gui.get_node("text_version"), "Defold " .. sys.get_engine_info().version)
+
+	-- Reload animation when window is focused, only for debug and on desktop
+	-- Need enable hot_reload animation and point the desktop path to the project folder
+	window.set_listener(function(_, event)
+		if event == window.WINDOW_EVENT_FOCUS_GAINED then
+			panthera.reload_animation()
+		end
+	end)
+	msg.post(".", "acquire_input_focus")
+end
+
+
+---@param self example.gui_script
+function update(self, dt)
+	local animation_id = panthera.get_latest_animation_id(self.animation)
+
+	if panthera.is_playing(self.animation) and animation_id then
+		local current_time = panthera.get_time(self.animation)
+		if animation_id then
+			gui.set_text(self.text_animation_id, animation_id)
+			local duration = panthera.get_duration(self.animation, animation_id)
+			local progress = current_time / duration
+			self.progress_size.x = math.max((500 * progress), 32)
+			gui.set_size(self.progress_fill, self.progress_size)
+		end
+	else
+		local progress = 1
+		if animation_id then
+			progress = panthera.get_time(self.animation) / panthera.get_duration(self.animation, animation_id)
+			progress = math.min(progress, 1)
+		end
+		self.progress_size.x = math.max((500 * progress), 32)
+		gui.set_size(self.progress_fill, self.progress_size)
+	end
+end
+
+
+local animation_index = 1
+
+---@param self example.gui_script
+local function play_next_animation(self)
+	local animation_id = self.animation_list[animation_index]
+	animation_index = animation_index + 1
+	if animation_index > #self.animation_list then
+		animation_index = 1
+	end
+
+	panthera.play(self.animation, animation_id, {
+		callback = function()
+			panthera.play(self.animation, "stop", {
+				is_skip_init = true,
+			})
+		end
+	})
+end
+
+
+---@param self example.gui_script
+function on_input(self, action_id, action)
+	if action_id == hash("touch") then
+		-- Button Play
+		if action.pressed and gui.pick_node(self.button, action.x, action.y) then
+			local anim_id = panthera.get_latest_animation_id(self.animation)
+			if anim_id ~= "stop" and anim_id ~= "appear" then
+				panthera.play(self.animation, "stop", {
+					is_skip_init = true,
+				})
+			else
+				play_next_animation(self)
+			end
+		end
+
+		-- Drag mouse over progress bar
+		local animation_id = panthera.get_latest_animation_id(self.animation)
+		local is_dragging = self.is_dragging or gui.pick_node(self.animation_control_zone, action.x, action.y)
+
+		if is_dragging and animation_id then
+			self.is_dragging = true
+
+			local progress = panthera.get_time(self.animation) / panthera.get_duration(self.animation, animation_id)
+			progress = progress + action.dx / 500
+			progress = math.max(math.min(progress, 1), 0)
+
+			local duration = panthera.get_duration(self.animation, animation_id)
+			panthera.set_time(self.animation, animation_id, progress * duration)
+		end
+
+		if is_dragging and action.released then
+			self.is_dragging = false
+		end
+	end
+end

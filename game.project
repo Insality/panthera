@@ -1,0 +1,34 @@
+[bootstrap]
+main_collection = /example/example.collectionc
+render = /example/default.renderc
+
+[script]
+shared_state = 1
+
+[display]
+width = 960
+height = 640
+
+[android]
+input_method = HiddenInputField
+
+[project]
+title = Panthera Runtime
+version = 2.0
+publisher = Insality
+developer = Maksim Tuprikov, Insality
+custom_resources = /resources
+dependencies#0 = https://github.com/Insality/defold-tweener/archive/refs/tags/2.zip
+dependencies#1 = https://github.com/Insality/defold-log/archive/refs/tags/2.zip
+
+[library]
+include_dirs = panthera
+
+[panthera]
+hotreload_animations = 1
+
+[log]
+level = DEBUG
+time_tracking = 1
+memory_tracking = 1
+

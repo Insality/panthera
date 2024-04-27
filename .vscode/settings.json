@@ -1,0 +1,16 @@
+{
+	"Lua.diagnostics.globals": [
+		"sys",
+		"init",
+		"on_input",
+		"hash",
+		"gui",
+		"window",
+		"msg",
+		"socket",
+		"timer",
+		"pprint",
+		"json",
+		"go"
+	]
+}
