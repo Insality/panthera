@@ -47,6 +47,7 @@ function M.create(animation_path, adapter, get_node)
 	---@type panthera.animation.state
 	return {
 		nodes = {},
+		speed = 1,
 		childs = nil,
 		timer_id = nil,
 		animation = nil,
@@ -56,6 +57,17 @@ function M.create(animation_path, adapter, get_node)
 		animation_path = animation_path,
 		get_node = get_node or adapter.get_node,
 	}
+end
+
+
+---Create identical copy of animation state to run it in parallel
+---@param animation_state panthera.animation.state
+---@return panthera.animation.state|nil @New animation state or nil if animation can't be cloned
+function M.clone_state(animation_state)
+	local adapter = animation_state.adapter
+	local get_node = animation_state.get_node
+	local animation_path = animation_state.animation_path
+	return M.create(animation_path, adapter, get_node)
 end
 
 
@@ -116,10 +128,11 @@ function M.play(animation_state, animation_id, options)
 	local last_time = socket.gettime()
 	animation_state.timer_id = timer.delay(TIMER_DELAY, true, function()
 		local current_time = socket.gettime()
-		local dt = current_time - last_time
+		local dt = (current_time - last_time)
 		last_time = current_time
+		local speed = (options.speed or 1) * animation_state.speed
 
-		animation_state.current_time = animation_state.current_time + dt * (options.speed or 1)
+		animation_state.current_time = animation_state.current_time + dt * speed
 		M._update_animation(animation_state, options)
 	end)
 	timer.trigger(animation_state.timer_id)
@@ -152,16 +165,16 @@ function M._update_animation(animation_state, options)
 				local get_node = animation_state.get_node
 
 				local child_state = M.create(animation_path, adapter, get_node)
-
 				if child_state then
 					animation_state.childs = animation_state.childs or {}
 					table.insert(animation_state.childs, child_state)
 					local animation_duration = M.get_duration(child_state, key.property_id)
 
 					if animation_duration > 0 and key.duration > 0 then
+						local speed = (options.speed or 1) * animation_state.speed
 						M.play(child_state, key.property_id, {
 							is_skip_init = true,
-							speed = (animation_duration / key.duration) * (options.speed or 1),
+							speed = (animation_duration / key.duration) * speed,
 							callback = function()
 								panthera_system.remove_child_animation(animation_state, child_state)
 							end
