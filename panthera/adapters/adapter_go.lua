@@ -142,6 +142,14 @@ end
 
 ---@param node node
 ---@param property_id string
+local function stop_tween(node, property_id)
+	property_id = PROPERTY_TO_TWEEN_PROPERTY[property_id]
+	go.cancel_animations(node, property_id)
+end
+
+
+---@param node node
+---@param property_id string
 ---@param value number
 ---@return boolean @true if success
 local function set_node_property(node, property_id, value)
@@ -152,6 +160,8 @@ local function set_node_property(node, property_id, value)
 		trigger_animation_key(node, defold_property_id, value)
 		return true
 	end
+
+	stop_tween(node, property_id)
 
 	defold_property_id = PROPERTY_TO_TWEEN_PROPERTY[property_id]
 	if not defold_property_id then
@@ -204,14 +214,6 @@ local function tween_animation_key(node, property_id, easing, duration, end_valu
 		property_id = PROPERTY_TO_TWEEN_PROPERTY[property_id]
 		go.animate(node, property_id, go.PLAYBACK_ONCE_FORWARD, end_value, easing, duration)
 	end
-end
-
-
----@param node node
----@param property_id string
-local function stop_tween(node, property_id)
-	property_id = PROPERTY_TO_TWEEN_PROPERTY[property_id]
-	go.cancel_animations(node, property_id)
 end
 
 

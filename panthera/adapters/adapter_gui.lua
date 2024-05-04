@@ -265,6 +265,14 @@ end
 
 ---@param node node
 ---@param property_id string
+local function stop_tween(node, property_id)
+	local defold_property_id = PROPERTY_TO_DEFOLD_TWEEN_PROPERTY[property_id]
+	gui.cancel_animation(node, defold_property_id)
+end
+
+
+---@param node node
+---@param property_id string
 ---@param value number
 ---@return boolean @true if success
 local function set_node_property(node, property_id, value)
@@ -274,6 +282,8 @@ local function set_node_property(node, property_id, value)
 		trigger_animation_key(node, property_id, value or "")
 		return true
 	end
+
+	stop_tween(node, property_id)
 
 	-- Handle Tween properties
 	if IS_DEFOLD_180 then
@@ -363,21 +373,13 @@ local function tween_animation_key(node, property_id, easing, duration, end_valu
 end
 
 
----@param node node
----@param property_id string
-local function stop_tween(node, property_id)
-	local defold_property_id = PROPERTY_TO_DEFOLD_TWEEN_PROPERTY[property_id]
-	gui.cancel_animation(node, defold_property_id)
-end
-
-
 local M = {
 	get_node = gui.get_node,
 	get_easing = get_easing,
+	stop_tween = stop_tween,
 	set_node_property = set_node_property,
 	get_node_property = get_node_property,
 	tween_animation_key = tween_animation_key,
-	stop_tween = stop_tween,
 	trigger_animation_key = trigger_animation_key,
 }
 

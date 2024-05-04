@@ -33,6 +33,7 @@
 
 ---@class panthera.animation.state
 ---@field adapter panthera.adapter @Adapter to use for animation
+---@field speed number @All animation speed multiplier
 ---@field current_time number @Current animation time
 ---@field nodes table @Animation nodes used in animation
 ---@field childs panthera.animation.state[]|nil @List of active child animations
