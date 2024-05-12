@@ -11,10 +11,14 @@ local PROPERTY_TO_TWEEN_PROPERTY = {
 	["size_x"] = "size.x",
 	["size_y"] = "size.y",
 	["size_z"] = "size.z",
-	["color_r"] = "tint.x",
-	["color_g"] = "tint.y",
-	["color_b"] = "tint.z",
-	["color_a"] = "tint.w",
+	["color_r"] = "color.x",
+	["color_g"] = "color.y",
+	["color_b"] = "color.z",
+	["color_a"] = "color.w",
+	["slice9_left"] = "slice.x",
+	["slice9_top"] = "slice.y",
+	["slice9_right"] = "slice.z",
+	["slice9_bottom"] = "slice.w"
 }
 
 local PROPERTY_TO_TRIGGER_PROPERTY = {
@@ -67,10 +71,6 @@ local EASING_TO_DEFOLD_EASING = {
 	["outsine"] = go.EASING_OUTSINE,
 }
 
-local BOOLEAN_VALUE = {
-	["true"] = true,
-	["false"] = false,
-}
 
 local MSG_ENABLE_VALUE = {
 	["true"] = hash("enable"),
@@ -110,7 +110,7 @@ local function trigger_animation_key(node, property_id, value)
 	end
 	if defold_property_id == "enabled" then
 		local msg_id = MSG_ENABLE_VALUE[value]
-		 msg.post(node, msg_id)
+		msg.post(node, msg_id)
 	end
 end
 
@@ -162,7 +162,6 @@ local function set_node_property(node, property_id, value)
 	end
 
 	stop_tween(node, property_id)
-
 	defold_property_id = PROPERTY_TO_TWEEN_PROPERTY[property_id]
 	if not defold_property_id then
 		print("Unknown property_id: " .. property_id, debug.traceback())

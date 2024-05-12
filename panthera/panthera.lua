@@ -15,7 +15,7 @@ end
 
 ---Load animation from JSON file and create it with Panthera GO adapter
 ---@param animation_path string
----@param get_node (fun(node_id: string): node)|nil @Function to get node by node_id. Default is defined in adapter
+---@param get_node (fun(node_id: string): hash|url)|nil @Function to get node by node_id. Default is defined in adapter
 ---@return panthera.animation.state|nil @Animation data or nil if animation can't be loaded, error message
 function M.create_go(animation_path, get_node)
 	return M.create(animation_path, adapter_go, get_node)
@@ -45,7 +45,7 @@ function M.create(animation_path, adapter, get_node)
 
 	-- Create a data structure for animation
 	---@type panthera.animation.state
-	return {
+	local animation_state = {
 		nodes = {},
 		speed = 1,
 		childs = nil,
@@ -57,6 +57,8 @@ function M.create(animation_path, adapter, get_node)
 		animation_path = animation_path,
 		get_node = get_node or adapter.get_node,
 	}
+
+	return animation_state
 end
 
 
@@ -215,11 +217,11 @@ function M.set_time(animation_state, animation_id, time)
 
 	if M.is_playing(animation_state) then
 		M.stop(animation_state)
+	end
 
-		if animation_state.previous_animation then
-			panthera_system.reset_animation_state(animation_state, animation_state.previous_animation.animation_id)
-			animation_state.previous_animation = nil
-		end
+	if animation_state.previous_animation then
+		panthera_system.reset_animation_state(animation_state, animation_state.previous_animation.animation_id)
+		animation_state.previous_animation = nil
 	end
 
 	animation_state.current_time = time

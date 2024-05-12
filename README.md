@@ -172,6 +172,10 @@ panthera.create_gui(animation_path, [get_node])
 - **Usage Example:**
 
 ```lua
+local gui_animation = panthera.create_gui("/animations/my_gui_animation.json")
+```
+
+```lua
 local gui_animation = panthera.create_gui("/animations/my_gui_animation.json", function(node_id)
 	-- If we inside a Druid's component, we can use this function to get a node by its ID instead of gui.get_node(node_id)
 	return self:get_node(node_id)
@@ -195,6 +199,10 @@ panthera.create_go(animation_path, [get_node])
 - **Returns:** An animation state object or `nil` if the animation cannot be loaded.
 
 - **Usage Example:**
+
+```lua
+local go_animation = panthera.create_go("/animations/my_animation.json")
+```
 
 ```lua
 local go_animation = panthera.create_go("/animations/my_animation.json", function(node_id)
