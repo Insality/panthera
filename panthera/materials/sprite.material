@@ -1,7 +1,7 @@
 name: "sprite"
 tags: "tile"
-vertex_program: "/panthera/materials/sprite/sprite.vp"
-fragment_program: "/panthera/materials/sprite/sprite.fp"
+vertex_program: "/panthera/materials/sprite.vp"
+fragment_program: "/panthera/materials/sprite.fp"
 vertex_space: VERTEX_SPACE_WORLD
 vertex_constants {
   name: "view_proj"

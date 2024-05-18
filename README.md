@@ -539,7 +539,7 @@ end
 
 When integrating Panthera 2.0 animations with Defold game objects (GOs), it's essential to know which properties you can animate:
 
-By default, sprite components uses the `tint` property and label components use the `color` property. Panthera try to use `color` property. To enable `color` property you should set the material of sprite component to `/panthera/materials/sprite/sprite.material` or use any other material with `color` attribute.
+By default, sprite components uses the `tint` property and label components use the `color` property. Panthera try to use `color` property. To enable `color` property you should set the material of sprite component to `/panthera/materials/sprite.material` or use any other material with `color` attribute.
 
 - **Position**: Move objects.
 - **Rotation**: Rotate objects.

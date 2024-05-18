@@ -15,6 +15,6 @@ Initial resease!
 - Update documentation.
 - Update GO and GUI adapters:
 	- GO now supports `color` and `slice9` properties.
-	- The default sprite color property is `tint`. To use panthera color property, use `/panthera/materials/sprite/sprite.material` or any other with `color` property.
+	- The default sprite color property is `tint`. To use panthera color property, use `/panthera/materials/sprite.material` or any other with `color` property.
 	- GUI: fix slice9 property.
 	- GUI: fix for pie vertices and piebounds properties.
