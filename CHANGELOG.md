@@ -7,7 +7,7 @@ Initial resease!
 
 ## Version v2
 
-- Add adjustable text font size per project.
+- Add `panthera.clone_state` function to clone animation states.
 - Various fixes for correct animation playback.
 - Add `speed` modifier for animation states to adjust all animations played by this state.
 	- After creating an animation state, you can set the speed of all animations played by this state by setting the `speed` property.
