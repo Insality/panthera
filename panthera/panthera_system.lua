@@ -101,10 +101,21 @@ end
 ---@param animation_id string
 ---@param time number
 function M.set_animation_state_at_time(animation_state, animation_id, time)
-	local adapter = animation_state.adapter
 	local animation_data = M.get_animation_data(animation_state) --[[@as panthera.animation.data]]
-	local group_keys = animation_data.group_animation_keys[animation_id]
+	local animation = M.get_animation_by_animation_id(animation_data, animation_id)
+	if not animation then
+		return nil
+	end
 
+	-- If we have initial animation, we should set up it here?
+	if animation.initial_state then
+		local initial_animation = M.get_animation_by_animation_id(animation_data, animation.initial_state)
+		if initial_animation then
+			M.set_animation_state_at_time(animation_state, initial_animation.animation_id, initial_animation.duration)
+		end
+	end
+
+	local group_keys = animation_data.group_animation_keys[animation_id]
 	for node_id, node_keys in pairs(group_keys) do
 		if node_id ~= "" then
 			-- Node keys
@@ -274,7 +285,7 @@ end
 ---@param options panthera.options
 ---@return boolean @true if success
 function M.run_timeline_key(animation_state, key, options)
-	local speed = options.speed or 1
+	local speed = (options.speed or 1) * animation_state.speed
 	assert(speed > 0, "Speed should be greater than 0")
 
 	local adapter = animation_state.adapter

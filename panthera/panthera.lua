@@ -15,7 +15,7 @@ end
 
 ---Load animation from JSON file and create it with Panthera GO adapter
 ---@param animation_path string
----@param get_node (fun(node_id: string): node)|nil @Function to get node by node_id. Default is defined in adapter
+---@param get_node (fun(node_id: string): hash|url)|nil @Function to get node by node_id. Default is defined in adapter
 ---@return panthera.animation.state|nil @Animation data or nil if animation can't be loaded, error message
 function M.create_go(animation_path, get_node)
 	return M.create(animation_path, adapter_go, get_node)
@@ -45,8 +45,9 @@ function M.create(animation_path, adapter, get_node)
 
 	-- Create a data structure for animation
 	---@type panthera.animation.state
-	return {
+	local animation_state = {
 		nodes = {},
+		speed = 1,
 		childs = nil,
 		timer_id = nil,
 		animation = nil,
@@ -56,6 +57,19 @@ function M.create(animation_path, adapter, get_node)
 		animation_path = animation_path,
 		get_node = get_node or adapter.get_node,
 	}
+
+	return animation_state
+end
+
+
+---Create identical copy of animation state to run it in parallel
+---@param animation_state panthera.animation.state
+---@return panthera.animation.state|nil @New animation state or nil if animation can't be cloned
+function M.clone_state(animation_state)
+	local adapter = animation_state.adapter
+	local get_node = animation_state.get_node
+	local animation_path = animation_state.animation_path
+	return M.create(animation_path, adapter, get_node)
 end
 
 
@@ -116,10 +130,11 @@ function M.play(animation_state, animation_id, options)
 	local last_time = socket.gettime()
 	animation_state.timer_id = timer.delay(TIMER_DELAY, true, function()
 		local current_time = socket.gettime()
-		local dt = current_time - last_time
+		local dt = (current_time - last_time)
 		last_time = current_time
+		local speed = (options.speed or 1) * animation_state.speed
 
-		animation_state.current_time = animation_state.current_time + dt * (options.speed or 1)
+		animation_state.current_time = animation_state.current_time + dt * speed
 		M._update_animation(animation_state, options)
 	end)
 	timer.trigger(animation_state.timer_id)
@@ -152,16 +167,16 @@ function M._update_animation(animation_state, options)
 				local get_node = animation_state.get_node
 
 				local child_state = M.create(animation_path, adapter, get_node)
-
 				if child_state then
 					animation_state.childs = animation_state.childs or {}
 					table.insert(animation_state.childs, child_state)
 					local animation_duration = M.get_duration(child_state, key.property_id)
 
 					if animation_duration > 0 and key.duration > 0 then
+						local speed = (options.speed or 1) * animation_state.speed
 						M.play(child_state, key.property_id, {
 							is_skip_init = true,
-							speed = (animation_duration / key.duration) * (options.speed or 1),
+							speed = (animation_duration / key.duration) * speed,
 							callback = function()
 								panthera_system.remove_child_animation(animation_state, child_state)
 							end
@@ -202,11 +217,11 @@ function M.set_time(animation_state, animation_id, time)
 
 	if M.is_playing(animation_state) then
 		M.stop(animation_state)
+	end
 
-		if animation_state.previous_animation then
-			panthera_system.reset_animation_state(animation_state, animation_state.previous_animation.animation_id)
-			animation_state.previous_animation = nil
-		end
+	if animation_state.previous_animation then
+		panthera_system.reset_animation_state(animation_state, animation_state.previous_animation.animation_id)
+		animation_state.previous_animation = nil
 	end
 
 	animation_state.current_time = time

@@ -36,7 +36,7 @@ https://github.com/Insality/defold-tweener/archive/refs/tags/2.zip
 **[Panthera Runtime](https://github.com/Insality/panthera)**
 
 ```
-https://github.com/Insality/panthera/archive/refs/tags/runtime.1.zip
+https://github.com/Insality/panthera/archive/refs/tags/runtime.2.zip
 ```
 
 After that, select `Project ▸ Fetch Libraries` to update [library dependencies]((https://defold.com/manuals/libraries/#setting-up-library-dependencies)). This happens automatically whenever you open a project so you will only need to do this if the dependencies change without re-opening the project.
@@ -92,6 +92,7 @@ end)
 panthera.create_gui(animation_path, [get_node])
 panthera.create_go(animation_path, [get_node])
 panthera.create(animation_path, adapter, [get_node])
+panthera.clone_state(animation_state)
 panthera.play(animation_state, animation_id, [options])
 panthera.stop(animation_state)
 panthera.set_time(animation_state, animation_id, time)
@@ -172,6 +173,10 @@ panthera.create_gui(animation_path, [get_node])
 - **Usage Example:**
 
 ```lua
+local gui_animation = panthera.create_gui("/animations/my_gui_animation.json")
+```
+
+```lua
 local gui_animation = panthera.create_gui("/animations/my_gui_animation.json", function(node_id)
 	-- If we inside a Druid's component, we can use this function to get a node by its ID instead of gui.get_node(node_id)
 	return self:get_node(node_id)
@@ -195,6 +200,10 @@ panthera.create_go(animation_path, [get_node])
 - **Returns:** An animation state object or `nil` if the animation cannot be loaded.
 
 - **Usage Example:**
+
+```lua
+local go_animation = panthera.create_go("/animations/my_animation.json")
+```
 
 ```lua
 local go_animation = panthera.create_go("/animations/my_animation.json", function(node_id)
@@ -244,6 +253,26 @@ local gui_animation_state = panthera.create("/animations/gui_animation.json", ad
 ```
 
 This method is essential for advanced users who need to implement custom animation logic or integrate Panthera animations with non-standard Defold components. It provides the flexibility to work directly with the underlying adapters, enabling a wide range of animation functionalities. Read about Panthera adapters in the [adapter documentation](docs/panthera_adapter.md).
+
+**panthera.clone_state**
+---
+Clone an existing animation state object, enabling multiple instances of the same animation to play simultaneously or independently.
+
+```lua
+panthera.clone_state(animation_state)
+```
+
+- **Parameters:**
+  - `animation_state`: The animation state object to clone.
+
+- **Returns:** A new animation state object that is a copy of the original.
+
+- **Usage Example:**
+
+```lua
+local go_animation_state = panthera.create_go("/animations/player_animation.json")
+local cloned_state = panthera.clone_state(go_animation_state)
+```
 
 
 **panthera.play**
@@ -510,10 +539,14 @@ end
 
 When integrating Panthera 2.0 animations with Defold game objects (GOs), it's essential to know which properties you can animate:
 
+By default, sprite components uses the `tint` property and label components use the `color` property. Panthera try to use `color` property. To enable `color` property you should set the material of sprite component to `/panthera/materials/sprite/sprite.material` or use any other material with `color` attribute.
+
 - **Position**: Move objects.
 - **Rotation**: Rotate objects.
 - **Scale**: Scale objects.
-- **Color**: Update tint of sprite component.
+- **Color**: Update color of sprite or Text component.
+- **Slice9**: Update slice9 properties of sprite component.
+- **Size**: Update size of sprite component.
 - **Text**: Update text content of label component.
 - **Texture**: Switch textures of sprite component.
 - **Enabled**: Toggle object enabled/disabled.

@@ -28,8 +28,8 @@ local PROPERTY_TO_DEFOLD_TWEEN_PROPERTY = {
 	["shadow_a"] = "shadow.w",
 	["slice9_left"] = "slice9.x",
 	["slice9_top"] = "slice9.y",
-	["slice9_right"] = "slice9.w",
-	["slice9_bottom"] = "slice9.z",
+	["slice9_right"] = "slice9.z",
+	["slice9_bottom"] = "slice9.w",
 	["inner_radius"] = "inner_radius",
 	["fill_angle"] = "fill_angle",
 	["text_tracking"] = "tracking",
@@ -114,6 +114,11 @@ local BLEND_MODE_TO_DEFOLD_BLEND_MODE = {
 	["add"] = gui.BLEND_ADD,
 	["multiply"] = gui.BLEND_MULT,
 	["screen"] = 4, -- No screen blend mode in Defold gui* bindings, pick from source
+}
+
+local OUTER_BOUNDS_TO_DEFOLD_OUTER_BOUNDS = {
+	["ellipse"] = gui.PIEBOUNDS_ELLIPSE,
+	["rectangle"] = gui.PIEBOUNDS_RECTANGLE
 }
 
 local BOOLEAN_VALUE = {
@@ -240,10 +245,11 @@ local DEFOLD_TRIGGER_SETTER = {
 		gui.set_line_break(node, BOOLEAN_VALUE[value])
 	end,
 	["outer_bounds"] = function(node, value)
-		gui.set_outer_bounds(node, BOOLEAN_VALUE[value])
+		local outer_bounds = OUTER_BOUNDS_TO_DEFOLD_OUTER_BOUNDS[value]
+		gui.set_outer_bounds(node, outer_bounds)
 	end,
 	["perimeter_verticies"] = function(node, value)
-		gui.set_perimeter_vertices(node, BOOLEAN_VALUE[value])
+		gui.set_perimeter_vertices(node, value)
 	end,
 }
 
@@ -265,6 +271,14 @@ end
 
 ---@param node node
 ---@param property_id string
+local function stop_tween(node, property_id)
+	local defold_property_id = PROPERTY_TO_DEFOLD_TWEEN_PROPERTY[property_id]
+	gui.cancel_animation(node, defold_property_id)
+end
+
+
+---@param node node
+---@param property_id string
 ---@param value number
 ---@return boolean @true if success
 local function set_node_property(node, property_id, value)
@@ -274,6 +288,8 @@ local function set_node_property(node, property_id, value)
 		trigger_animation_key(node, property_id, value or "")
 		return true
 	end
+
+	stop_tween(node, property_id)
 
 	-- Handle Tween properties
 	if IS_DEFOLD_180 then
@@ -363,21 +379,13 @@ local function tween_animation_key(node, property_id, easing, duration, end_valu
 end
 
 
----@param node node
----@param property_id string
-local function stop_tween(node, property_id)
-	local defold_property_id = PROPERTY_TO_DEFOLD_TWEEN_PROPERTY[property_id]
-	gui.cancel_animation(node, defold_property_id)
-end
-
-
 local M = {
 	get_node = gui.get_node,
 	get_easing = get_easing,
+	stop_tween = stop_tween,
 	set_node_property = set_node_property,
 	get_node_property = get_node_property,
 	tween_animation_key = tween_animation_key,
-	stop_tween = stop_tween,
 	trigger_animation_key = trigger_animation_key,
 }
 

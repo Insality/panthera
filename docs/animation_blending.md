@@ -24,12 +24,12 @@ local panthera = require("panthera.panthera")
 
 function init(self)
     -- Create two separate animation states for blending
-    self.walk_animation = panthera.create_go("/animations/character_walk.json")
-    self.arm_wave_animation = panthera.create_go("/animations/character_arm_wave.json")
+    self.character_animation = panthera.create_go("/animations/character.json")
+    self.character_details_animation = panthera.clone_state(self.character_animation)
 
     -- Start both animations to run at the same time
-    panthera.play(self.walk_animation, "walk", { is_loop = true })
-    panthera.play(self.arm_wave_animation, "arm_wave", { is_loop = true })
+    panthera.play(self.character_animation, "walk", { is_loop = true })
+    panthera.play(self.character_details_animation, "eyes", { is_loop = true })
 end
 ```
 
