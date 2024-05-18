@@ -36,7 +36,7 @@ https://github.com/Insality/defold-tweener/archive/refs/tags/2.zip
 **[Panthera Runtime](https://github.com/Insality/panthera)**
 
 ```
-https://github.com/Insality/panthera/archive/refs/tags/runtime.1.zip
+https://github.com/Insality/panthera/archive/refs/tags/runtime.2.zip
 ```
 
 After that, select `Project ▸ Fetch Libraries` to update [library dependencies]((https://defold.com/manuals/libraries/#setting-up-library-dependencies)). This happens automatically whenever you open a project so you will only need to do this if the dependencies change without re-opening the project.
