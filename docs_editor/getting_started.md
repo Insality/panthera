@@ -283,8 +283,6 @@ https://github.com/Insality/panthera/assets/3294627/ed082b26-cfaf-4567-93ac-41d2
 
 You can import the Defold GUI layout to the Panthera Editor. The animation file should be placed inside your Defold project folder to correct reloading in the future.
 
-While importing the GUI file, several internal files can be created. They stored internally and should be not modified in the current version.
-
 1. Open animation project.
 2. Click on the plus icon in the Nodes panel.
 3. Select "Bind Defold File".
@@ -293,8 +291,6 @@ While importing the GUI file, several internal files can be created. They stored
 The GUI layout will be imported and displayed in the Editor View. The file state is changed to linked. The GUI will be reloaded automatically when the project is opened, or manually by clicking the "Reload Binded File" button.
 
 The layout nodes can't be modified. But you can animate them. Nodes layout data will be not stored in the animation file. Only the animation data will be stored.
-
-At Home page, project list with file icon (📁) is a external file, without icon - internal file. Internal files are stored in the Panthera Editor's internal storage and should not be modified. These internal files are additional files from import the Defold file.
 
 
 # Working with Node Properties
@@ -432,6 +428,16 @@ To adjust the timeline gizmo settings, follow these steps:
 Time step is the minimal step point in timeline controls. The time step will be stored in the project file and used for all keys in the timeline.
 
 
+# Adjust Font Size
+
+![change_font_size](/docs_editor/media/change_font_size.png)
+
+By default, Panthera uses a font with 40 font size. If you want to change the font size, you can click the `settings` button at bottom right corner of the editor and set your font size. This settings is stored in the project file and should be set for each project.
+
+After changing the font size, you should restart the project to apply the changes.
+
+
 # Using Hotkeys
 
 Read the [Hotkeys](hotkeys.md) guide to learn about the helpful shortcuts available in the Panthera Editor.
+
