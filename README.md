@@ -571,6 +571,10 @@ Panthera Runtime is licensed under the MIT License - see the [LICENSE](/LICENSE)
 
 For any issues, questions, or suggestions, please [create an issue](https://github.com/Insality/panthera/issues).
 
+## Changelog
+
+Read the [CHANGELOG](/CHANGELOG.md) to learn about the latest updates and features in Panthera Runtime.
+
 
 ## 👏 Contributors
 
