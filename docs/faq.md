@@ -31,7 +31,7 @@ To setup initial property value in animation you should create a timeline key wi
 
 Sounds like a bug. You can press save on the project and reload the project. If the issue persists, please create an issue on the GitHub repository with the detailed description of the problem.
 
-# Hotkeys is not working
+## Hotkeys is not working
 
 Probably a some of modifiers keys are pressed in the system. Try to press `Ctrl`, `Alt`, `Shift` and `Cmd` keys on your keyboard to ensure it released by the system.
 

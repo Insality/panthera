@@ -92,6 +92,7 @@ end)
 panthera.create_gui(animation_path, [get_node])
 panthera.create_go(animation_path, [get_node])
 panthera.create(animation_path, adapter, [get_node])
+panthera.clone_state(animation_state)
 panthera.play(animation_state, animation_id, [options])
 panthera.stop(animation_state)
 panthera.set_time(animation_state, animation_id, time)
@@ -252,6 +253,26 @@ local gui_animation_state = panthera.create("/animations/gui_animation.json", ad
 ```
 
 This method is essential for advanced users who need to implement custom animation logic or integrate Panthera animations with non-standard Defold components. It provides the flexibility to work directly with the underlying adapters, enabling a wide range of animation functionalities. Read about Panthera adapters in the [adapter documentation](docs/panthera_adapter.md).
+
+**panthera.clone_state**
+---
+Clone an existing animation state object, enabling multiple instances of the same animation to play simultaneously or independently.
+
+```lua
+panthera.clone_state(animation_state)
+```
+
+- **Parameters:**
+  - `animation_state`: The animation state object to clone.
+
+- **Returns:** A new animation state object that is a copy of the original.
+
+- **Usage Example:**
+
+```lua
+local go_animation_state = panthera.create_go("/animations/player_animation.json")
+local cloned_state = panthera.clone_state(go_animation_state)
+```
 
 
 **panthera.play**
