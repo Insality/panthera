@@ -174,21 +174,24 @@ panthera.create_gui(animation_path, [template], [nodes])
 - **Usage Example:**
 
 ```lua
-local gui_animation = panthera.create_gui("/animations/my_gui_animation.json")
+local PATH = "/animations/my_gui_animation.json"
 
--- Create animation over GUI template
-local gui_animation = panthera.create_gui("/animations/my_gui_animation.json", "template_name")
+-- Run over gui on current scene
+local gui_animation = panthera.create_gui(PATH)
+
+-- Run over GUI template on current scene
+local gui_animation = panthera.create_gui(PATH, "template_name")
+
+-- Run over cloned GUI nodes
+local nodes = gui.clone_tree(gui.get_node("root"))
+local gui_animation = panthera.create_gui(PATH, nil, nodes)
 
 -- Create animation over cloned GUI template
 local nodes = gui.clone_tree(gui.get_node("template_name/root"))
-local gui_animation = panthera.create_gui("/animations/my_gui_animation.json", "template_name", nodes)
-
--- Create animation over cloned GUI nodes
-local nodes = gui.clone_tree(gui.get_node("root"))
-local gui_animation = panthera.create_gui("/animations/my_gui_animation.json", nil, nodes)
+local gui_animation = panthera.create_gui(PATH, "template_name", nodes)
 
 -- Using Druid:
-local gui_animation = panthera.create_gui("/animations/my_gui_animation.json", self:get_template(), self:get_nodes())
+local gui_animation = panthera.create_gui(PATH, self:get_template(), self:get_nodes())
 ```
 
 **panthera.create_go**
@@ -198,12 +201,13 @@ Load and create a game object (GO) animation state from a JSON file.
 The Panthera uses `sys.load_resource` to load the animation file. Place your animation files inside your [custom resources folder](https://defold.com/manuals/project-settings/#custom-resources) to ensure they are included in the build.
 
 ```lua
-panthera.create_go(animation_path, [get_node])
+panthera.create_go(animation_path, collection_name, objects)
 ```
 
 - **Parameters:**
   - `animation_path`: The path to the animation JSON file. Example: `/animations/my_animation.json`.
-  - `get_node` (optional): A function to resolve nodes by their ID within the GO. If not provided, the adapter uses its default method from adapter implementation.
+  - `collection_name` (optional): The name of the collection to load objects from. Pass `nil` if no collection is used.
+  - `objects` (optional): Table with object ids from collectionfactory.create() function. Pass `nil` if objects are not created.
 
 - **Returns:** An animation state object or `nil` if the animation cannot be loaded.
 
@@ -214,21 +218,21 @@ local go_animation = panthera.create_go("/animations/my_animation.json")
 ```
 
 ```lua
-local go_animation = panthera.create_go("/animations/my_animation.json", function(node_id)
-	-- This is the default get_node function in adapter_go.
-	-- The node_id for object components should be in the format "object_id#component_id", example: "player#sprite"
-	if string.find(node_id, "#") then
-		local object_id = string.sub(node_id, 1, string.find(node_id, "#") - 1)
-		local fragment_id = string.sub(node_id, string.find(node_id, "#") + 1)
+local PATH = "/animations/my_animation.json"
 
-		local object_url = msg.url(hash("/" .. object_id))
-		object_url.fragment = fragment_id
+-- Run over objects on current scene
+local go_animation = panthera.create_go(PATH)
 
-		return object_url
-	end
+-- Run over collection on current scene
+local go_animation = panthera.create_go(PATH, "collection_name")
 
-	return hash("/" .. node_id)
-end
+-- Run over objects from collection
+local objects = collectionfactory.create("#collectionfactory")
+local go_animation = panthera.create_go(PATH, nil, objects)
+
+-- Run over objects from collection inside spawned collection
+local objects = collectionfactory.create("#collectionfactory")
+local go_animation = panthera.create_go(PATH, "collection_name", objects)
 ```
 
 **panthera.create**

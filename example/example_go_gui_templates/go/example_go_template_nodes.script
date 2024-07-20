@@ -3,24 +3,35 @@ local PATH = "/resources/test_go.json"
 
 function init(self)
 	-- Run Panthera over Game Object in collection
+	-- No any collection name or created objects
 	local go_animation = panthera.create_go(PATH)
 	panthera.play(go_animation, "default", { is_loop = true })
 
+
 	-- Run Panthera over collection
+	-- Is a collection name, but no any created objects
 	local go_animation = panthera.create_go(PATH, "test_collection")
 	panthera.play(go_animation, "default", { is_loop = true })
 
+
 	-- Run Panthera over nested collection
+	-- Is a still a collection, just inside another collection, so we concatenate collection names
 	local go_animation = panthera.create_go(PATH, "test_inner_collection/test_collection")
 	panthera.play(go_animation, "default", { is_loop = true })
 
+
 	-- Run Panthera over collection from collectionfactory
+	-- We create a collection from collectionfactory and use this objects to run Panthera
+	-- The paths to the objects inside this collection are just paths without any collection names
 	local objects = collectionfactory.create("#collectionfactory")
 	go.set_position(vmath.vector3(640, 160, 0), objects["/panthera"])
 	local go_animation = panthera.create_go(PATH, nil, objects)
 	panthera.play(go_animation, "default", { is_loop = true })
 
+
 	-- Run Panthera over nested collection from collectionfactory
+	-- But here when we create a collection from collectionfactory, inside created objects we have a collection
+	-- So add a collection name and created objects
 	local objects = collectionfactory.create("#collectionfactory_inner")
 	go.set_position(vmath.vector3(860, 160, 0), objects["/test_collection/panthera"])
 	local go_animation = panthera.create_go(PATH, "test_collection", objects)
