@@ -226,7 +226,13 @@ local go_animation = panthera.create_go(PATH)
 -- Run over collection on current scene
 local go_animation = panthera.create_go(PATH, "collection_name")
 
--- Run over objects from collection
+-- Run over object from spawned factory
+-- You should create a table with mapping object to created instance.
+-- Instead "/pantera" use object id from animation
+local object = factory.create("#factory")
+local go_animation = panthera.create_go(PATH, nil, { [hash("/panthera")]  = object })
+
+-- Run over objects from spawned collection
 local objects = collectionfactory.create("#collectionfactory")
 local go_animation = panthera.create_go(PATH, nil, objects)
 

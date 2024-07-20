@@ -20,11 +20,18 @@ function init(self)
 	panthera.play(go_animation, "default", { is_loop = true })
 
 
+	-- Run Panthera over Game Object from factory
+	local object = factory.create("#factory")
+	go.set_position(vmath.vector3(120, 160, 0), object)
+	local go_animation = panthera.create_go(PATH, nil, { [hash("/panthera")]  = object })
+	panthera.play(go_animation, "default", { is_loop = true })
+
+
 	-- Run Panthera over collection from collectionfactory
 	-- We create a collection from collectionfactory and use this objects to run Panthera
 	-- The paths to the objects inside this collection are just paths without any collection names
 	local objects = collectionfactory.create("#collectionfactory")
-	go.set_position(vmath.vector3(640, 160, 0), objects["/panthera"])
+	go.set_position(vmath.vector3(480, 160, 0), objects["/panthera"])
 	local go_animation = panthera.create_go(PATH, nil, objects)
 	panthera.play(go_animation, "default", { is_loop = true })
 
@@ -33,7 +40,7 @@ function init(self)
 	-- But here when we create a collection from collectionfactory, inside created objects we have a collection
 	-- So add a collection name and created objects
 	local objects = collectionfactory.create("#collectionfactory_inner")
-	go.set_position(vmath.vector3(860, 160, 0), objects["/test_collection/panthera"])
+	go.set_position(vmath.vector3(840, 160, 0), objects["/test_collection/panthera"])
 	local go_animation = panthera.create_go(PATH, "test_collection", objects)
 	panthera.play(go_animation, "default", { is_loop = true })
 end
