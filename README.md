@@ -89,8 +89,8 @@ end)
 ### Quick API Reference
 
 ```lua
-panthera.create_gui(animation_path, [get_node])
-panthera.create_go(animation_path, [get_node])
+panthera.create_gui(animation_path, [template], [nodes])
+panthera.create_go(animation_path, [collection_name], [objects])
 panthera.create(animation_path, adapter, [get_node])
 panthera.clone_state(animation_state)
 panthera.play(animation_state, animation_id, [options])
@@ -176,22 +176,19 @@ panthera.create_gui(animation_path, [template], [nodes])
 ```lua
 local PATH = "/animations/my_gui_animation.json"
 
--- Run over gui on current scene
+-- Create over gui on current scene
 local gui_animation = panthera.create_gui(PATH)
 
--- Run over GUI template on current scene
+-- Create over GUI template on current scene
 local gui_animation = panthera.create_gui(PATH, "template_name")
 
--- Run over cloned GUI nodes
+-- Create over cloned GUI nodes
 local nodes = gui.clone_tree(gui.get_node("root"))
 local gui_animation = panthera.create_gui(PATH, nil, nodes)
 
--- Create animation over cloned GUI template
+-- Create over cloned GUI template
 local nodes = gui.clone_tree(gui.get_node("template_name/root"))
 local gui_animation = panthera.create_gui(PATH, "template_name", nodes)
-
--- Using Druid:
-local gui_animation = panthera.create_gui(PATH, self:get_template(), self:get_nodes())
 ```
 
 **panthera.create_go**
@@ -214,29 +211,25 @@ panthera.create_go(animation_path, collection_name, objects)
 - **Usage Example:**
 
 ```lua
-local go_animation = panthera.create_go("/animations/my_animation.json")
-```
-
-```lua
 local PATH = "/animations/my_animation.json"
 
--- Run over objects on current scene
+-- Create over objects on current scene
 local go_animation = panthera.create_go(PATH)
 
--- Run over collection on current scene
+-- Create over collection on current scene
 local go_animation = panthera.create_go(PATH, "collection_name")
 
--- Run over object from spawned factory
+-- Create over object from spawned factory
 -- You should create a table with mapping object to created instance.
 -- Instead "/pantera" use object id from animation
 local object = factory.create("#factory")
 local go_animation = panthera.create_go(PATH, nil, { [hash("/panthera")]  = object })
 
--- Run over objects from spawned collection
+-- Create over objects from spawned collection
 local objects = collectionfactory.create("#collectionfactory")
 local go_animation = panthera.create_go(PATH, nil, objects)
 
--- Run over objects from collection inside spawned collection
+-- Create over objects from collection inside spawned collection
 local objects = collectionfactory.create("#collectionfactory")
 local go_animation = panthera.create_go(PATH, "collection_name", objects)
 ```
