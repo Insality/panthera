@@ -125,10 +125,7 @@ local function get_trigger_property_id(node, property_id)
 		return label.get_text(node)
 	end
 	if defold_property_id == "texture" then
-		local texture_name = sprite.get_flipbook(node)
-		if texture_name == "" then
-			return ""
-		end
+		local texture_name = go.get(node, "animation")
 		local splitted = split(texture_name, "/")
 		return splitted[#splitted]
 	end
@@ -233,8 +230,44 @@ local function get_node(node_id)
 end
 
 
+---@param template string|nil
+---@param nodes table<string|hash, string|hash>|nil
+---@return function(node_id: string): hash|url
+local function get_node_fn(template, nodes)
+	return function(node_id)
+		if template then
+			node_id = template .. "/" .. node_id
+		end
+
+		local split_index = string.find(node_id, "#")
+		if split_index then
+			local object_id = string.sub(node_id, 1, split_index - 1)
+			local fragment_id = string.sub(node_id, split_index + 1)
+
+			local object_path = hash("/" .. object_id)
+			if nodes then
+				object_path = nodes[object_path]
+			end
+
+			local object_url = msg.url(object_path)
+			object_url.fragment = fragment_id
+
+			return object_url
+		end
+
+		local object_path = hash("/" .. node_id)
+		if nodes then
+			object_path = nodes[object_path]
+		end
+
+		return object_path
+	end
+end
+
+
 local M = {
 	get_node = get_node,
+	get_node_fn = get_node_fn,
 	get_easing = get_easing,
 	set_node_property = set_node_property,
 	get_node_property = get_node_property,

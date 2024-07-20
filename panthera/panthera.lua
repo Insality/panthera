@@ -1,6 +1,6 @@
 local adapter_go = require("panthera.adapters.adapter_go")
 local adapter_gui = require("panthera.adapters.adapter_gui")
-local panthera_system = require("panthera.panthera_system")
+local panthera_internal = require("panthera.panthera_internal")
 
 ---@class panthera
 local M = {}
@@ -9,13 +9,13 @@ local TIMER_DELAY = 1/60
 
 ---@param logger_instance panthera.logger|nil
 function M.set_logger(logger_instance)
-	panthera_system.logger = logger_instance or panthera_system.empty_logger
+	panthera_internal.logger = logger_instance or panthera_internal.empty_logger
 end
 
 
 ---Load animation from JSON file and create it with Panthera GO adapter
 ---@param animation_path string
----@param get_node (fun(node_id: string): hash|url)|nil @Function to get node by node_id. Default is defined in adapter
+---@param get_node (fun(node_id: string): userdata|hash|url)|nil @Function to get node by node_id. Default is defined in adapter
 ---@return panthera.animation.state|nil @Animation data or nil if animation can't be loaded, error message
 function M.create_go(animation_path, get_node)
 	return M.create(animation_path, adapter_go, get_node)
@@ -37,9 +37,9 @@ end
 ---@param get_node (fun(node_id: string): node)|nil @Function to get node by node_id. Default is defined in adapter
 ---@return panthera.animation.state|nil @Animation data or nil if animation can't be loaded, error message
 function M.create(animation_path, adapter, get_node)
-	local animation_data, error_reason = panthera_system.load(animation_path, false)
+	local animation_data, error_reason = panthera_internal.load(animation_path, false)
 	if not animation_data then
-		panthera_system.logger:error("Can't load Panthera animation", error_reason)
+		panthera_internal.logger:error("Can't load Panthera animation", error_reason)
 		return nil
 	end
 
@@ -78,52 +78,52 @@ end
 ---@param options panthera.options|nil
 function M.play(animation_state, animation_id, options)
 	if not animation_state then
-		panthera_system.logger:warn("Can't play animation, animation_state is nil", animation_id)
+		panthera_internal.logger:warn("Can't play animation, animation_state is nil", animation_id)
 		return
 	end
 
-	local animation_data = panthera_system.get_animation_data(animation_state)
+	local animation_data = panthera_internal.get_animation_data(animation_state)
 	if not animation_data then
-		panthera_system.logger:warn("Can't play animation, animation_data is nil", {
+		panthera_internal.logger:warn("Can't play animation, animation_data is nil", {
 			animation_path = animation_state.animation_path,
 			animation_id = animation_id,
 		})
 		return nil
 	end
 
-	local animation = panthera_system.get_animation_by_animation_id(animation_data, animation_id)
+	local animation = panthera_internal.get_animation_by_animation_id(animation_data, animation_id)
 	if not animation then
-		panthera_system.logger:warn("Animation is not found", {
+		panthera_internal.logger:warn("Animation is not found", {
 			animation_path = animation_state.animation_path,
 			animation_id = animation_id,
 		})
 		return nil
 	end
 
-	if animation_state.animation then
+	if animation_state.animation_id then
 		M.stop(animation_state)
 	end
 
 	options = options or {}
-	animation_state.animation = animation
+	animation_state.animation_id = animation.animation_id
 	animation_state.animation_keys_index = 1
 
 	if not options.is_skip_init then
 		-- Reset all previuosly animated nodes to initial state
-		if animation_state.previous_animation then
-			panthera_system.reset_animation_state(animation_state, animation_state.previous_animation.animation_id)
-			animation_state.previous_animation = nil
+		if animation_state.previous_animation_id then
+			panthera_internal.reset_animation_state(animation_state, animation_state.previous_animation_id)
+			animation_state.previous_animation_id = nil
 		end
 
 		-- If we have initial animation, we should set up it here?
 		if animation.initial_state and animation_state ~= "" then
-			local initial_animation = panthera_system.get_animation_by_animation_id(animation_data, animation.initial_state)
+			local initial_animation = panthera_internal.get_animation_by_animation_id(animation_data, animation.initial_state)
 			if initial_animation then
-				panthera_system.set_animation_state_at_time(animation_state, initial_animation.animation_id, initial_animation.duration)
+				panthera_internal.set_animation_state_at_time(animation_state, initial_animation.animation_id, initial_animation.duration)
 			end
 		end
 
-		panthera_system.set_animation_state_at_time(animation_state, animation.animation_id, 0)
+		panthera_internal.set_animation_state_at_time(animation_state, animation.animation_id, 0)
 	end
 
 	-- Start animation update timer
@@ -135,17 +135,17 @@ function M.play(animation_state, animation_id, options)
 		local speed = (options.speed or 1) * animation_state.speed
 
 		animation_state.current_time = animation_state.current_time + dt * speed
-		M._update_animation(animation_state, options)
+		M._update_animation(animation, animation_state, options)
 	end)
 	timer.trigger(animation_state.timer_id)
 end
 
 
 ---@private
+---@param animation panthera.animation.data.animation
 ---@param animation_state panthera.animation.state
 ---@param options panthera.options
-function M._update_animation(animation_state, options)
-	local animation = animation_state.animation
+function M._update_animation(animation, animation_state, options)
 	if not animation then
 		return
 	end
@@ -159,7 +159,7 @@ function M._update_animation(animation_state, options)
 			animation_state.animation_keys_index = index + 1
 
 			if key.key_type ~= "animation" then
-				panthera_system.run_timeline_key(animation_state, key, options)
+				panthera_internal.run_timeline_key(animation_state, key, options)
 			else
 				-- Create a new animation child track
 				local animation_path = animation_state.animation_path
@@ -178,7 +178,7 @@ function M._update_animation(animation_state, options)
 							is_skip_init = true,
 							speed = (animation_duration / key.duration) * speed,
 							callback = function()
-								panthera_system.remove_child_animation(animation_state, child_state)
+								panthera_internal.remove_child_animation(animation_state, child_state)
 							end
 						})
 					end
@@ -190,7 +190,7 @@ function M._update_animation(animation_state, options)
 	end
 
 	-- If current time >= animation duration - stop animation
-	if animation_state.current_time >= animation_state.animation.duration then
+	if animation_state.current_time >= animation.duration then
 		M.stop(animation_state)
 
 		if options.callback then
@@ -209,26 +209,26 @@ end
 ---@param animation_id string
 ---@param time number
 function M.set_time(animation_state, animation_id, time)
-	local animation_data = panthera_system.get_animation_data(animation_state)
+	local animation_data = panthera_internal.get_animation_data(animation_state)
 	assert(animation_data, "Animation data is not loaded")
 
-	local animation = panthera_system.get_animation_by_animation_id(animation_data, animation_id)
+	local animation = panthera_internal.get_animation_by_animation_id(animation_data, animation_id)
 	assert(animation, "Animation is not found: " .. animation_id)
 
 	if M.is_playing(animation_state) then
 		M.stop(animation_state)
 	end
 
-	if animation_state.previous_animation then
-		panthera_system.reset_animation_state(animation_state, animation_state.previous_animation.animation_id)
-		animation_state.previous_animation = nil
+	if animation_state.previous_animation_id then
+		panthera_internal.reset_animation_state(animation_state, animation_state.previous_animation_id)
+		animation_state.previous_animation_id = nil
 	end
 
 	animation_state.current_time = time
-	animation_state.animation = animation
+	animation_state.animation_id = animation.animation_id
 	animation_state.animation_keys_index = 1
 
-	panthera_system.set_animation_state_at_time(animation_state, animation.animation_id, time)
+	panthera_internal.set_animation_state_at_time(animation_state, animation.animation_id, time)
 end
 
 
@@ -245,7 +245,7 @@ end
 ---@return boolean @True if animation was stopped, false if animation is not playing
 function M.stop(animation_state)
 	if not animation_state then
-		panthera_system.logger:warn("Can't stop animation, animation_state is nil")
+		panthera_internal.logger:warn("Can't stop animation, animation_state is nil")
 		return false
 	end
 
@@ -254,22 +254,22 @@ function M.stop(animation_state)
 		animation_state.timer_id = nil
 	end
 
-	local previous_animation = animation_state.animation
-	animation_state.previous_animation = previous_animation
+	local previous_animation_id = animation_state.animation_id
+	animation_state.previous_animation_id = previous_animation_id
 
 	-- Stop all tweens started by animation
-	if previous_animation then
+	if previous_animation_id then
 		local adapter = animation_state.adapter
-		local animation_data = panthera_system.get_animation_data(animation_state)
+		local animation_data = panthera_internal.get_animation_data(animation_state)
 		if animation_data then
-			local group_keys = animation_data.group_animation_keys[previous_animation.animation_id]
+			local group_keys = animation_data.group_animation_keys[previous_animation_id]
 
 			for node_id, node_keys in pairs(group_keys) do
 				for property_id, keys in pairs(node_keys) do
 					if keys[1] and keys[1].key_type == "tween" then
 						local key_end_time = keys[1].start_time + keys[1].duration
 						local is_finished = key_end_time <= animation_state.current_time
-						local node = panthera_system.get_node(animation_state, node_id)
+						local node = panthera_internal.get_node(animation_state, node_id)
 						if node and not is_finished then
 							adapter.stop_tween(node, property_id)
 						end
@@ -277,14 +277,14 @@ function M.stop(animation_state)
 				end
 			end
 		else
-			panthera_system.logger:warn("Can't stop animation, animation_data is nil", {
+			panthera_internal.logger:warn("Can't stop animation, animation_data is nil", {
 				animation_path = animation_state.animation_path,
-				animation_id = previous_animation.animation_id
+				animation_id = previous_animation_id
 			})
 		end
 	end
 
-	animation_state.animation = nil
+	animation_state.animation_id = nil
 	animation_state.current_time = 0
 	animation_state.animation_keys_index = 1
 
@@ -303,10 +303,10 @@ end
 ---@param animation_id string
 ---@return number
 function M.get_duration(animation_state, animation_id)
-	local animation_data = panthera_system.get_animation_data(animation_state)
+	local animation_data = panthera_internal.get_animation_data(animation_state)
 	assert(animation_data, "Animation data is not loaded")
 
-	local animation = panthera_system.get_animation_by_animation_id(animation_data, animation_id)
+	local animation = panthera_internal.get_animation_by_animation_id(animation_data, animation_id)
 	assert(animation, "Animation is not found: " .. animation_id)
 
 	return animation.duration
@@ -321,14 +321,11 @@ function M.is_playing(animation_state)
 end
 
 
----Get current animation id
+---Get current animation
 ---@param animation_state panthera.animation.state @Animation state
 ---@return string|nil @Animation id or nil if animation is not playing
 function M.get_latest_animation_id(animation_state)
-	if animation_state.animation then
-		return animation_state.animation.animation_id
-	end
-	return animation_state.previous_animation and animation_state.previous_animation.animation_id or nil
+	return animation_state.animation_id or animation_state.previous_animation_id
 end
 
 
@@ -336,7 +333,7 @@ end
 ---@param animation_state panthera.animation.state
 ---@return string[]
 function M.get_animations(animation_state)
-	local animation_data = panthera_system.get_animation_data(animation_state)
+	local animation_data = panthera_internal.get_animation_data(animation_state)
 	if not animation_data then
 		return {}
 	end
@@ -358,10 +355,10 @@ end
 ---@param animation_path string|nil @If nil - reload all loaded animations
 function M.reload_animation(animation_path)
 	if animation_path then
-		panthera_system.load(animation_path, true)
+		panthera_internal.load(animation_path, true)
 	else
-		for path in pairs(panthera_system.LOADED_ANIMATIONS) do
-			panthera_system.load(path, true)
+		for path in pairs(panthera_internal.LOADED_ANIMATIONS) do
+			panthera_internal.load(path, true)
 		end
 	end
 end

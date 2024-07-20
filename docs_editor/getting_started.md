@@ -43,6 +43,7 @@ Quickly dive into creating animations with **Panthera Editor 2.0** using this st
 - [Adjust Gizmo Settings](#adjust-gizmo-settings)
    * [Scene Gizmo Settings](#scene-gizmo-settings)
    * [Timeline Gizmo Settings](#timeline-gizmo-settings)
+- [Adjust Font Size](#adjust-font-size)
 - [Using Hotkeys](#using-hotkeys)
 
 # Important Notes
@@ -319,6 +320,12 @@ To discard changes in the Properties panel, follow these steps:
 
 > Note: You can use "Reset all" button in the Properties panel to reset all the properties to the initial state. If there are no changed properties., the node will be reset to the initial state.
 
+## Set Empty or Default Value
+
+To set the empty or default value for the property, follow these steps:
+
+1. Right click on the property name in the Properties panel.
+2. Select "Set Default".
 
 # Working with Timeline Keys
 
