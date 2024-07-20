@@ -11,6 +11,7 @@
 		"timer",
 		"pprint",
 		"json",
-		"go"
+		"go",
+		"vmath"
 	]
 }
