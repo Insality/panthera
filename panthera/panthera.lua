@@ -15,18 +15,22 @@ end
 
 ---Load animation from JSON file and create it with Panthera GO adapter
 ---@param animation_path string
----@param get_node (fun(node_id: string): userdata|hash|url)|nil @Function to get node by node_id. Default is defined in adapter
+---@param collection_name string|nil @Collection name to load nodes from. Pass nil if no collection is used
+---@param objects table<string|hash, string|hash>|nil @Table with game objects from collectionfactory. Pass nil if no objects are used
 ---@return panthera.animation.state|nil @Animation data or nil if animation can't be loaded, error message
-function M.create_go(animation_path, get_node)
+function M.create_go(animation_path, collection_name, objects)
+	local get_node = adapter_go.get_node_function(collection_name, objects)
 	return M.create(animation_path, adapter_go, get_node)
 end
 
 
 ---Load animation from JSON file and create it with Panthera GUI adapter
 ---@param animation_path string
----@param get_node (fun(node_id: string): node)|nil @Function to get node by node_id. Default is defined in adapter
+---@param template string|nil @The GUI template id to load nodes from. Pass nil if no template is used
+---@param nodes table<string, node>|nil @Table with nodes from gui.clone_tree() function. Pass nil if no nodes are used
 ---@return panthera.animation.state|nil @Animation data or nil if animation can't be loaded, error message
-function M.create_gui(animation_path, get_node)
+function M.create_gui(animation_path, template, nodes)
+	local get_node = adapter_gui.get_node_function(template, nodes)
 	return M.create(animation_path, adapter_gui, get_node)
 end
 

@@ -230,13 +230,13 @@ local function get_node(node_id)
 end
 
 
----@param template string|nil
----@param nodes table<string|hash, string|hash>|nil
+---@param collection_name string|nil
+---@param objects table<string|hash, string|hash>|nil
 ---@return function(node_id: string): hash|url
-local function get_node_fn(template, nodes)
+local function get_node_function(collection_name, objects)
 	return function(node_id)
-		if template then
-			node_id = template .. "/" .. node_id
+		if collection_name then
+			node_id = collection_name .. "/" .. node_id
 		end
 
 		local split_index = string.find(node_id, "#")
@@ -245,8 +245,8 @@ local function get_node_fn(template, nodes)
 			local fragment_id = string.sub(node_id, split_index + 1)
 
 			local object_path = hash("/" .. object_id)
-			if nodes then
-				object_path = nodes[object_path]
+			if objects then
+				object_path = objects[object_path]
 			end
 
 			local object_url = msg.url(object_path)
@@ -256,10 +256,9 @@ local function get_node_fn(template, nodes)
 		end
 
 		local object_path = hash("/" .. node_id)
-		if nodes then
-			object_path = nodes[object_path]
+		if objects then
+			object_path = objects[object_path]
 		end
-
 		return object_path
 	end
 end
@@ -267,7 +266,7 @@ end
 
 local M = {
 	get_node = get_node,
-	get_node_fn = get_node_fn,
+	get_node_function = get_node_function,
 	get_easing = get_easing,
 	set_node_property = set_node_property,
 	get_node_property = get_node_property,

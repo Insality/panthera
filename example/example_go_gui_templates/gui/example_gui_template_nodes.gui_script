@@ -8,26 +8,20 @@ function init(self)
 
 
 	-- Run Panthera animation on GUI template nodes
-	local animation_template = panthera.create_gui(PATH, function(node_id)
-		return gui.get_node("test_gui/" .. node_id)
-	end)
+	local animation_template = panthera.create_gui(PATH, "test_gui")
 	panthera.play(animation_template, "default", { is_loop = true })
 
 
 	--- Run Panthera animation on cloned GUI nodes
 	local nodes = gui.clone_tree(gui.get_node("test_gui_inline"))
 	gui.set_position(nodes["test_gui_inline"], vmath.vector3(-200, -240, 0))
-	local animation_nodes = panthera.create_gui(PATH, function(node_id)
-		return nodes[node_id]
-	end)
+	local animation_nodes = panthera.create_gui(PATH, nil, nodes)
 	panthera.play(animation_nodes, "default", { is_loop = true })
 
 
 	-- Run Panthera animation on cloned GUI template nodes
 	local template_nodes = gui.clone_tree(gui.get_node("test_gui/root"))
 	gui.set_position(template_nodes["test_gui/root"], vmath.vector3(200, -240, 0))
-	local animation_template_nodes = panthera.create_gui(PATH, function(node_id)
-		return template_nodes["test_gui/" .. node_id]
-	end)
+	local animation_template_nodes = panthera.create_gui(PATH, "test_gui", template_nodes)
 	panthera.play(animation_template_nodes, "default", { is_loop = true })
 end

@@ -12,6 +12,9 @@
 		"pprint",
 		"json",
 		"go",
-		"vmath"
+		"vmath",
+		"collectionfactory",
+		"label",
+		"sprite"
 	]
 }

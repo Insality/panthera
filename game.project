@@ -1,5 +1,5 @@
 [bootstrap]
-main_collection = /example/example.collectionc
+main_collection = /example/example_go_gui_templates/go/example_go_template_nodes.collectionc
 render = /example/default.renderc
 
 [script]

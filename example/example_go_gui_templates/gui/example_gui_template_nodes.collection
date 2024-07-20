@@ -1,7 +1,7 @@
 name: "example_go_gui_templates"
 collection_instances {
   id: "test_collection"
-  collection: "/example/example_go_gui_templates/test_collection.collection"
+  collection: "/example/example_go_gui_templates/go/example_go_template_nodes.collection"
   position {
     x: 0.0
     y: 0.0
@@ -24,7 +24,7 @@ embedded_instances {
   id: "gui"
   data: "components {\n"
   "  id: \"example_go_gui_templates\"\n"
-  "  component: \"/example/example_go_gui_templates/example_go_gui_templates.gui\"\n"
+  "  component: \"/example/example_go_gui_templates/gui/example_gui_template_nodes.gui\"\n"
   "  position {\n"
   "    x: 0.0\n"
   "    y: 0.0\n"

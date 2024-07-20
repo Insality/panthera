@@ -261,6 +261,24 @@ local DEFOLD_TRIGGER_SETTER = {
 }
 
 
+---@param template string|nil @GUI template path to load nodes from. Pass nil if no template is used
+---@param nodes table<string, node>|nil @Table with nodes from gui.clone_tree() function. Pass nil if no nodes are used
+---@return fun(node_id: string): node
+local function get_node_function(template, nodes)
+	return function(node_id)
+		if template then
+			node_id = template .. "/" .. node_id
+		end
+
+		if nodes then
+			return nodes[node_id]
+		else
+			return gui.get_node(node_id)
+		end
+	end
+end
+
+
 ---@param node node
 ---@param property_id string
 ---@param value any
@@ -388,6 +406,7 @@ end
 
 local M = {
 	get_node = gui.get_node,
+	get_node_function = get_node_function,
 	get_easing = get_easing,
 	stop_tween = stop_tween,
 	set_node_property = set_node_property,

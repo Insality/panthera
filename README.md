@@ -161,12 +161,13 @@ Load and create a GUI animation state from a JSON file.
 The Panthera uses `sys.load_resource` to load the animation file. Place your animation files inside your [custom resources folder](https://defold.com/manuals/project-settings/#custom-resources) to ensure they are included in the build.
 
 ```lua
-panthera.create_gui(animation_path, [get_node])
+panthera.create_gui(animation_path, [template], [nodes])
 ```
 
 - **Parameters:**
   - `animation_path`: The path to the animation JSON file. Example: `/animations/my_gui_animation.json`.
-  - `get_node` (optional): A function to resolve nodes by their ID within the GUI. If not provided, the adapter uses its default method from adapter implementation.
+  - `template` (optional): The GUI template id to load nodes from. Pass nil if no template is used.
+  - `nodes` (optional): Table with nodes from `gui.clone_tree()` function. Pass nil if nodes are not cloned.
 
 - **Returns:** An animation state object or `nil` if the animation cannot be loaded.
 
@@ -174,13 +175,20 @@ panthera.create_gui(animation_path, [get_node])
 
 ```lua
 local gui_animation = panthera.create_gui("/animations/my_gui_animation.json")
-```
 
-```lua
-local gui_animation = panthera.create_gui("/animations/my_gui_animation.json", function(node_id)
-	-- If we inside a Druid's component, we can use this function to get a node by its ID instead of gui.get_node(node_id)
-	return self:get_node(node_id)
-end
+-- Create animation over GUI template
+local gui_animation = panthera.create_gui("/animations/my_gui_animation.json", "template_name")
+
+-- Create animation over cloned GUI template
+local nodes = gui.clone_tree(gui.get_node("template_name/root"))
+local gui_animation = panthera.create_gui("/animations/my_gui_animation.json", "template_name", nodes)
+
+-- Create animation over cloned GUI nodes
+local nodes = gui.clone_tree(gui.get_node("root"))
+local gui_animation = panthera.create_gui("/animations/my_gui_animation.json", nil, nodes)
+
+-- Using Druid:
+local gui_animation = panthera.create_gui("/animations/my_gui_animation.json", self:get_template(), self:get_nodes())
 ```
 
 **panthera.create_go**
