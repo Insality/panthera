@@ -10,7 +10,7 @@ local logger = log.get_logger("example")
 ---@field animation_control_zone node
 ---@field progress_fill node
 ---@field progress_size vector3
----@field text_animation_id string
+---@field text_animation_id node
 ---@field is_dragging boolean
 
 
