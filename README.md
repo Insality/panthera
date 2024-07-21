@@ -12,7 +12,7 @@
 
 - **Seamless Animation Integration**: Import and use Panthera 2.0 animations directly in Defold.
 - **Full Animation Support**: Supports all animation features provided by Panthera 2.0, including events, animation blending, nested animations and more.
-- **Flexible Usage**: Compatible with both game objects and GUI nodes in Defold, allowing for versatile application across different game elements.
+- **Flexible Usage**: Compatible with both Game Objects and GUI nodes in Defold, allowing for versatile application across different game elements.
 - **Animation Cursor**: Provides a way to control animation manually, allowing for precise control over playback and synchronization with game events.
 - **Hot Reloading**: Reload animations on the fly during development, enabling rapid iteration and testing of animation assets.
 
@@ -176,7 +176,7 @@ panthera.create_gui(animation_path, [template], [nodes])
 ```lua
 local PATH = "/animations/my_gui_animation.json"
 
--- Create over gui on current scene
+-- Create over GUI on current scene
 local gui_animation = panthera.create_gui(PATH)
 
 -- Create over GUI template on current scene
@@ -198,7 +198,7 @@ Load and create a game object (GO) animation state from a JSON file.
 The Panthera uses `sys.load_resource` to load the animation file. Place your animation files inside your [custom resources folder](https://defold.com/manuals/project-settings/#custom-resources) to ensure they are included in the build.
 
 ```lua
-panthera.create_go(animation_path, collection_name, objects)
+panthera.create_go(animation_path, [collection_name], [objects])
 ```
 
 - **Parameters:**
@@ -219,17 +219,17 @@ local go_animation = panthera.create_go(PATH)
 -- Create over collection on current scene
 local go_animation = panthera.create_go(PATH, "collection_name")
 
--- Create over object from spawned factory
+-- Create over Game Object from spawned factory
 -- You should create a table with mapping object to created instance.
 -- Instead "/pantera" use object id from animation
 local object = factory.create("#factory")
 local go_animation = panthera.create_go(PATH, nil, { [hash("/panthera")]  = object })
 
--- Create over objects from spawned collection
+-- Create over objects from spawned collectionfactory
 local objects = collectionfactory.create("#collectionfactory")
 local go_animation = panthera.create_go(PATH, nil, objects)
 
--- Create over objects from collection inside spawned collection
+-- Create over objects from collectionfactory inside spawned collection
 local objects = collectionfactory.create("#collectionfactory")
 local go_animation = panthera.create_go(PATH, "collection_name", objects)
 ```
@@ -241,13 +241,13 @@ Load an animation from a JSON file and create an animation state using a specifi
 The Panthera uses `sys.load_resource` to load the animation file. Place your animation files inside your [custom resources folder](https://defold.com/manuals/project-settings/#custom-resources) to ensure they are included in the build.
 
 ```lua
-panthera.create(animation_path, adapter, [get_node])
+panthera.create(animation_path, adapter, get_node)
 ```
 
 - **Parameters:**
   - `animation_path`: The path to the animation JSON file.
   - `adapter`: An adapter object that specifies how Panthera Runtime interacts with Engine.
-  - `get_node` (optional): A custom function to resolve nodes by their ID. This function is used by the adapter to retrieve Defold nodes for animation. If not provided, the adapter uses its default method from adapter implementation.
+  - `get_node`: A custom function to resolve nodes by their ID. This function is used by the adapter to retrieve Defold nodes for animation.
 
 - **Returns:** An animation state object. This object contains the loaded animation data and state necessary for playback. Returns `nil` and an error message if the animation cannot be loaded.
 

@@ -51,7 +51,9 @@ To use your custom adapter with Panthera Runtime, simply pass it when creating a
 
 ```lua
 local my_custom_adapter = require("path.to.my_custom_adapter")
-local animation = panthera.create("/path/to/animation.json", my_custom_adapter)
+local animation = panthera.create("/path/to/animation.json", my_custom_adapter, function(node_id)
+	return gui.get_node(node_id)
+end)
 ```
 
 This flexibility allows Panthera Runtime to work seamlessly with any part of Defold, ensuring that you can bring any animation from Panthera 2.0 into your game with precision and ease.
