@@ -1,5 +1,24 @@
 # API Reference
 
+## Table of Contents
+
+- [Setup and Initialization](#setup-and-initialization)
+- [Animation Functions](#animation-functions)
+  - [panthera.create_gui](#pantheracreate_gui)
+  - [panthera.create_go](#pantheracreate_go)
+  - [panthera.create](#pantheracreate)
+  - [panthera.clone_state](#pantheraclone_state)
+  - [panthera.play](#pantheraplay)
+  - [panthera.stop](#pantherastop)
+  - [panthera.reload_animation](#pantherareload_animation)
+  - [panthera.set_time](#pantheraset_time)
+  - [panthera.get_time](#pantheraget_time)
+  - [panthera.get_duration](#pantheraget_duration)
+  - [panthera.is_playing](#pantherais_playing)
+  - [panthera.get_latest_animation_id](#pantheraget_latest_animation_id)
+- [Configuration Functions](#configuration-functions)
+  - [panthera.set_logger](#pantheraset_logger)
+
 ## Setup and Initialization
 
 To utilize Panthera Runtime in your Defold project for playing **Panthera 2.0** animations, start by importing the Panthera Runtime module:
