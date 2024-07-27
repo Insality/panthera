@@ -8,18 +8,18 @@
 
 **Panthera 2.0 Editor** is a cross-platform animation software solution developed using the [Defold](https://defold.com/) engine, with the goal of streamlining the process of designing layouts and animations for game projects.
 
-Integrated tightly with Defold, Panthera allows the import of `.gui` files, which can then be animated directly within the editor interface. This tool offers support for various animation techniques, including tweening, triggering, events, and animation keys, allowing users to create complex animations effortlessly.
+Integrated tightly with Defold, Panthera allows the import of **Defold** files, which can then be animated directly within the editor interface. This tool offers support for various animation techniques, including tweening, triggering, events, and animation keys, allowing users to create complex animations effortlessly.
 
-**Panthera 2.0 Editor** uses a simple animation [JSON format](/docs_editor/animation_data_format.md) for animation files. If you are not using Defold, the animation runtime can be easily implemented in any game engine or framework.
+**Panthera 2.0 Editor** uses a simple [animation format](/docs_editor/animation_data_format.md) for animation files. If you are not using Defold, the animation runtime can be easily implemented in any game engine or framework.
 
 
 ## Features
 
 - **Intuitive Layout Creation**: Design and arrange your scene elements effortlessly.
 - **Advanced Animation Tools**: Craft smooth and complex animations to bring your game to life.
-- **Simple Animation Format**: Export animations in a simple [JSON format](/docs_editor/animation_data_format.md) for easy integration into your projects.
+- **Simple Animation Format**: Export animations in a simple [JSON format](/docs_editor/animation_data_format.md) or as Lua table for easy integration into your projects.
 - **Compact Size**: Lightweight and easy to install, with no additional dependencies required.
-- **Defold Tight Integration**: Seamlessly import **Defold** `*.gui` files for direct animation within the editor.
+- **Defold Tight Integration**: Seamlessly import **Defold** `*.gui`, `*.go` and `*.collection` files for direct animation within the editor.
 
 
 ## Animation Editor Features

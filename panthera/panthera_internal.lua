@@ -24,32 +24,56 @@ M.logger = {
 }
 
 
----@type table<string, panthera.animation.data>
+---The list of loaded animations.
+---@type table<string, panthera.animation.data> @Animation path -> animation data
 M.LOADED_ANIMATIONS = {}
+
+-- The list of animations that loaded directly from the table. We can't reload them on runtime, and we should not clear them on hot reload
+---@type table<string, boolean> @Animation fake path -> true
+M.INLINE_ANIMATIONS = {}
 
 M.PROJECT_FOLDER = nil -- Current game project folder, used for hot reload animations in debug mode
 M.IS_HOTRELOAD_ANIMATIONS = nil
 local IS_DEBUG = sys.get_engine_info().is_debug
 
 ---Load animation from file and store it in cache
----@param animation_path string
----@param is_cache_reset boolean @If true - animation will be reloaded from file
----@return panthera.animation.data|nil, string|nil @animation_data, error_reason
-function M.load(animation_path, is_cache_reset)
-	if is_cache_reset then
+---@param animation_path_or_table string|panthera.animation.project_file @Path to the animation file or animation table
+---@param is_cache_reset boolean @If true - animation will be reloaded from file. Will be ignored for inline animations
+---@return panthera.animation.data|nil, string|nil, string|nil @animation_data, animation_path, error_reason.
+function M.load(animation_path_or_table, is_cache_reset)
+	-- If we have already loaded animation table
+	local is_table = type(animation_path_or_table) == "table"
+	if is_table then
+		local animation_path = M._get_fake_animation_path()
+		local project_data = animation_path_or_table --[[@as panthera.animation.project_file]]
+
+		local data = project_data.data
+		M._preprocess_animation_keys(data)
+		M.LOADED_ANIMATIONS[animation_path] = data
+		M.INLINE_ANIMATIONS[animation_path] = true
+
+		return data, animation_path, nil
+	end
+
+	-- If we have path to the file
+	assert(type(animation_path_or_table) == "string", "Path should be a string")
+	local animation_path = animation_path_or_table --[[@as string]]
+	local is_inline_animation = M.INLINE_ANIMATIONS[animation_path]
+	if is_cache_reset and not is_inline_animation then
 		M.LOADED_ANIMATIONS[animation_path] = nil
 	end
 
 	if not M.LOADED_ANIMATIONS[animation_path] then
 		local animation, error_reason = M._get_animation_by_path(animation_path)
 		if not animation then
-			return nil, error_reason
+			return nil, nil, error_reason
 		end
 
+		M._preprocess_animation_keys(animation)
 		M.LOADED_ANIMATIONS[animation_path] = animation
 	end
 
-	return M.LOADED_ANIMATIONS[animation_path], nil
+	return M.LOADED_ANIMATIONS[animation_path], animation_path, nil
 end
 
 
@@ -455,16 +479,13 @@ function M._get_animation_by_path(path)
 		return nil, error
 	end
 
+	resource = resource --[[@as panthera.animation.project_file]]
 	local filetype = resource.type
 	if filetype ~= "animation_editor" then
 		return nil, "The JSON file is not an animation editor file"
 	end
 
-	---@type panthera.animation.data
-	local data = resource.data
-	M._preprocess_animation_keys(data)
-
-	return data, nil
+	return resource.data, nil
 end
 
 
@@ -568,17 +589,13 @@ end
 ---Get current application folder (only desktop)
 ---@return string|nil @Current application folder, nil if failed
 function M._get_current_game_project_folder()
-	local tmpfile = os.tmpname()
-	os.execute("pwd > " .. tmpfile)
-
-	local file = io.open(tmpfile, "r")
+	local file = io.popen("pwd")
 	if not file then
 		return nil
 	end
 
 	local pwd = file:read("*l")
 	file:close()
-	os.remove(tmpfile)
 
 	if not pwd then
 		return nil
@@ -593,6 +610,13 @@ function M._get_current_game_project_folder()
 
 	game_project_file:close()
 	return pwd
+end
+
+
+local path_counter = 0
+function M._get_fake_animation_path()
+	path_counter = path_counter + 1
+	return "panthera_animation_table_" .. path_counter
 end
 
 

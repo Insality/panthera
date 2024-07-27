@@ -18,6 +18,12 @@
 ---@field group_animation_keys table<string, table<string, table<string, panthera.animation.data.animation_key[]>>> @group_animation_keys[animation_id][node_id][property_id]: keys[]. Value filled at loading animation data
 ---@field animations_dict table<string, panthera.animation.data.animation> @animations_dict[animation_id]: animation. Value filled at loading animation data
 
+---@class panthera.animation.project_file
+---@field data panthera.animation.data @Animation data
+---@field format string @Animation format
+---@field version string @Animation version
+---@field type string @Animation type. Example: "animation_editor", "atlas"
+
 ---@class panthera.animation.data.animation_key
 ---@field key_type string
 ---@field node_id string
