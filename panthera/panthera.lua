@@ -14,34 +14,34 @@ end
 
 
 ---Load animation from JSON file or direct data and create it with Panthera GO adapter
----@param animation_path_or_table string|table @Path to JSON animation file in custom resources or table with animation data
+---@param animation_path_or_data string|table @Path to JSON animation file in custom resources or table with animation data
 ---@param collection_name string|nil @Collection name to load nodes from. Pass nil if no collection is used
 ---@param objects table<string|hash, string|hash>|nil @Table with game objects from collectionfactory. Pass nil if no objects are used
 ---@return panthera.animation.state|nil @Animation data or nil if animation can't be loaded, error message
-function M.create_go(animation_path_or_table, collection_name, objects)
+function M.create_go(animation_path_or_data, collection_name, objects)
 	local get_node = adapter_go.create_get_node_function(collection_name, objects)
-	return M.create(animation_path_or_table, adapter_go, get_node)
+	return M.create(animation_path_or_data, adapter_go, get_node)
 end
 
 
 ---Load animation from JSON file or direct data and create it with Panthera GUI adapter
----@param animation_path_or_table string|table @Path to JSON animation file in custom resources or table with animation data
+---@param animation_path_or_data string|table @Path to JSON animation file in custom resources or table with animation data
 ---@param template string|nil @The GUI template id to load nodes from. Pass nil if no template is used
 ---@param nodes table<string|hash, node>|nil @Table with nodes from gui.clone_tree() function. Pass nil if no nodes are used
 ---@return panthera.animation.state|nil @Animation data or nil if animation can't be loaded, error message
-function M.create_gui(animation_path_or_table, template, nodes)
+function M.create_gui(animation_path_or_data, template, nodes)
 	local get_node = adapter_gui.create_get_node_function(template, nodes)
-	return M.create(animation_path_or_table, adapter_gui, get_node)
+	return M.create(animation_path_or_data, adapter_gui, get_node)
 end
 
 
 ---Load animation from JSON file
----@param animation_path_or_table string|table @Path to JSON animation file in custom resources or table with animation data
+---@param animation_path_or_data string|table @Path to JSON animation file in custom resources or table with animation data
 ---@param adapter panthera.adapter
 ---@param get_node (fun(node_id: string): node) @Function to get node by node_id. Default is defined in adapter
 ---@return panthera.animation.state|nil @Animation data or nil if animation can't be loaded, error message
-function M.create(animation_path_or_table, adapter, get_node)
-	local animation_data, animation_path, error_reason = panthera_internal.load(animation_path_or_table, false)
+function M.create(animation_path_or_data, adapter, get_node)
+	local animation_data, animation_path, error_reason = panthera_internal.load(animation_path_or_data, false)
 
 	if not animation_data or not animation_path then
 		panthera_internal.logger:error("Can't load Panthera animation", error_reason)

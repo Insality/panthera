@@ -37,15 +37,15 @@ M.IS_HOTRELOAD_ANIMATIONS = nil
 local IS_DEBUG = sys.get_engine_info().is_debug
 
 ---Load animation from file and store it in cache
----@param animation_path_or_table string|panthera.animation.project_file @Path to the animation file or animation table
+---@param animation_path_or_data string|panthera.animation.project_file @Path to the animation file or animation table
 ---@param is_cache_reset boolean @If true - animation will be reloaded from file. Will be ignored for inline animations
 ---@return panthera.animation.data|nil, string|nil, string|nil @animation_data, animation_path, error_reason.
-function M.load(animation_path_or_table, is_cache_reset)
+function M.load(animation_path_or_data, is_cache_reset)
 	-- If we have already loaded animation table
-	local is_table = type(animation_path_or_table) == "table"
+	local is_table = type(animation_path_or_data) == "table"
 	if is_table then
 		local animation_path = M._get_fake_animation_path()
-		local project_data = animation_path_or_table --[[@as panthera.animation.project_file]]
+		local project_data = animation_path_or_data --[[@as panthera.animation.project_file]]
 
 		local data = project_data.data
 		M._preprocess_animation_keys(data)
@@ -56,8 +56,8 @@ function M.load(animation_path_or_table, is_cache_reset)
 	end
 
 	-- If we have path to the file
-	assert(type(animation_path_or_table) == "string", "Path should be a string")
-	local animation_path = animation_path_or_table --[[@as string]]
+	assert(type(animation_path_or_data) == "string", "Path should be a string")
+	local animation_path = animation_path_or_data --[[@as string]]
 	local is_inline_animation = M.INLINE_ANIMATIONS[animation_path]
 	if is_cache_reset and not is_inline_animation then
 		M.LOADED_ANIMATIONS[animation_path] = nil

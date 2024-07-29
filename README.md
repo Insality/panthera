@@ -89,9 +89,9 @@ end)
 ### Quick API Reference
 
 ```lua
-panthera.create_gui(animation_path_or_table, [template], [nodes])
-panthera.create_go(animation_path_or_table, [collection_name], [objects])
-panthera.create(animation_path_or_table, adapter, get_node)
+panthera.create_gui(animation_path_or_data, [template], [nodes])
+panthera.create_go(animation_path_or_data, [collection_name], [objects])
+panthera.create(animation_path_or_data, adapter, get_node)
 panthera.clone_state(animation_state)
 panthera.play(animation_state, animation_id, [options])
 panthera.stop(animation_state)
