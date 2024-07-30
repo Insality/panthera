@@ -50,7 +50,7 @@ Quickly dive into creating animations with **Panthera Editor 2.0** using this st
 
 Here are some fast helpful tips and reminders for using Panthera Editor:
 
-- To create animation you have to create a layout with nodes in **Layout mode** (or export GUI layout from **[Defold](https://defold.com/)** project).
+- To create animation you have to create a layout with nodes in **Layout mode** (or export GUI/Collection/GO layout from **[Defold](https://defold.com/)** project).
 - Then layout created, you can switch to **Animation mode** and start making animations.
 - Pan the editor view by holding `Ctrl` or `Alt` and dragging the view.
 - Property names in 🔸 orange indicate unapplied changes. ![changed_property](/docs_editor/media/icon_changed_property.png)

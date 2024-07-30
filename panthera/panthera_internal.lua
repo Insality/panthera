@@ -516,7 +516,7 @@ function M._preprocess_animation_keys(data)
 	for index = 1, #data.animations do
 		local animation = data.animations[index]
 
-		for key_index = 1, #animation.animation_keys do
+		for key_index = #animation.animation_keys, 1, -1 do
 			-- These default keys can be nil
 			local key = animation.animation_keys[key_index]
 			key.start_value = key.start_value or 0
@@ -524,6 +524,10 @@ function M._preprocess_animation_keys(data)
 			key.end_value = key.end_value or 0
 			key.duration = key.duration or 0
 			key.node_id = key.node_id or ""
+
+			if key.is_editor_only then
+				table.remove(animation.animation_keys, key_index)
+			end
 		end
 
 		table.sort(animation.animation_keys, M._sort_keys_function)

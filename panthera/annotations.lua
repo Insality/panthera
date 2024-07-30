@@ -36,6 +36,7 @@
 ---@field start_data string
 ---@field data string
 ---@field event_id string
+---@field is_editor_only boolean
 
 ---@class panthera.animation.state
 ---@field adapter panthera.adapter @Adapter to use for animation

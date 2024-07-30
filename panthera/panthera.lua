@@ -58,9 +58,9 @@ function M.create(animation_path_or_data, adapter, get_node)
 		animation = nil,
 		current_time = 0,
 		adapter = adapter,
+		get_node = get_node,
 		animation_keys_index = 1,
 		animation_path = animation_path,
-		get_node = get_node,
 	}
 
 	return animation_state
