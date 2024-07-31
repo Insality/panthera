@@ -316,7 +316,7 @@ function M.run_timeline_key(animation_state, key, options)
 	local node = M.get_node(animation_state, key.node_id)
 
 	if node and key.key_type == "tween" then
-		local easing = adapter.get_easing(key.easing)
+		local easing = key.easing_custom or adapter.get_easing(key.easing)
 		local delta = key.end_value - key.start_value
 		local start_value = key.start_value
 
@@ -358,7 +358,7 @@ function M.event_animation_key(node, key, callback_event)
 	if key.duration == 0 then
 		callback_event(key.event_id, node, key.data, key.end_value)
 	else
-		local easing = tweener[key.easing] or tweener.linear
+		local easing = key.easing_custom or tweener[key.easing] or tweener.linear
 		tweener.tween(easing, key.start_value, key.end_value, key.duration, function(value)
 			callback_event(key.event_id, node, key.data, value)
 		end)
@@ -525,8 +525,14 @@ function M._preprocess_animation_keys(data)
 			key.duration = key.duration or 0
 			key.node_id = key.node_id or ""
 
+			-- Remove editor only keys, they are used only in Panthera Editor to preview animations
 			if key.is_editor_only then
 				table.remove(animation.animation_keys, key_index)
+			end
+
+			-- Custom easings have more priority than easing and Defold requires vector for custom easing
+			if key.easing_custom then
+				key.easing_custom = vmath.vector(key.easing_custom)
 			end
 		end
 
@@ -583,7 +589,7 @@ function M._get_key_value_at_time(key, time)
 		return key.end_value
 	end
 
-	local easing = tweener[key.easing] or tweener.linear
+	local easing = key.easing_custom or tweener[key.easing] or tweener.linear
 	local value = tweener.ease(easing, key.start_value, key.end_value, key.duration, time - key.start_time)
 
 	return value

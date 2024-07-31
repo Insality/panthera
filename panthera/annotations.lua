@@ -33,6 +33,7 @@
 ---@field start_value number
 ---@field end_value number
 ---@field easing string
+---@field easing_custom number[]|nil
 ---@field start_data string
 ---@field data string
 ---@field event_id string
@@ -62,7 +63,7 @@
 ---@class panthera.adapter
 ---@field get_node fun(node_id: string): node @Function to get node by node_id.
 ---@field get_easing fun(easing_id: string): hash @Function to get defold easing by easing_id. Default is gui.EASING
----@field tween_animation_key fun(node: node, property_id: string, easing: hash, duration: number, end_value: number): nil @Function to tween animation key.
+---@field tween_animation_key fun(node: node, property_id: string, easing: hash|number[], duration: number, end_value: number): nil @Function to tween animation key.
 ---@field trigger_animation_key fun(node: node, property_id: string, value: any): nil @Function to trigger animation key.
 ---@field event_animation_key fun(node: node, key: panthera.animation.data.animation_key): nil @Function to trigger event in animation.
 ---@field set_node_property fun(node: node, property_id: string, value: number|string): boolean @Function to set node property. Return true if success
