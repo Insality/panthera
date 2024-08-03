@@ -32,3 +32,5 @@ Initial resease!
 - Update documentation.
 - The `animation_state` table now contains `animation_id`, instead of `animation` table data. It will be better to log or `pprint` the animation state.
 - Rename file `panthera_system` to `panthera_internal`.
+- Add support for `is_editor_only` timeline key property
+- Add support for `easing_custom` timeline key property

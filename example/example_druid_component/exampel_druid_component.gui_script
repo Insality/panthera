@@ -1,0 +1,23 @@
+local druid = require("druid.druid")
+
+local druid_component = require("example.example_druid_component.druid_component")
+
+function init(self)
+	self.druid = druid.new(self)
+
+	local prefab = gui.get_node("druid_component_template/root")
+
+	local druid_component_on_scene = self.druid:new(druid_component, "druid_component_template")
+
+	local nodes = gui.clone_tree(prefab)
+	local druid_component_cloned = self.druid:new(druid_component, "druid_component_template", nodes)
+	gui.set_position(druid_component_cloned.root, vmath.vector3(700, 340, 0))
+
+	druid_component_on_scene:run_animation()
+	druid_component_cloned:run_animation()
+end
+
+
+function final(self)
+	self.druid:final()
+end

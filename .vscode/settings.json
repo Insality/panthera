@@ -17,6 +17,7 @@
 		"label",
 		"sprite",
 		"update",
-		"on_message"
+		"on_message",
+		"final"
 	]
 }
