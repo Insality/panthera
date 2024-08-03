@@ -11,6 +11,13 @@
 		"timer",
 		"pprint",
 		"json",
-		"go"
+		"go",
+		"vmath",
+		"collectionfactory",
+		"label",
+		"sprite",
+		"update",
+		"on_message",
+		"final"
 	]
 }

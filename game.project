@@ -18,8 +18,9 @@ version = 2.0
 publisher = Insality
 developer = Maksim Tuprikov, Insality
 custom_resources = /resources
-dependencies#0 = https://github.com/Insality/defold-tweener/archive/refs/tags/2.zip
-dependencies#1 = https://github.com/Insality/defold-log/archive/refs/tags/2.zip
+dependencies#0 = https://github.com/Insality/defold-log/archive/refs/tags/2.zip
+dependencies#1 = https://github.com/Insality/defold-tweener/archive/refs/tags/3.zip
+dependencies#2 = https://github.com/Insality/druid/archive/refs/tags/0.11.0.zip
 
 [library]
 include_dirs = panthera

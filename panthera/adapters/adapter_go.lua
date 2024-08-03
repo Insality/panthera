@@ -92,6 +92,41 @@ local function split(inputstr, sep)
 end
 
 
+---@param collection_name string|nil
+---@param objects table<string|hash, string|hash>|nil
+---@return function(node_id: string): hash|url
+local function create_get_node_function(collection_name, objects)
+	return function(node_id)
+		if collection_name then
+			node_id = collection_name .. "/" .. node_id
+		end
+
+		-- Acquire component id
+		local split_index = string.find(node_id, "#")
+		if split_index then
+			local object_id = string.sub(node_id, 1, split_index - 1)
+			local fragment_id = string.sub(node_id, split_index + 1)
+
+			local object_path = hash("/" .. object_id)
+			if objects then
+				object_path = objects[object_path] --[[@as hash]]
+			end
+
+			local object_url = msg.url(object_path)
+			object_url.fragment = hash(fragment_id)
+
+			return object_url
+		end
+
+		local object_path = hash("/" .. node_id)
+		if objects then
+			object_path = objects[object_path] --[[@as hash]]
+		end
+		return object_path
+	end
+end
+
+
 ---@param node node
 ---@param property_id string
 ---@param value any
@@ -125,10 +160,8 @@ local function get_trigger_property_id(node, property_id)
 		return label.get_text(node)
 	end
 	if defold_property_id == "texture" then
-		local texture_name = sprite.get_flipbook(node)
-		if texture_name == "" then
-			return ""
-		end
+		local texture_name = go.get(node, "animation")
+		pprint(texture_name)
 		local splitted = split(texture_name, "/")
 		return splitted[#splitted]
 	end
@@ -203,7 +236,7 @@ end
 
 ---@param node node
 ---@param property_id string
----@param easing userdata
+---@param easing userdata|number[]
 ---@param duration number
 ---@param end_value number
 local function tween_animation_key(node, property_id, easing, duration, end_value)
@@ -216,31 +249,14 @@ local function tween_animation_key(node, property_id, easing, duration, end_valu
 end
 
 
----@param node_id string @If node_id contains "#", split it and get full url
----@return hash|url
-local function get_node(node_id)
-	if string.find(node_id, "#") then
-		local object_id = string.sub(node_id, 1, string.find(node_id, "#") - 1)
-		local fragment_id = string.sub(node_id, string.find(node_id, "#") + 1)
-
-		local object_url = msg.url(hash("/" .. object_id))
-		object_url.fragment = fragment_id
-
-		return object_url
-	end
-
-	return hash("/" .. node_id)
-end
-
-
 local M = {
-	get_node = get_node,
 	get_easing = get_easing,
 	set_node_property = set_node_property,
 	get_node_property = get_node_property,
 	tween_animation_key = tween_animation_key,
 	stop_tween = stop_tween,
 	trigger_animation_key = trigger_animation_key,
+	create_get_node_function = create_get_node_function,
 }
 
 

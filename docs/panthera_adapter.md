@@ -6,9 +6,9 @@ In Panthera Runtime for Defold, an adapter is a crucial component that bridges P
 
 An adapter takes care of several key tasks:
 
-- **Node Retrieval**: Finds the specific game or GUI node in Defold that an animation should be applied to.
 - **Property Animation**: Applies animations to properties of nodes, such as position, rotation, or scale, using Defold's animation system.
 - **Event Handling**: Triggers custom actions defined in Panthera animations, like playing a sound or changing a scene.
+- **Easing Functions**: Maps Panthera easing functions to Defold's easing types for smooth transitions.
 
 #### Example Adapter
 
@@ -16,10 +16,6 @@ Here’s a simple adapter example for Defold GUI:
 
 ```lua
 local M = {
-    get_node = function(node_id)
-        -- Retrieves a Defold node by its ID.
-        return gui.get_node(node_id)
-    end,
     get_easing = function(easing_name)
         -- Returns a Defold easing type. This example always returns LINEAR easing.
         -- You might want to map Panthera easing names to Defold's easing constants.
@@ -55,7 +51,9 @@ To use your custom adapter with Panthera Runtime, simply pass it when creating a
 
 ```lua
 local my_custom_adapter = require("path.to.my_custom_adapter")
-local animation = panthera.create("/path/to/animation.json", my_custom_adapter)
+local animation = panthera.create("/path/to/animation.json", my_custom_adapter, function(node_id)
+	return gui.get_node(node_id)
+end)
 ```
 
 This flexibility allows Panthera Runtime to work seamlessly with any part of Defold, ensuring that you can bring any animation from Panthera 2.0 into your game with precision and ease.

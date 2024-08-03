@@ -24,32 +24,56 @@ M.logger = {
 }
 
 
----@type table<string, panthera.animation.data>
+---The list of loaded animations.
+---@type table<string, panthera.animation.data> @Animation path -> animation data
 M.LOADED_ANIMATIONS = {}
+
+-- The list of animations that loaded directly from the table. We can't reload them on runtime, and we should not clear them on hot reload
+---@type table<string, boolean> @Animation fake path -> true
+M.INLINE_ANIMATIONS = {}
 
 M.PROJECT_FOLDER = nil -- Current game project folder, used for hot reload animations in debug mode
 M.IS_HOTRELOAD_ANIMATIONS = nil
 local IS_DEBUG = sys.get_engine_info().is_debug
 
 ---Load animation from file and store it in cache
----@param animation_path string
----@param is_cache_reset boolean @If true - animation will be reloaded from file
----@return panthera.animation.data|nil, string|nil @animation_data, error_reason
-function M.load(animation_path, is_cache_reset)
-	if is_cache_reset then
+---@param animation_path_or_data string|panthera.animation.project_file @Path to the animation file or animation table
+---@param is_cache_reset boolean @If true - animation will be reloaded from file. Will be ignored for inline animations
+---@return panthera.animation.data|nil, string|nil, string|nil @animation_data, animation_path, error_reason.
+function M.load(animation_path_or_data, is_cache_reset)
+	-- If we have already loaded animation table
+	local is_table = type(animation_path_or_data) == "table"
+	if is_table then
+		local animation_path = M._get_fake_animation_path()
+		local project_data = animation_path_or_data --[[@as panthera.animation.project_file]]
+
+		local data = project_data.data
+		M._preprocess_animation_keys(data)
+		M.LOADED_ANIMATIONS[animation_path] = data
+		M.INLINE_ANIMATIONS[animation_path] = true
+
+		return data, animation_path, nil
+	end
+
+	-- If we have path to the file
+	assert(type(animation_path_or_data) == "string", "Path should be a string")
+	local animation_path = animation_path_or_data --[[@as string]]
+	local is_inline_animation = M.INLINE_ANIMATIONS[animation_path]
+	if is_cache_reset and not is_inline_animation then
 		M.LOADED_ANIMATIONS[animation_path] = nil
 	end
 
 	if not M.LOADED_ANIMATIONS[animation_path] then
 		local animation, error_reason = M._get_animation_by_path(animation_path)
 		if not animation then
-			return nil, error_reason
+			return nil, nil, error_reason
 		end
 
+		M._preprocess_animation_keys(animation)
 		M.LOADED_ANIMATIONS[animation_path] = animation
 	end
 
-	return M.LOADED_ANIMATIONS[animation_path], nil
+	return M.LOADED_ANIMATIONS[animation_path], animation_path, nil
 end
 
 
@@ -292,7 +316,7 @@ function M.run_timeline_key(animation_state, key, options)
 	local node = M.get_node(animation_state, key.node_id)
 
 	if node and key.key_type == "tween" then
-		local easing = adapter.get_easing(key.easing)
+		local easing = key.easing_custom or adapter.get_easing(key.easing)
 		local delta = key.end_value - key.start_value
 		local start_value = key.start_value
 
@@ -334,7 +358,7 @@ function M.event_animation_key(node, key, callback_event)
 	if key.duration == 0 then
 		callback_event(key.event_id, node, key.data, key.end_value)
 	else
-		local easing = tweener[key.easing] or tweener.linear
+		local easing = key.easing_custom or tweener[key.easing] or tweener.linear
 		tweener.tween(easing, key.start_value, key.end_value, key.duration, function(value)
 			callback_event(key.event_id, node, key.data, value)
 		end)
@@ -455,16 +479,13 @@ function M._get_animation_by_path(path)
 		return nil, error
 	end
 
+	resource = resource --[[@as panthera.animation.project_file]]
 	local filetype = resource.type
 	if filetype ~= "animation_editor" then
 		return nil, "The JSON file is not an animation editor file"
 	end
 
-	---@type panthera.animation.data
-	local data = resource.data
-	M._preprocess_animation_keys(data)
-
-	return data, nil
+	return resource.data, nil
 end
 
 
@@ -495,7 +516,7 @@ function M._preprocess_animation_keys(data)
 	for index = 1, #data.animations do
 		local animation = data.animations[index]
 
-		for key_index = 1, #animation.animation_keys do
+		for key_index = #animation.animation_keys, 1, -1 do
 			-- These default keys can be nil
 			local key = animation.animation_keys[key_index]
 			key.start_value = key.start_value or 0
@@ -503,6 +524,16 @@ function M._preprocess_animation_keys(data)
 			key.end_value = key.end_value or 0
 			key.duration = key.duration or 0
 			key.node_id = key.node_id or ""
+
+			-- Remove editor only keys, they are used only in Panthera Editor to preview animations
+			if key.is_editor_only then
+				table.remove(animation.animation_keys, key_index)
+			end
+
+			-- Custom easings have more priority than easing and Defold requires vector for custom easing
+			if key.easing_custom then
+				key.easing_custom = vmath.vector(key.easing_custom)
+			end
 		end
 
 		table.sort(animation.animation_keys, M._sort_keys_function)
@@ -558,7 +589,7 @@ function M._get_key_value_at_time(key, time)
 		return key.end_value
 	end
 
-	local easing = tweener[key.easing] or tweener.linear
+	local easing = key.easing_custom or tweener[key.easing] or tweener.linear
 	local value = tweener.ease(easing, key.start_value, key.end_value, key.duration, time - key.start_time)
 
 	return value
@@ -568,17 +599,13 @@ end
 ---Get current application folder (only desktop)
 ---@return string|nil @Current application folder, nil if failed
 function M._get_current_game_project_folder()
-	local tmpfile = os.tmpname()
-	os.execute("pwd > " .. tmpfile)
-
-	local file = io.open(tmpfile, "r")
+	local file = io.popen("pwd")
 	if not file then
 		return nil
 	end
 
 	local pwd = file:read("*l")
 	file:close()
-	os.remove(tmpfile)
 
 	if not pwd then
 		return nil
@@ -593,6 +620,13 @@ function M._get_current_game_project_folder()
 
 	game_project_file:close()
 	return pwd
+end
+
+
+local path_counter = 0
+function M._get_fake_animation_path()
+	path_counter = path_counter + 1
+	return "panthera_animation_table_" .. path_counter
 end
 
 

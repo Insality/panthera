@@ -1,0 +1,8 @@
+local panthera = require("panthera.panthera")
+
+function init(self)
+	local animation = panthera.create_gui("/resources/test_layer.json")
+	panthera.play(animation, "spin", {
+		is_loop = true
+	})
+end

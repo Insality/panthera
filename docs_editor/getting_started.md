@@ -43,13 +43,14 @@ Quickly dive into creating animations with **Panthera Editor 2.0** using this st
 - [Adjust Gizmo Settings](#adjust-gizmo-settings)
    * [Scene Gizmo Settings](#scene-gizmo-settings)
    * [Timeline Gizmo Settings](#timeline-gizmo-settings)
+- [Adjust Font Size](#adjust-font-size)
 - [Using Hotkeys](#using-hotkeys)
 
 # Important Notes
 
 Here are some fast helpful tips and reminders for using Panthera Editor:
 
-- To create animation you have to create a layout with nodes in **Layout mode** (or export GUI layout from **[Defold](https://defold.com/)** project).
+- To create animation you have to create a layout with nodes in **Layout mode** (or export GUI/Collection/GO layout from **[Defold](https://defold.com/)** project).
 - Then layout created, you can switch to **Animation mode** and start making animations.
 - Pan the editor view by holding `Ctrl` or `Alt` and dragging the view.
 - Property names in 🔸 orange indicate unapplied changes. ![changed_property](/docs_editor/media/icon_changed_property.png)
@@ -319,6 +320,12 @@ To discard changes in the Properties panel, follow these steps:
 
 > Note: You can use "Reset all" button in the Properties panel to reset all the properties to the initial state. If there are no changed properties., the node will be reset to the initial state.
 
+## Set Empty or Default Value
+
+To set the empty or default value for the property, follow these steps:
+
+1. Right click on the property name in the Properties panel.
+2. Select "Set Default".
 
 # Working with Timeline Keys
 

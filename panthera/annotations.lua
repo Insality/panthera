@@ -18,6 +18,12 @@
 ---@field group_animation_keys table<string, table<string, table<string, panthera.animation.data.animation_key[]>>> @group_animation_keys[animation_id][node_id][property_id]: keys[]. Value filled at loading animation data
 ---@field animations_dict table<string, panthera.animation.data.animation> @animations_dict[animation_id]: animation. Value filled at loading animation data
 
+---@class panthera.animation.project_file
+---@field data panthera.animation.data @Animation data
+---@field format string @Animation format
+---@field version string @Animation version
+---@field type string @Animation type. Example: "animation_editor", "atlas"
+
 ---@class panthera.animation.data.animation_key
 ---@field key_type string
 ---@field node_id string
@@ -27,9 +33,11 @@
 ---@field start_value number
 ---@field end_value number
 ---@field easing string
+---@field easing_custom number[]|nil
 ---@field start_data string
 ---@field data string
 ---@field event_id string
+---@field is_editor_only boolean
 
 ---@class panthera.animation.state
 ---@field adapter panthera.adapter @Adapter to use for animation
@@ -38,8 +46,8 @@
 ---@field nodes table @Animation nodes used in animation
 ---@field childs panthera.animation.state[]|nil @List of active child animations
 ---@field get_node fun(node_id: string): node @Function to get node by node_id. Default is defined in adapter
----@field previous_animation panthera.animation.data.animation|nil @Previous runned animation
----@field animation panthera.animation.data.animation|nil @Current animation
+---@field animation_id string|nil @Current animation id
+---@field previous_animation_id string|nil @Previous runned animation id
 ---@field animation_path string @Animation path to JSON file
 ---@field animation_keys_index number @Animation keys index
 ---@field timer_id hash|nil @Timer id for animation
@@ -55,7 +63,7 @@
 ---@class panthera.adapter
 ---@field get_node fun(node_id: string): node @Function to get node by node_id.
 ---@field get_easing fun(easing_id: string): hash @Function to get defold easing by easing_id. Default is gui.EASING
----@field tween_animation_key fun(node: node, property_id: string, easing: hash, duration: number, end_value: number): nil @Function to tween animation key.
+---@field tween_animation_key fun(node: node, property_id: string, easing: hash|number[], duration: number, end_value: number): nil @Function to tween animation key.
 ---@field trigger_animation_key fun(node: node, property_id: string, value: any): nil @Function to trigger animation key.
 ---@field event_animation_key fun(node: node, key: panthera.animation.data.animation_key): nil @Function to trigger event in animation.
 ---@field set_node_property fun(node: node, property_id: string, value: number|string): boolean @Function to set node property. Return true if success

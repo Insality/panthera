@@ -1,3 +1,4 @@
+---@diagnostic disable: undefined-field, return-type-mismatch
 -- In Defold 1.2.180+ gui.set and gui.get functions were added. Rotation was changed to Euler
 local IS_DEFOLD_180 = (gui.set and gui.get)
 
@@ -38,6 +39,7 @@ local PROPERTY_TO_DEFOLD_TWEEN_PROPERTY = {
 
 local PROPERTY_TO_DEFOLD_TRIGGER_PROPERTY = {
 	["text"] = "text",
+	["layer"] = "layer",
 	["texture"] = "texture",
 	["enabled"] = "enabled",
 	["visible"] = "visible",
@@ -113,7 +115,7 @@ local BLEND_MODE_TO_DEFOLD_BLEND_MODE = {
 	["alpha"] = gui.BLEND_ALPHA,
 	["add"] = gui.BLEND_ADD,
 	["multiply"] = gui.BLEND_MULT,
-	["screen"] = 4, -- No screen blend mode in Defold gui* bindings, pick from source
+	["screen"] = gui.BLEND_SCREEN
 }
 
 local OUTER_BOUNDS_TO_DEFOLD_OUTER_BOUNDS = {
@@ -174,6 +176,7 @@ local TWEEN_DEFOLD_SET_GET = {
 
 local TRIGGER_DEFOLD_SET_GET = {
 	["text"] = { "text", "text", gui.get_text, gui.set_text },
+	["layer"] = { "layer", "layer", gui.get_layer, gui.set_layer },
 	["texture"] = { "texture", "texture", gui.get_texture, gui.set_texture },
 	["enabled"] = { "enabled", "enabled", gui.is_enabled, gui.set_enabled },
 	["visible"] = { "visible", "visible", gui.get_visible, gui.set_visible },
@@ -204,9 +207,13 @@ local function split(inputstr, sep)
 end
 
 
+local LAYER_EMPTY = hash("")
 local DEFOLD_TRIGGER_SETTER = {
 	["text"] = function(node, value)
 		gui.set_text(node, value)
+	end,
+	["layer"] = function(node, value)
+		gui.set_layer(node, value or LAYER_EMPTY)
 	end,
 	["texture"] = function(node, texture_name)
 		if texture_name ~= "" then
@@ -252,6 +259,24 @@ local DEFOLD_TRIGGER_SETTER = {
 		gui.set_perimeter_vertices(node, value)
 	end,
 }
+
+
+---@param template string|nil @GUI template path to load nodes from. Pass nil if no template is used
+---@param nodes table<string|hash, node>|nil @Table with nodes from gui.clone_tree() function. Pass nil if no nodes are used
+---@return fun(node_id: string): node
+local function create_get_node_function(template, nodes)
+	return function(node_id)
+		if template then
+			node_id = template .. "/" .. node_id
+		end
+
+		if nodes then
+			return nodes[node_id]
+		else
+			return gui.get_node(node_id)
+		end
+	end
+end
 
 
 ---@param node node
@@ -366,7 +391,7 @@ end
 
 ---@param node node
 ---@param property_id string
----@param easing userdata
+---@param easing userdata|number[]
 ---@param duration number
 ---@param end_value number
 local function tween_animation_key(node, property_id, easing, duration, end_value)
@@ -380,13 +405,13 @@ end
 
 
 local M = {
-	get_node = gui.get_node,
 	get_easing = get_easing,
 	stop_tween = stop_tween,
 	set_node_property = set_node_property,
 	get_node_property = get_node_property,
 	tween_animation_key = tween_animation_key,
 	trigger_animation_key = trigger_animation_key,
+	create_get_node_function = create_get_node_function,
 }
 
 
