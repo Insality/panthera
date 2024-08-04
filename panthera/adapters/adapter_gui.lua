@@ -1,6 +1,13 @@
 ---@diagnostic disable: undefined-field, return-type-mismatch
+
+-- Localize Defold functions
+local gui_animate = gui.animate
+local gui_set = gui.set
+local gui_get = gui.get
+local gui_get_node = gui.get_node
+
 -- In Defold 1.2.180+ gui.set and gui.get functions were added. Rotation was changed to Euler
-local IS_DEFOLD_180 = (gui.set and gui.get)
+local IS_DEFOLD_180 = (gui_set and gui_get)
 
 local PROPERTY_TO_DEFOLD_TWEEN_PROPERTY = {
 	["position_x"] = "position.x",
@@ -273,7 +280,7 @@ local function create_get_node_function(template, nodes)
 		if nodes then
 			return nodes[node_id]
 		else
-			return gui.get_node(node_id)
+			return gui_get_node(node_id)
 		end
 	end
 end
@@ -320,7 +327,7 @@ local function set_node_property(node, property_id, value)
 	if IS_DEFOLD_180 then
 		-- Handle Defold 1.2.180+ properties
 		local defold_number_property_id = PROPERTY_TO_DEFOLD_TWEEN_PROPERTY[property_id]
-		gui.set(node, defold_number_property_id, value)
+		gui_set(node, defold_number_property_id, value)
 	else
 		-- Handle Defold 1.2.179- properties
 		local tween_info = TWEEN_DEFOLD_SET_GET[property_id]
@@ -359,7 +366,7 @@ local function get_node_property(node, property_id)
 	if IS_DEFOLD_180 then
 		-- Handle Defold 1.2.180+ properties
 		local defold_number_property_id = PROPERTY_TO_DEFOLD_TWEEN_PROPERTY[property_id]
-		return gui.get(node, defold_number_property_id)
+		return gui_get(node, defold_number_property_id)
 	else
 		-- Handle Defold 1.2.179- properties
 		local tween_info = TWEEN_DEFOLD_SET_GET[property_id]
@@ -399,7 +406,7 @@ local function tween_animation_key(node, property_id, easing, duration, end_valu
 		set_node_property(node, property_id, end_value)
 	else
 		property_id = PROPERTY_TO_DEFOLD_TWEEN_PROPERTY[property_id]
-		gui.animate(node, property_id, end_value, easing, duration)
+		gui_animate(node, property_id, end_value, easing, duration)
 	end
 end
 

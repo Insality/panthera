@@ -2,6 +2,8 @@ local tweener = require("tweener.tweener")
 
 local M = {}
 
+local TYPE_TABLE = "table"
+
 --- Use empty function to save a bit of memory
 local EMPTY_FUNCTION = function(_, message, context) end
 
@@ -42,7 +44,7 @@ local IS_DEBUG = sys.get_engine_info().is_debug
 ---@return panthera.animation.data|nil, string|nil, string|nil @animation_data, animation_path, error_reason.
 function M.load(animation_path_or_data, is_cache_reset)
 	-- If we have already loaded animation table
-	local is_table = type(animation_path_or_data) == "table"
+	local is_table = type(animation_path_or_data) == TYPE_TABLE
 	if is_table then
 		local animation_path = M._get_fake_animation_path()
 		local project_data = animation_path_or_data --[[@as panthera.animation.project_file]]
@@ -404,7 +406,7 @@ function M._load_by_path(path)
 				return nil, "Failed to parse json: " .. path
 			end
 			local parsed_data = result
-			if parsed_data and type(parsed_data) == "table" then
+			if parsed_data and type(parsed_data) == TYPE_TABLE then
 				return parsed_data, nil
 			end
 		end
@@ -427,7 +429,7 @@ function M._load_by_resource_path(path)
 		return nil, "Failed to parse json: " .. path
 	end
 	local parsed_data = result
-	if parsed_data and type(parsed_data) == "table" then
+	if parsed_data and type(parsed_data) == TYPE_TABLE then
 		return parsed_data
 	end
 
