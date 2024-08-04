@@ -314,32 +314,34 @@ function M.run_timeline_key(animation_state, key, options)
 
 	local adapter = animation_state.adapter
 	local node = M.get_node(animation_state, key.node_id)
+	local time_overflow = animation_state.current_time - key.start_time
+	local key_duration = math.max(key.duration - time_overflow, 0) / speed
 
-	if node and key.key_type == "tween" then
-		local easing = key.easing_custom or adapter.get_easing(key.easing)
-		local delta = key.end_value - key.start_value
-		local start_value = key.start_value
+	if key.key_type == "tween" then
+		if node then
+			local easing = key.easing_custom or adapter.get_easing(key.easing)
+			local delta = key.end_value - key.start_value
+			local start_value = key.start_value
 
-		if options.is_relative then
-			local current_value = adapter.get_node_property(node, key.property_id) --[[@as number]]
-			if current_value then
-				start_value = current_value
+			if options.is_relative then
+				local current_value = adapter.get_node_property(node, key.property_id) --[[@as number]]
+				if current_value then
+					start_value = current_value
+				end
 			end
+
+			adapter.tween_animation_key(node, key.property_id, easing, key_duration, start_value + delta)
+			return true
 		end
-
-		local target_value = start_value + delta
-		adapter.tween_animation_key(node, key.property_id, easing, key.duration / speed, target_value)
-
-		return true
-	end
-
-	if node and key.key_type == "trigger" then
-		adapter.trigger_animation_key(node, key.property_id, key.data)
-		return true
-	end
-
-	if key.key_type == "event" then
-		M.event_animation_key(node, key, options.callback_event)
+		return false
+	elseif key.key_type == "trigger" then
+		if node then
+			adapter.trigger_animation_key(node, key.property_id, key.data)
+			return true
+		end
+		return false
+	elseif key.key_type == "event" then
+		M.event_animation_key(node, key, key_duration, options.callback_event)
 		return true
 	end
 
@@ -349,17 +351,18 @@ end
 
 ---@param node node|nil
 ---@param key panthera.animation.data.animation_key
+---@param duration number @Duration of the key, calculated with animation speed and time overflow
 ---@param callback_event fun(event_id: string, node: node|nil, data: any, end_value: number): nil
-function M.event_animation_key(node, key, callback_event)
+function M.event_animation_key(node, key, duration, callback_event)
 	if not callback_event then
 		return
 	end
 
-	if key.duration == 0 then
+	if duration == 0 then
 		callback_event(key.event_id, node, key.data, key.end_value)
 	else
 		local easing = key.easing_custom or tweener[key.easing] or tweener.linear
-		tweener.tween(easing, key.start_value, key.end_value, key.duration, function(value)
+		tweener.tween(easing, key.start_value, key.end_value, duration, function(value)
 			callback_event(key.event_id, node, key.data, value)
 		end)
 	end

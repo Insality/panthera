@@ -168,15 +168,22 @@ function M._update_animation(animation, animation_state, options)
 			else
 				local child_state = M.clone_state(animation_state)
 				if child_state then
+					-- Time Overflow
+					local time_overflow = math.max(0, animation_state.current_time - key.start_time)
+					child_state.current_time = time_overflow
+
 					animation_state.childs = animation_state.childs or {}
 					table.insert(animation_state.childs, child_state)
 					local animation_duration = M.get_duration(child_state, key.property_id)
 
 					if animation_duration > 0 and key.duration > 0 then
 						local speed = (options.speed or 1) * animation_state.speed
+						local key_duration = (key.duration - time_overflow)
+						local play_speed = (animation_duration / key_duration) * speed
+
 						M.play(child_state, key.property_id, {
 							is_skip_init = true,
-							speed = (animation_duration / key.duration) * speed,
+							speed = play_speed,
 							callback = function()
 								panthera_internal.remove_child_animation(animation_state, child_state)
 							end

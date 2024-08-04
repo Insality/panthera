@@ -145,7 +145,7 @@ nodes {
   pivot: PIVOT_CENTER
   adjust_mode: ADJUST_MODE_FIT
   parent: "druid_component_template"
-  layer: ""
+  layer: "gui"
   inherit_alpha: true
   slice9 {
     x: 16.0
@@ -204,7 +204,7 @@ nodes {
   pivot: PIVOT_CENTER
   adjust_mode: ADJUST_MODE_FIT
   parent: "druid_component_template/root"
-  layer: ""
+  layer: "gui"
   inherit_alpha: true
   slice9 {
     x: 0.0
@@ -277,7 +277,7 @@ nodes {
   adjust_mode: ADJUST_MODE_FIT
   line_break: false
   parent: "druid_component_template/root"
-  layer: ""
+  layer: "text"
   inherit_alpha: true
   alpha: 1.0
   outline_alpha: 0.0
@@ -289,6 +289,12 @@ nodes {
   enabled: true
   visible: true
   material: ""
+}
+layers {
+  name: "gui"
+}
+layers {
+  name: "text"
 }
 material: "/builtins/materials/gui.material"
 adjust_reference: ADJUST_REFERENCE_PARENT
