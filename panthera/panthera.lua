@@ -166,12 +166,7 @@ function M._update_animation(animation, animation_state, options)
 			if key.key_type ~= "animation" then
 				panthera_internal.run_timeline_key(animation_state, key, options)
 			else
-				-- Create a new animation child track
-				local animation_path = animation_state.animation_path
-				local adapter = animation_state.adapter
-				local get_node = animation_state.get_node
-
-				local child_state = M.create(animation_path, adapter, get_node)
+				local child_state = M.clone_state(animation_state)
 				if child_state then
 					animation_state.childs = animation_state.childs or {}
 					table.insert(animation_state.childs, child_state)
@@ -196,6 +191,7 @@ function M._update_animation(animation, animation_state, options)
 
 	-- If current time >= animation duration - stop animation
 	if animation_state.current_time >= animation.duration then
+		local time_overflow = animation_state.current_time - animation.duration
 		M.stop(animation_state)
 
 		if options.callback then
@@ -203,6 +199,8 @@ function M._update_animation(animation, animation_state, options)
 		end
 
 		if options.is_loop then
+			-- Compensate the time overflow
+			animation_state.current_time = time_overflow
 			M.play(animation_state, animation.animation_id, options)
 		end
 	end

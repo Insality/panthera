@@ -13,8 +13,30 @@ function init(self)
 	local druid_component_cloned = self.druid:new(druid_component, "druid_component_template", nodes)
 	gui.set_position(druid_component_cloned.root, vmath.vector3(700, 340, 0))
 
+	local nodes = gui.clone_tree(prefab)
+	local druid_component_cloned2 = self.druid:new(druid_component, "druid_component_template", nodes)
+	gui.set_position(druid_component_cloned2.root, vmath.vector3(260, 140, 0))
+
+	local nodes = gui.clone_tree(prefab)
+	local druid_component_cloned3 = self.druid:new(druid_component, "druid_component_template", nodes)
+	gui.set_position(druid_component_cloned3.root, vmath.vector3(700, 140, 0))
+
+	local nodes = gui.clone_tree(prefab)
+	local druid_component_cloned4 = self.druid:new(druid_component, "druid_component_template", nodes)
+	gui.set_position(druid_component_cloned4.root, vmath.vector3(260, 540, 0))
+
+	local nodes = gui.clone_tree(prefab)
+	local druid_component_cloned5 = self.druid:new(druid_component, "druid_component_template", nodes)
+	gui.set_position(druid_component_cloned5.root, vmath.vector3(700, 540, 0))
+
 	druid_component_on_scene:run_animation()
 	druid_component_cloned:run_animation()
+	druid_component_cloned2:run_animation()
+	druid_component_cloned3:run_animation()
+	druid_component_cloned4:run_animation()
+	druid_component_cloned5:run_animation()
+
+	--profiler.enable_ui(true)
 end
 
 
