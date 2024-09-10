@@ -18,6 +18,7 @@
 		"sprite",
 		"update",
 		"on_message",
-		"final"
+		"final",
+		"editor"
 	]
 }
