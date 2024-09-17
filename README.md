@@ -53,6 +53,8 @@ After that, select `Project ▸ Fetch Libraries` to update [library dependencies
 
 ### Hot Reloading Animations for Development
 
+> **Note:** Hot reloading is designed for use in development environments only. Hot reloading only works for animations from JSON files. If you using a lua table for animations, hot reloading will not work.
+
 Panthera Runtime supports hot reloading of animations for a more efficient development workflow. This feature allows animations to be reloaded automatically without restarting your Defold game, facilitating rapid iteration on animation assets.
 
 To enable hot reloading of animations, include the following settings in your `game.project` file:
@@ -80,9 +82,6 @@ window.set_listener(function(_, event)
     end
 end)
 ```
-
-> **Note:** Hot reloading is designed for use in development environments only. Hot reloading only works for animations from JSON files. If you using a lua table for animations, hot reloading will not work.
-
 
 ## API Reference
 

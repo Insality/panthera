@@ -86,6 +86,8 @@ Contains the information, latest news and quick access buttons to leave feedback
 ---
 List of all your projects. Here you can open, delete, or create a new project. Projects are sorted by the last modified date. After creation you can rename the project by right click -> Rename. This rename is not affecting the saved file name and can be used for better navigation.
 
+To create first animation project, click on the "Plus" button and select "New Animation". As file extension use `.lua` or `.json`.
+
 > Project Tabs
 ---
 All currently opened projects are displayed here. You can switch between them by clicking on the tab.
@@ -136,6 +138,13 @@ Displays the properties of the selected node. You can view the properties here. 
 > Images List
 ---
 Contains all the images in the atlas. You can add new images here.
+
+
+## Interface adjustments
+
+You can change the UI scale by pressing `Ctrl` + `Shift` + `-` to scale down and `Ctrl` + `Shift` + `+` to scale up.
+
+You can adjust the width of the Node panel and Timeline panel by dragging the splitter between them.
 
 
 # Create a New Project

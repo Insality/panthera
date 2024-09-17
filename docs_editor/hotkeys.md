@@ -31,6 +31,7 @@
 | `Shift + A` | Move animation time backward on time step |
 | `Shift + D` | Move animation time forward on time step |
 | `Shift + Enter` | Commit all changes in animation of selected nodes |
+| `U` | Reset all changed properties of selected nodes. If no changes - reset all properties to initial values |
 | `Ctrl` + `C` | Copy selected nodes or animation keys |
 | `Ctrl` + `V` | **Layout Mode**: Paste copied nodes |
 | `Ctrl` + `V` | **Animation Mode**: Paste copied keys |
@@ -41,7 +42,8 @@
 | `Ctrl` + `N` | Create new box node |
 | `Ctrl` + `A` | **Layout Mode** Select all nodes |
 | `Ctrl` + `A` | **Animation Mode** Select all keys |
-| `Ctrl` + `E` | Hide/Show Node. Hidden node is non-selectable from Editor View |
+| `Ctrl` + `E` | Hide/Show selected nodes. Hidden node is non-selectable from Editor View |
+| `Ctrl` + `Shift` + `E` | Hide/Show not selected nodes. |
 | `Arrows (Up, Down, Left, Right)` | Move selected nodes +1px |
 | `Shift` + `Arrows (Up, Down, Left, Right)` | Move selected nodes +10px |
 | `Ctrl` + `Arrows (Up, Down, Left, Right)` | Change selected nodes size +1px |
@@ -100,3 +102,4 @@
 | --- | --- |
 | `Hold Shift` | Select all items between two items |
 | `Hold Ctrl` | Select multiple items |
+| `Alt` + `Left Click` | (_on arrow icon_) Fold/Unfold node |
