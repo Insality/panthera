@@ -317,7 +317,11 @@ You can create and open animations directly from Defold Editor. Prerequisites:
 
 To create new animation from Defold Editor, press right click on the `.gui`, `.go` or `.collection` file in the Defold Editor and select "Create Panthera Animation". The Panthera Editor will be opened with the new animation project. The new file will be created in the same folder as the `.gui`, `.go` or `.collection` file. The name will be `{file_name}_panthera.lua`.
 
+https://github.com/user-attachments/assets/b39445d1-ebe8-4f02-ac54-418e952d9b84
+
 To open Panthera animation (both in json or lua formars) from Defold Editor, press right click on the Panthera animation file and select "Open Panthera Animation". The Panthera Editor will be opened with the selected animation project.
+
+https://github.com/user-attachments/assets/5e649807-f030-4c81-8264-a0e54191da2a
 
 # Working with Node Properties
 
