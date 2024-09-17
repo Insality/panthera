@@ -25,6 +25,7 @@ Quickly dive into creating animations with **Panthera Editor 2.0** using this st
 - [Export Animation Data](#export-animation-data)
    * [How to Find Animation File](#how-to-find-animation-file)
 - [Import Defold GUI Layout](#import-defold-gui-layout)
+- [Create Animations from Defold Editor](#create-animations-from-defold-editor)
 - [Working with Node Properties](#working-with-node-properties)
    * [Copy and Paste Properties](#copy-and-paste-properties)
    * [Discarding Changes](#discarding-changes)
@@ -289,22 +290,34 @@ Panthera Editor used a JSON file for animation data. This file serves a dual pur
 
 The file will be opened in the file explorer window.
 
-# Import Defold GUI Layout
+# Import Defold Layout
 <!-- animation file should be placed inside your Defold Project folder -->
 
 https://github.com/Insality/panthera/assets/3294627/ed082b26-cfaf-4567-93ac-41d2169b2444
 
-You can import the Defold GUI layout to the Panthera Editor. The animation file should be placed inside your Defold project folder to correct reloading in the future.
+You can import the Defold GUI/Collection/GO layout to the Panthera Editor. The animation file should be placed inside your Defold project folder to correct reloading in the future (it uses relative path's from `game.project` file).
 
 1. Open animation project.
 2. Click on the plus icon in the Nodes panel.
 3. Select "Bind Defold File".
 4. Choose the `.gui` file from your Defold project.
 
-The GUI layout will be imported and displayed in the Editor View. The file state is changed to linked. The GUI will be reloaded automatically when the project is opened, or manually by clicking the "Reload Binded File" button.
+The layout will be imported and displayed in the Editor View. The file state is changed to linked. The file will be reloaded automatically when the project is opened, or manually by clicking the "Reload Binded File" button.
 
 The layout nodes can't be modified. But you can animate them. Nodes layout data will be not stored in the animation file. Only the animation data will be stored.
 
+# Create Animations from Defold Editor
+
+> Panthera Runtime v4 is required for this feature.
+
+You can create and open animations directly from Defold Editor. Prerequisites:
+
+- The Panthera Editor should be opened.
+- The Panthera Runtime library should be included in your Defold project.
+
+To create new animation from Defold Editor, press right click on the `.gui`, `.go` or `.collection` file in the Defold Editor and select "Create Panthera Animation". The Panthera Editor will be opened with the new animation project. The new file will be created in the same folder as the `.gui`, `.go` or `.collection` file. The name will be `{file_name}_panthera.lua`.
+
+To open Panthera animation (both in json or lua formars) from Defold Editor, press right click on the Panthera animation file and select "Open Panthera Animation". The Panthera Editor will be opened with the selected animation project.
 
 # Working with Node Properties
 
