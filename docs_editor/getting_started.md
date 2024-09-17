@@ -144,8 +144,11 @@ Contains all the images in the atlas. You can add new images here.
 
 You can change the UI scale by pressing `Ctrl` + `Shift` + `-` to scale down and `Ctrl` + `Shift` + `+` to scale up.
 
+https://github.com/user-attachments/assets/f6f94120-56c1-4abb-a5fc-acdedbe6127c
+
 You can adjust the width of the Node panel and Timeline panel by dragging the splitter between them.
 
+https://github.com/user-attachments/assets/ef0e9d38-eb39-4001-83de-5bdbaf9cc47d
 
 # Create a New Project
 
