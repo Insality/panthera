@@ -439,6 +439,11 @@ You can add a nested animation to the scene. Nested animations can be created in
 In the current version, the cyclic references are not protected. The cyclic references can cause the infinite loop in the animation playback. Be careful with it.
 
 
+# Workflow Example
+
+Here is a 4 minutes of making simple appear/disappear animations in Panthera Editor.
+
+
 # Adjust Gizmo Settings
 
 https://github.com/Insality/panthera/assets/3294627/53b1de58-84eb-4a20-800f-c4bcf13cc78b
