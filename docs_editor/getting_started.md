@@ -41,6 +41,7 @@ Quickly dive into creating animations with **Panthera Editor 2.0** using this st
 - [Working with Nested Animations](#working-with-nested-animations)
    * [Add Nested Animation](#add-nested-animation)
    * [Cyclic References](#cyclic-references)
+- [Workflow Example](#workflow-example)
 - [Adjust Gizmo Settings](#adjust-gizmo-settings)
    * [Scene Gizmo Settings](#scene-gizmo-settings)
    * [Timeline Gizmo Settings](#timeline-gizmo-settings)
@@ -442,6 +443,8 @@ In the current version, the cyclic references are not protected. The cyclic refe
 # Workflow Example
 
 Here is a 4 minutes of making simple appear/disappear animations in Panthera Editor.
+
+https://github.com/user-attachments/assets/18615ed3-3b09-47c3-a677-411ffa7d6600
 
 
 # Adjust Gizmo Settings
