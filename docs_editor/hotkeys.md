@@ -58,7 +58,7 @@
 | `Alt` + `Arrow Up` | Move selected nodes up in hierarcy |
 | `Alt` + `Arrow Down` | Move selected nodes down in hierarcy |
 | `Right Click` | Show context menu of element |
-| `Ctrl` + `Left Click` | Select Animation with keeping nodes selection |
+| `Ctrl` + `Left Click` | Select Animation with keeping current nodes selection |
 
 ## Properties View
 

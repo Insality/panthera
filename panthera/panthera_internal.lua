@@ -604,6 +604,10 @@ end
 ---Get current application folder (only desktop)
 ---@return string|nil @Current application folder, nil if failed
 function M._get_current_game_project_folder()
+	if not io.popen or html5 then
+		return nil
+	end
+
 	local file = io.popen("pwd")
 	if not file then
 		return nil
