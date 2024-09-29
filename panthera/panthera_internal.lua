@@ -46,11 +46,11 @@ function M.load(animation_path_or_data, is_cache_reset)
 	-- If we have already loaded animation table
 	local is_table = type(animation_path_or_data) == TYPE_TABLE
 	if is_table then
-		local animation_path = M._get_fake_animation_path()
+		local animation_path = M.get_fake_animation_path()
 		local project_data = animation_path_or_data --[[@as panthera.animation.project_file]]
 
 		local data = project_data.data
-		M._preprocess_animation_keys(data)
+		M.preprocess_animation_keys(data)
 		M.LOADED_ANIMATIONS[animation_path] = data
 		M.INLINE_ANIMATIONS[animation_path] = true
 
@@ -66,12 +66,12 @@ function M.load(animation_path_or_data, is_cache_reset)
 	end
 
 	if not M.LOADED_ANIMATIONS[animation_path] then
-		local animation, error_reason = M._get_animation_by_path(animation_path)
+		local animation, error_reason = M.get_animation_by_path(animation_path)
 		if not animation then
 			return nil, nil, error_reason
 		end
 
-		M._preprocess_animation_keys(animation)
+		M.preprocess_animation_keys(animation)
 		M.LOADED_ANIMATIONS[animation_path] = animation
 	end
 
@@ -91,35 +91,6 @@ end
 ---@return panthera.animation.data.animation|nil
 function M.get_animation_by_animation_id(animation_data, animation_id)
 	return animation_data.animations_dict[animation_id]
-end
-
-
----@param animation_data panthera.animation.data
----@param node_id string
----@param animation_id string
----@return string[]
-function M.get_animated_node_properties(animation_data, node_id, animation_id)
-	local node_properties = {}
-	for index = 1, #animation_data.animations do
-		local animation = animation_data.animations[index]
-		if animation.animation_id == animation_id then
-			local animation_keys = animation.animation_keys
-			for key_index = 1, #animation_keys do
-				local key = animation_keys[key_index]
-				if key.node_id == node_id then
-					node_properties[key.property_id] = true
-				end
-			end
-		end
-	end
-
-	-- Return list of properties
-	local result = {}
-	for property_id in pairs(node_properties) do
-		table.insert(result, property_id)
-	end
-
-	return result
 end
 
 
@@ -183,12 +154,7 @@ function M.get_node_value_at_time(animation_state, animation_id, node_id, proper
 	local animation_data = M.get_animation_data(animation_state) --[[@as panthera.animation.data]]
 	local group_keys = animation_data.group_animation_keys[animation_id]
 
-	local node_keys = group_keys[node_id]
-	if not node_keys then
-		return nil
-	end
-
-	local keys = node_keys[property_id]
+	local keys = group_keys[node_id] and group_keys[node_id][property_id]
 	if not keys then
 		return nil
 	end
@@ -207,7 +173,7 @@ function M.get_node_value_at_time(animation_state, animation_id, node_id, proper
 		local key = keys[index]
 		if key.start_time <= time  then
 			if key.key_type == "tween" then
-				set_value = M._get_key_value_at_time(key, time)
+				set_value = M.get_key_value_at_time(key, time)
 			end
 
 			if key.key_type == "trigger" then
@@ -236,12 +202,14 @@ function M.set_node_value_at_time(animation_state, animation_id, node_id, proper
 	end
 
 	local node = M.get_node(animation_state, node_id)
-	if node then
-		local set_value = M.get_node_value_at_time(animation_state, animation_id, node_id, property_id, time)
-		if set_value ~= nil then
-			adapter.set_node_property(node, property_id, set_value)
-			return set_value
-		end
+	if not node then
+		return nil
+	end
+
+	local set_value = M.get_node_value_at_time(animation_state, animation_id, node_id, property_id, time)
+	if set_value ~= nil then
+		adapter.set_node_property(node, property_id, set_value)
+		return set_value
 	end
 
 	return nil
@@ -290,6 +258,7 @@ function M.get_node(animation_state, node_id)
 			return
 		end
 		node = result
+		animation_state.nodes[node_id] = node
 	end
 
 	if not node then
@@ -395,7 +364,7 @@ end
 ---@private
 ---@param path string The save path
 ---@return table|nil, string|nil
-function M._load_by_path(path)
+function M.load_by_path(path)
 	local file = io.open(path)
 	if file then
 		local file_data = file:read("*all")
@@ -418,7 +387,7 @@ end
 ---@private
 ---@param path string The resource path
 ---@return table|nil, string|nil
-function M._load_by_resource_path(path)
+function M.load_by_resource_path(path)
 	local data, error = sys.load_resource(path)
 	if error then
 		return nil, error
@@ -437,35 +406,11 @@ function M._load_by_resource_path(path)
 end
 
 
-local current_dir = nil
----Get current directory
----@private
----@return string|nil
-function M._get_current_dir()
-	if current_dir then
-		return current_dir
-	end
-
-	local tmp_path = os.tmpname()
-	os.execute("pwd > " .. tmp_path)
-	local file = io.open(tmp_path, "r")
-	if not file then
-		return nil
-	end
-
-	local pwd_result = file:read("*l")
-	file:close()
-	os.remove(tmp_path)
-	current_dir = pwd_result
-	return current_dir
-end
-
-
 ---Load animation from JSON file and return it
 ---@private
 ---@param path string
 ---@return panthera.animation.data|nil, string|nil
-function M._get_animation_by_path(path)
+function M.get_animation_by_path(path)
 	local resource, error
 
 	if M.IS_HOTRELOAD_ANIMATIONS then
@@ -473,11 +418,11 @@ function M._get_animation_by_path(path)
 		if not project_path then
 			return nil, "Can't get current game project folder"
 		end
-		resource, error = M._load_by_path(project_path)
+		resource, error = M.load_by_path(project_path)
 
 		M.logger:debug("Panthera animation reloaded", path)
 	else
-		resource, error = M._load_by_resource_path(path)
+		resource, error = M.load_by_resource_path(path)
 	end
 
 	if not resource then
@@ -497,7 +442,7 @@ end
 ---@private
 ---@param a panthera.animation.data.animation_key
 ---@param b panthera.animation.data.animation_key
-function M._sort_keys_function(a, b)
+function M.sort_keys_function(a, b)
 	if a.start_time ~= b.start_time then
 		return a.start_time < b.start_time
 	end
@@ -517,7 +462,7 @@ end
 
 ---@private
 ---@param data panthera.animation.data
-function M._preprocess_animation_keys(data)
+function M.preprocess_animation_keys(data)
 	for index = 1, #data.animations do
 		local animation = data.animations[index]
 
@@ -541,7 +486,7 @@ function M._preprocess_animation_keys(data)
 			end
 		end
 
-		table.sort(animation.animation_keys, M._sort_keys_function)
+		table.sort(animation.animation_keys, M.sort_keys_function)
 	end
 
 	-- For fast search
@@ -551,7 +496,7 @@ function M._preprocess_animation_keys(data)
 		data.animations_dict[animation.animation_id] = animation
 	end
 
-	data.group_animation_keys = M._get_group_animation_keys(data)
+	data.group_animation_keys = M.get_group_animation_keys(data)
 end
 
 
@@ -559,7 +504,7 @@ end
 ---@private
 ---@param animation_data panthera.animation.data
 ---@return table<string, table<string, panthera.animation.data.animation_key[]>>
-function M._get_group_animation_keys(animation_data)
+function M.get_group_animation_keys(animation_data)
 	local group_animations = {}
 	for index = 1, #animation_data.animations do
 		local animation = animation_data.animations[index]
@@ -585,7 +530,7 @@ end
 ---@param key panthera.animation.data.animation_key
 ---@param time number
 ---@return number
-function M._get_key_value_at_time(key, time)
+function M.get_key_value_at_time(key, time)
 	if time < key.start_time then
 		return key.start_value
 	end
@@ -602,8 +547,9 @@ end
 
 
 ---Get current application folder (only desktop)
+---@private
 ---@return string|nil @Current application folder, nil if failed
-function M._get_current_game_project_folder()
+function M.get_current_game_project_folder()
 	if not io.popen or html5 then
 		return nil
 	end
@@ -633,7 +579,8 @@ end
 
 
 local path_counter = 0
-function M._get_fake_animation_path()
+---@private
+function M.get_fake_animation_path()
 	path_counter = path_counter + 1
 	return "panthera_animation_table_" .. path_counter
 end
@@ -643,7 +590,7 @@ end
 if IS_DEBUG then
 	M.IS_HOTRELOAD_ANIMATIONS = sys.get_config_int("panthera.hotreload_animations", 0) == 1
 	if M.IS_HOTRELOAD_ANIMATIONS then
-		M.PROJECT_FOLDER = M._get_current_game_project_folder()
+		M.PROJECT_FOLDER = M.get_current_game_project_folder()
 		if not M.PROJECT_FOLDER then
 			M.logger:error("Can't get current game project folder")
 			M.IS_HOTRELOAD_ANIMATIONS = false

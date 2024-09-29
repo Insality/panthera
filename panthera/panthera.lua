@@ -5,9 +5,11 @@ local panthera_internal = require("panthera.panthera_internal")
 ---@class panthera
 local M = {}
 local TIMER_DELAY = 1/60
+local EMPTY_OPTIONS = {}
 
 
----@param logger_instance panthera.logger|nil
+---Customize the logging mechanism used by **Panthera Runtime**. You can use **Defold Log** library or provide a custom logger.
+---@param logger_instance panthera.logger|table|nil
 function M.set_logger(logger_instance)
 	panthera_internal.logger = logger_instance or panthera_internal.empty_logger
 end
@@ -109,7 +111,7 @@ function M.play(animation_state, animation_id, options)
 		M.stop(animation_state)
 	end
 
-	options = options or {}
+	options = options or EMPTY_OPTIONS
 	animation_state.animation_id = animation.animation_id
 	animation_state.animation_keys_index = 1
 
@@ -135,7 +137,7 @@ function M.play(animation_state, animation_id, options)
 	local last_time = socket.gettime()
 	animation_state.timer_id = timer.delay(TIMER_DELAY, true, function()
 		local current_time = socket.gettime()
-		local dt = (current_time - last_time)
+		local dt = current_time - last_time
 		last_time = current_time
 		local speed = (options.speed or 1) * animation_state.speed
 
@@ -242,7 +244,7 @@ function M.set_time(animation_state, animation_id, time)
 end
 
 
----Get current animation time in seconds
+---Retrieve the current playback time in seconds of an animation. If the animation is not playing, the function returns 0.
 ---@param animation_state panthera.animation.state
 ---@return number @Current animation time in seconds
 function M.get_time(animation_state)
@@ -308,7 +310,7 @@ function M.stop(animation_state)
 end
 
 
----Get animation duration
+---Retrieve the total duration of a specific animation.
 ---@param animation_state panthera.animation.state
 ---@param animation_id string
 ---@return number
@@ -323,7 +325,7 @@ function M.get_duration(animation_state, animation_id)
 end
 
 
----Check if animation is playing
+---Check if an animation is currently playing.
 ---@param animation_state panthera.animation.state
 ---@return boolean
 function M.is_playing(animation_state)
@@ -331,7 +333,7 @@ function M.is_playing(animation_state)
 end
 
 
----Get current animation
+---Get the ID of the last animation that was started.
 ---@param animation_state panthera.animation.state @Animation state
 ---@return string|nil @Animation id or nil if animation is not playing
 function M.get_latest_animation_id(animation_state)

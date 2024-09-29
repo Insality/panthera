@@ -7,7 +7,7 @@ local gui_get = gui.get
 local gui_get_node = gui.get_node
 
 -- In Defold 1.2.180+ gui.set and gui.get functions were added. Rotation was changed to Euler
-local IS_DEFOLD_180 = (gui_set and gui_get)
+local IS_DEFOLD_180 = gui_set and gui_get
 
 local PROPERTY_TO_DEFOLD_TWEEN_PROPERTY = {
 	["position_x"] = "position.x",
