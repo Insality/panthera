@@ -414,11 +414,8 @@ function M.get_animation_by_path(path)
 	local resource, error
 
 	if M.IS_HOTRELOAD_ANIMATIONS then
-		local project_path = M.PROJECT_FOLDER .. path
-		if not project_path then
-			return nil, "Can't get current game project folder"
-		end
-		resource, error = M.load_by_path(project_path)
+		local relative_path = M.PROJECT_FOLDER .. path
+		resource, error = M.load_by_path(relative_path)
 
 		M.logger:debug("Panthera animation reloaded", path)
 	else

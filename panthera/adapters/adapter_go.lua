@@ -161,7 +161,6 @@ local function get_trigger_property_id(node, property_id)
 	end
 	if defold_property_id == "texture" then
 		local texture_name = go.get(node, "animation")
-		pprint(texture_name)
 		local splitted = split(texture_name, "/")
 		return splitted[#splitted]
 	end
