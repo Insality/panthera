@@ -72,6 +72,17 @@
 | `Mouse Hover` + `0-9` | Set opacity of color picker widget to [10% .. 100%] |
 | `Mouse Hover` + `Left Shift` + `0` | Set opacity of color picker widget 0% |
 
+## Node List View
+
+| Key | Description |
+| --- | --- |
+| `Alt` + `Left Click` | (_on arrow icon_) Fold/Unfold node and all children |
+| `Shift` + `[` | Select parent node |
+| `Shift` + `]` | Select child node |
+| `Shift` + `P` | Select next node |
+| `Shift` + `Alt` + `P` | Select previous node |
+
+
 ## Timeline View
 
 | Key | Description |
@@ -85,6 +96,7 @@
 | `Hold Shift` + `Left Click` | Add or remove key from selection |
 | `Hold Shift` + `Drag` | Add or remove keys from selection |
 | `Left Click` | Select key (or key behind selected if multiple selection) |
+
 
 ## Transform Gizmo
 
@@ -102,4 +114,3 @@
 | --- | --- |
 | `Hold Shift` | Select all items between two items |
 | `Hold Ctrl` | Select multiple items |
-| `Alt` + `Left Click` | (_on arrow icon_) Fold/Unfold node |
