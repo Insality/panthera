@@ -1,24 +1,24 @@
 local PROPERTY_TO_TWEEN_PROPERTY = {
-	["position_x"] = "position.x",
-	["position_y"] = "position.y",
-	["position_z"] = "position.z",
-	["rotation_x"] = "euler.x",
-	["rotation_y"] = "euler.y",
-	["rotation_z"] = "euler.z",
-	["scale_x"] = "scale.x",
-	["scale_y"] = "scale.y",
-	["scale_z"] = "scale.z",
-	["size_x"] = "size.x",
-	["size_y"] = "size.y",
-	["size_z"] = "size.z",
-	["color_r"] = "color.x",
-	["color_g"] = "color.y",
-	["color_b"] = "color.z",
-	["color_a"] = "color.w",
-	["slice9_left"] = "slice.x",
-	["slice9_top"] = "slice.y",
-	["slice9_right"] = "slice.z",
-	["slice9_bottom"] = "slice.w"
+	["position_x"] = hash("position.x"),
+	["position_y"] = hash("position.y"),
+	["position_z"] = hash("position.z"),
+	["rotation_x"] = hash("euler.x"),
+	["rotation_y"] = hash("euler.y"),
+	["rotation_z"] = hash("euler.z"),
+	["scale_x"] = hash("scale.x"),
+	["scale_y"] = hash("scale.y"),
+	["scale_z"] = hash("scale.z"),
+	["size_x"] = hash("size.x"),
+	["size_y"] = hash("size.y"),
+	["size_z"] = hash("size.z"),
+	["color_r"] = hash("color.x"),
+	["color_g"] = hash("color.y"),
+	["color_b"] = hash("color.z"),
+	["color_a"] = hash("color.w"),
+	["slice9_left"] = hash("slice.x"),
+	["slice9_top"] = hash("slice.y"),
+	["slice9_right"] = hash("slice.z"),
+	["slice9_bottom"] = hash("slice.w"),
 }
 
 local PROPERTY_TO_TRIGGER_PROPERTY = {
@@ -196,7 +196,7 @@ local function set_node_property(node, property_id, value)
 	stop_tween(node, property_id)
 	defold_property_id = PROPERTY_TO_TWEEN_PROPERTY[property_id]
 	if not defold_property_id then
-		print("Unknown property_id: " .. property_id, debug.traceback())
+		print("Unknown property_id: ", property_id, debug.traceback())
 		return false
 	end
 
@@ -217,7 +217,7 @@ local function get_node_property(node, property_id)
 
 	local defold_number_property_id = PROPERTY_TO_TWEEN_PROPERTY[property_id]
 	if not defold_number_property_id then
-		print("Unknown property_id: " .. property_id, debug.traceback())
+		print("Unknown property_id: ", property_id, debug.traceback())
 		return nil
 	end
 
