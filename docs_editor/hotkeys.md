@@ -31,6 +31,7 @@
 | `Shift + A` | Move animation time backward on time step |
 | `Shift + D` | Move animation time forward on time step |
 | `Shift + Enter` | Commit all changes in animation of selected nodes |
+| `U` | Reset all changed properties of selected nodes. If no changes - reset all properties to initial values |
 | `Ctrl` + `C` | Copy selected nodes or animation keys |
 | `Ctrl` + `V` | **Layout Mode**: Paste copied nodes |
 | `Ctrl` + `V` | **Animation Mode**: Paste copied keys |
@@ -41,7 +42,8 @@
 | `Ctrl` + `N` | Create new box node |
 | `Ctrl` + `A` | **Layout Mode** Select all nodes |
 | `Ctrl` + `A` | **Animation Mode** Select all keys |
-| `Ctrl` + `E` | Hide/Show Node. Hidden node is non-selectable from Editor View |
+| `Ctrl` + `E` | Hide/Show selected nodes. Hidden node is non-selectable from Editor View |
+| `Ctrl` + `Shift` + `E` | Hide/Show not selected nodes. |
 | `Arrows (Up, Down, Left, Right)` | Move selected nodes +1px |
 | `Shift` + `Arrows (Up, Down, Left, Right)` | Move selected nodes +10px |
 | `Ctrl` + `Arrows (Up, Down, Left, Right)` | Change selected nodes size +1px |
@@ -56,7 +58,7 @@
 | `Alt` + `Arrow Up` | Move selected nodes up in hierarcy |
 | `Alt` + `Arrow Down` | Move selected nodes down in hierarcy |
 | `Right Click` | Show context menu of element |
-| `Ctrl` + `Left Click` | Select Animation with keeping nodes selection |
+| `Ctrl` + `Left Click` | Select Animation with keeping current nodes selection |
 
 ## Properties View
 
@@ -69,6 +71,17 @@
 | `Mouse Hover` + `[QWEASDZXC]` | Change pivot in pivot dropdown menu |
 | `Mouse Hover` + `0-9` | Set opacity of color picker widget to [10% .. 100%] |
 | `Mouse Hover` + `Left Shift` + `0` | Set opacity of color picker widget 0% |
+
+## Node List View
+
+| Key | Description |
+| --- | --- |
+| `Alt` + `Left Click` | (_on arrow icon_) Fold/Unfold node and all children |
+| `Shift` + `[` | Select parent node |
+| `Shift` + `]` | Select child node |
+| `Shift` + `P` | Select next node |
+| `Shift` + `Alt` + `P` | Select previous node |
+
 
 ## Timeline View
 
@@ -83,6 +96,7 @@
 | `Hold Shift` + `Left Click` | Add or remove key from selection |
 | `Hold Shift` + `Drag` | Add or remove keys from selection |
 | `Left Click` | Select key (or key behind selected if multiple selection) |
+
 
 ## Transform Gizmo
 

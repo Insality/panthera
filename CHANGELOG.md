@@ -34,3 +34,10 @@ Initial resease!
 - Rename file `panthera_system` to `panthera_internal`.
 - Add support for `is_editor_only` timeline key property
 - Add support for `easing_custom` timeline key property
+
+
+## Version v4
+
+- Add Defold Editor scripts to create and edit Panthera animations directly from the Defold Editor
+	- Panthera Editor should be started before using the scripts.
+- Add time overflow handling for more precise animation playback.

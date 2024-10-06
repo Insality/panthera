@@ -1,40 +1,47 @@
 ---@diagnostic disable: undefined-field, return-type-mismatch
+
+-- Localize Defold functions
+local gui_animate = gui.animate
+local gui_set = gui.set
+local gui_get = gui.get
+local gui_get_node = gui.get_node
+
 -- In Defold 1.2.180+ gui.set and gui.get functions were added. Rotation was changed to Euler
-local IS_DEFOLD_180 = (gui.set and gui.get)
+local IS_DEFOLD_180 = gui_set and gui_get
 
 local PROPERTY_TO_DEFOLD_TWEEN_PROPERTY = {
-	["position_x"] = "position.x",
-	["position_y"] = "position.y",
-	["position_z"] = "position.z",
-	["rotation_x"] = IS_DEFOLD_180 and "euler.x" or "rotation.x",
-	["rotation_y"] = IS_DEFOLD_180 and "euler.y" or "rotation.y",
-	["rotation_z"] = IS_DEFOLD_180 and "euler.z" or "rotation.z",
-	["scale_x"] = "scale.x",
-	["scale_y"] = "scale.y",
-	["scale_z"] = "scale.z",
-	["size_x"] = "size.x",
-	["size_y"] = "size.y",
-	["size_z"] = "size.z",
-	["color_r"] = "color.x",
-	["color_g"] = "color.y",
-	["color_b"] = "color.z",
-	["color_a"] = "color.w",
-	["outline_r"] = "outline.x",
-	["outline_g"] = "outline.y",
-	["outline_b"] = "outline.z",
-	["outline_a"] = "outline.w",
-	["shadow_r"] = "shadow.x",
-	["shadow_g"] = "shadow.y",
-	["shadow_b"] = "shadow.z",
-	["shadow_a"] = "shadow.w",
-	["slice9_left"] = "slice9.x",
-	["slice9_top"] = "slice9.y",
-	["slice9_right"] = "slice9.z",
-	["slice9_bottom"] = "slice9.w",
-	["inner_radius"] = "inner_radius",
-	["fill_angle"] = "fill_angle",
-	["text_tracking"] = "tracking",
-	["text_leading"] = "leading",
+	["position_x"] = hash("position.x"),
+	["position_y"] = hash("position.y"),
+	["position_z"] = hash("position.z"),
+	["rotation_x"] = IS_DEFOLD_180 and hash("euler.x") or hash("rotation.x"),
+	["rotation_y"] = IS_DEFOLD_180 and hash("euler.y") or hash("rotation.y"),
+	["rotation_z"] = IS_DEFOLD_180 and hash("euler.z") or hash("rotation.z"),
+	["scale_x"] = hash("scale.x"),
+	["scale_y"] = hash("scale.y"),
+	["scale_z"] = hash("scale.z"),
+	["size_x"] = hash("size.x"),
+	["size_y"] = hash("size.y"),
+	["size_z"] = hash("size.z"),
+	["color_r"] = hash("color.x"),
+	["color_g"] = hash("color.y"),
+	["color_b"] = hash("color.z"),
+	["color_a"] = hash("color.w"),
+	["outline_r"] = hash("outline.x"),
+	["outline_g"] = hash("outline.y"),
+	["outline_b"] = hash("outline.z"),
+	["outline_a"] = hash("outline.w"),
+	["shadow_r"] = hash("shadow.x"),
+	["shadow_g"] = hash("shadow.y"),
+	["shadow_b"] = hash("shadow.z"),
+	["shadow_a"] = hash("shadow.w"),
+	["slice9_left"] = hash("slice9.x"),
+	["slice9_top"] = hash("slice9.y"),
+	["slice9_right"] = hash("slice9.z"),
+	["slice9_bottom"] = hash("slice9.w"),
+	["inner_radius"] = hash("inner_radius"),
+	["fill_angle"] = hash("fill_angle"),
+	["text_tracking"] = hash("tracking"),
+	["text_leading"] = hash("leading"),
 }
 
 local PROPERTY_TO_DEFOLD_TRIGGER_PROPERTY = {
@@ -273,7 +280,7 @@ local function create_get_node_function(template, nodes)
 		if nodes then
 			return nodes[node_id]
 		else
-			return gui.get_node(node_id)
+			return gui_get_node(node_id)
 		end
 	end
 end
@@ -320,7 +327,7 @@ local function set_node_property(node, property_id, value)
 	if IS_DEFOLD_180 then
 		-- Handle Defold 1.2.180+ properties
 		local defold_number_property_id = PROPERTY_TO_DEFOLD_TWEEN_PROPERTY[property_id]
-		gui.set(node, defold_number_property_id, value)
+		gui_set(node, defold_number_property_id, value)
 	else
 		-- Handle Defold 1.2.179- properties
 		local tween_info = TWEEN_DEFOLD_SET_GET[property_id]
@@ -359,7 +366,7 @@ local function get_node_property(node, property_id)
 	if IS_DEFOLD_180 then
 		-- Handle Defold 1.2.180+ properties
 		local defold_number_property_id = PROPERTY_TO_DEFOLD_TWEEN_PROPERTY[property_id]
-		return gui.get(node, defold_number_property_id)
+		return gui_get(node, defold_number_property_id)
 	else
 		-- Handle Defold 1.2.179- properties
 		local tween_info = TWEEN_DEFOLD_SET_GET[property_id]
@@ -399,7 +406,7 @@ local function tween_animation_key(node, property_id, easing, duration, end_valu
 		set_node_property(node, property_id, end_value)
 	else
 		property_id = PROPERTY_TO_DEFOLD_TWEEN_PROPERTY[property_id]
-		gui.animate(node, property_id, end_value, easing, duration)
+		gui_animate(node, property_id, end_value, easing, duration)
 	end
 end
 

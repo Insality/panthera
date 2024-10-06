@@ -21,7 +21,7 @@ for input_file in "$input_dir"/*.mov; do
 	output_file="$output_dir/$base_name.mp4"
 
 	# Run FFmpeg command to convert the video
-	ffmpeg -i "$input_file" -vf "scale=1280:-1" -c:v libx264 -preset slow -crf 22 -an "$output_file"
+	ffmpeg -i "$input_file" -vf "scale=1280:-2" -c:v libx264 -preset slow -crf 22 -an "$output_file"
 
 	# Check if the conversion was successful
 	if [ $? -eq 0 ]; then

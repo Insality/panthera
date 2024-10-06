@@ -36,7 +36,7 @@ https://github.com/Insality/defold-tweener/archive/refs/tags/3.zip
 **[Panthera Runtime](https://github.com/Insality/panthera)**
 
 ```
-https://github.com/Insality/panthera/archive/refs/tags/runtime.3.zip
+https://github.com/Insality/panthera/archive/refs/tags/runtime.4.zip
 ```
 
 After that, select `Project ▸ Fetch Libraries` to update [library dependencies]((https://defold.com/manuals/libraries/#setting-up-library-dependencies)). This happens automatically whenever you open a project so you will only need to do this if the dependencies change without re-opening the project.
@@ -47,11 +47,13 @@ After that, select `Project ▸ Fetch Libraries` to update [library dependencies
 
 | Platform         | Library Size |
 | ---------------- | ------------ |
-| HTML5            | **11.51 KB** |
-| Desktop / Mobile | **19.53 KB** |
+| HTML5            | **12.42 KB** |
+| Desktop / Mobile | **21.35 KB** |
 
 
-### Hot Reloading Animations for Development
+### Hot Reloading Animations for Development [Optional]
+
+> **Note:** Hot reloading is designed for use in development environments only. Hot reloading only works for animations from JSON files. If you using a lua table for animations, hot reloading will not work.
 
 Panthera Runtime supports hot reloading of animations for a more efficient development workflow. This feature allows animations to be reloaded automatically without restarting your Defold game, facilitating rapid iteration on animation assets.
 
@@ -80,9 +82,6 @@ window.set_listener(function(_, event)
     end
 end)
 ```
-
-> **Note:** Hot reloading is designed for use in development environments only. Hot reloading only works for animations from JSON files. If you using a lua table for animations, hot reloading will not work.
-
 
 ## API Reference
 
@@ -120,9 +119,10 @@ Load and play a animation file using the GO adapter.
 
 ```lua
 local panthera = require("panthera.panthera")
+local animation = require("path.to.panthera_animation")
 
 function init(self)
-    self.animation = panthera.create_go("/animations/animation.json")
+    self.animation = panthera.create_go(animation)
     panthera.play(self.animation, "run", { is_loop = true })
 end
 ```
@@ -134,9 +134,10 @@ Load and play a animation file using the GUI adapter.
 
 ```lua
 local panthera = require("panthera.panthera")
+local animation = require("path.to.panthera_animation")
 
 function init(self)
-    self.animation = panthera.create_gui("/animations/animation.json")
+    self.animation = panthera.create_gui(animation)
     panthera.play(self.animation, "fade_in")
 end
 ```
@@ -151,6 +152,7 @@ Check if an animation is currently playing and retrieve the current animation ID
 local panthera = require("panthera.panthera")
 
 function init(self)
+    -- You can use JSON instead of Lua tables, but it should be accessible with sys.load_resource()
     self.animation = panthera.create_gui("/animations/animation.json")
     local is_playing = panthera.is_playing(self.animation)
     local animation_id = panthera.get_latest_animation_id(self.animation)

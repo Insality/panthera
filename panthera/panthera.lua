@@ -5,9 +5,11 @@ local panthera_internal = require("panthera.panthera_internal")
 ---@class panthera
 local M = {}
 local TIMER_DELAY = 1/60
+local EMPTY_OPTIONS = {}
 
 
----@param logger_instance panthera.logger|nil
+---Customize the logging mechanism used by **Panthera Runtime**. You can use **Defold Log** library or provide a custom logger.
+---@param logger_instance panthera.logger|table|nil
 function M.set_logger(logger_instance)
 	panthera_internal.logger = logger_instance or panthera_internal.empty_logger
 end
@@ -109,7 +111,7 @@ function M.play(animation_state, animation_id, options)
 		M.stop(animation_state)
 	end
 
-	options = options or {}
+	options = options or EMPTY_OPTIONS
 	animation_state.animation_id = animation.animation_id
 	animation_state.animation_keys_index = 1
 
@@ -135,7 +137,7 @@ function M.play(animation_state, animation_id, options)
 	local last_time = socket.gettime()
 	animation_state.timer_id = timer.delay(TIMER_DELAY, true, function()
 		local current_time = socket.gettime()
-		local dt = (current_time - last_time)
+		local dt = current_time - last_time
 		last_time = current_time
 		local speed = (options.speed or 1) * animation_state.speed
 
@@ -166,22 +168,24 @@ function M._update_animation(animation, animation_state, options)
 			if key.key_type ~= "animation" then
 				panthera_internal.run_timeline_key(animation_state, key, options)
 			else
-				-- Create a new animation child track
-				local animation_path = animation_state.animation_path
-				local adapter = animation_state.adapter
-				local get_node = animation_state.get_node
-
-				local child_state = M.create(animation_path, adapter, get_node)
+				local child_state = M.clone_state(animation_state)
 				if child_state then
+					-- Time Overflow
+					local time_overflow = math.max(0, animation_state.current_time - key.start_time)
+					child_state.current_time = time_overflow
+
 					animation_state.childs = animation_state.childs or {}
 					table.insert(animation_state.childs, child_state)
 					local animation_duration = M.get_duration(child_state, key.property_id)
 
 					if animation_duration > 0 and key.duration > 0 then
 						local speed = (options.speed or 1) * animation_state.speed
+						local key_duration = (key.duration - time_overflow)
+						local play_speed = (animation_duration / key_duration) * speed
+
 						M.play(child_state, key.property_id, {
 							is_skip_init = true,
-							speed = (animation_duration / key.duration) * speed,
+							speed = play_speed,
 							callback = function()
 								panthera_internal.remove_child_animation(animation_state, child_state)
 							end
@@ -196,6 +200,7 @@ function M._update_animation(animation, animation_state, options)
 
 	-- If current time >= animation duration - stop animation
 	if animation_state.current_time >= animation.duration then
+		local time_overflow = animation_state.current_time - animation.duration
 		M.stop(animation_state)
 
 		if options.callback then
@@ -203,6 +208,8 @@ function M._update_animation(animation, animation_state, options)
 		end
 
 		if options.is_loop then
+			-- Compensate the time overflow
+			animation_state.current_time = time_overflow
 			M.play(animation_state, animation.animation_id, options)
 		end
 	end
@@ -237,7 +244,7 @@ function M.set_time(animation_state, animation_id, time)
 end
 
 
----Get current animation time in seconds
+---Retrieve the current playback time in seconds of an animation. If the animation is not playing, the function returns 0.
 ---@param animation_state panthera.animation.state
 ---@return number @Current animation time in seconds
 function M.get_time(animation_state)
@@ -303,7 +310,7 @@ function M.stop(animation_state)
 end
 
 
----Get animation duration
+---Retrieve the total duration of a specific animation.
 ---@param animation_state panthera.animation.state
 ---@param animation_id string
 ---@return number
@@ -318,7 +325,7 @@ function M.get_duration(animation_state, animation_id)
 end
 
 
----Check if animation is playing
+---Check if an animation is currently playing.
 ---@param animation_state panthera.animation.state
 ---@return boolean
 function M.is_playing(animation_state)
@@ -326,7 +333,7 @@ function M.is_playing(animation_state)
 end
 
 
----Get current animation
+---Get the ID of the last animation that was started.
 ---@param animation_state panthera.animation.state @Animation state
 ---@return string|nil @Animation id or nil if animation is not playing
 function M.get_latest_animation_id(animation_state)
