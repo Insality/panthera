@@ -36,7 +36,7 @@ https://github.com/Insality/defold-tweener/archive/refs/tags/3.zip
 **[Panthera Runtime](https://github.com/Insality/panthera)**
 
 ```
-https://github.com/Insality/panthera/archive/refs/tags/runtime.3.zip
+https://github.com/Insality/panthera/archive/refs/tags/runtime.4.zip
 ```
 
 After that, select `Project ▸ Fetch Libraries` to update [library dependencies]((https://defold.com/manuals/libraries/#setting-up-library-dependencies)). This happens automatically whenever you open a project so you will only need to do this if the dependencies change without re-opening the project.
@@ -47,8 +47,8 @@ After that, select `Project ▸ Fetch Libraries` to update [library dependencies
 
 | Platform         | Library Size |
 | ---------------- | ------------ |
-| HTML5            | **11.51 KB** |
-| Desktop / Mobile | **19.53 KB** |
+| HTML5            | **12.42 KB** |
+| Desktop / Mobile | **21.35 KB** |
 
 
 ### Hot Reloading Animations for Development [Optional]
