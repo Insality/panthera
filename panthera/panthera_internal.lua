@@ -472,11 +472,6 @@ function M.preprocess_animation_keys(data)
 			key.duration = key.duration or 0
 			key.node_id = key.node_id or ""
 
-			-- Remove editor only keys, they are used only in Panthera Editor to preview animations
-			if key.is_editor_only then
-				table.remove(animation.animation_keys, key_index)
-			end
-
 			-- Custom easings have more priority than easing and Defold requires vector for custom easing
 			if key.easing_custom then
 				key.easing_custom = vmath.vector(key.easing_custom)
@@ -494,6 +489,37 @@ function M.preprocess_animation_keys(data)
 	end
 
 	data.group_animation_keys = M.get_group_animation_keys(data)
+
+	do -- Process editor_only keys: update start_value and clear them
+		for _, animation in pairs(data.group_animation_keys) do
+			for _, node_keys in pairs(animation) do
+				for _, keys in pairs(node_keys) do
+					for key_index = #keys, 1, -1 do
+						local key = keys[key_index]
+						if key.is_editor_only then
+							local next_key = keys[key_index + 1]
+							if next_key then
+								next_key.start_value = key.start_value
+							end
+
+							table.remove(keys, key_index)
+						end
+					end
+				end
+			end
+		end
+
+		-- Remove editor only keys
+		for index = 1, #data.animations do
+			local animation = data.animations[index]
+			for key_index = #animation.animation_keys, 1, -1 do
+				local key = animation.animation_keys[key_index]
+				if key.is_editor_only then
+					table.remove(animation.animation_keys, key_index)
+				end
+			end
+		end
+	end
 end
 
 

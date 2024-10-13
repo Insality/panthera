@@ -80,12 +80,12 @@ function M.clone_state(animation_state)
 end
 
 
----@param animation_state panthera.animation.state|nil @If nil - skip playing
+---@param animation_state panthera.animation.state
 ---@param animation_id string
 ---@param options panthera.options|nil
 function M.play(animation_state, animation_id, options)
 	if not animation_state then
-		panthera_internal.logger:warn("Can't play animation, animation_state is nil", animation_id)
+		panthera_internal.logger:error("Can't play animation, animation_state is nil")
 		return
 	end
 
@@ -123,7 +123,7 @@ function M.play(animation_state, animation_id, options)
 		end
 
 		-- If we have initial animation, we should set up it here?
-		if animation.initial_state and animation_state ~= "" then
+		if animation.initial_state then
 			local initial_animation = panthera_internal.get_animation_by_animation_id(animation_data, animation.initial_state)
 			if initial_animation then
 				panthera_internal.set_animation_state_at_time(animation_state, initial_animation.animation_id, initial_animation.duration)
