@@ -142,7 +142,7 @@ function M.play(animation_state, animation_id, options)
 		local speed = (options.speed or 1) * animation_state.speed
 
 		animation_state.current_time = animation_state.current_time + dt * speed
-		M._update_animation(animation, animation_state, options)
+		M.update_animation(animation, animation_state, options)
 	end)
 	timer.trigger(animation_state.timer_id)
 end
@@ -152,7 +152,7 @@ end
 ---@param animation panthera.animation.data.animation
 ---@param animation_state panthera.animation.state
 ---@param options panthera.options
-function M._update_animation(animation, animation_state, options)
+function M.update_animation(animation, animation_state, options)
 	if not animation then
 		return
 	end

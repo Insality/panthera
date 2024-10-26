@@ -118,7 +118,7 @@ local function create_get_node_function(collection_name, objects)
 			return object_url
 		end
 
-		local object_path = hash("/" .. node_id)
+		local object_path = go.get_id(node_id)
 		if objects then
 			object_path = objects[object_path] --[[@as hash]]
 		end
