@@ -175,8 +175,11 @@ end
 ---@param node node
 ---@param property_id string
 local function stop_tween(node, property_id)
-	property_id = PROPERTY_TO_TWEEN_PROPERTY[property_id]
-	go.cancel_animations(node, property_id)
+	local defold_property_id = PROPERTY_TO_TWEEN_PROPERTY[property_id]
+
+	if go.exists(node) then
+		go.cancel_animations(node, defold_property_id)
+	end
 end
 
 
