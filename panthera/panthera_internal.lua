@@ -473,7 +473,7 @@ function M.preprocess_animation_keys(data)
 			key.node_id = key.node_id or ""
 
 			-- Custom easings have more priority than easing and Defold requires vector for custom easing
-			if key.easing_custom then
+			if key.easing_custom and type(key.easing_custom) == "table" then
 				key.easing_custom = vmath.vector(key.easing_custom)
 			end
 		end
