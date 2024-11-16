@@ -248,7 +248,7 @@ function M.get_node(animation_state, node_id)
 
 	local node = animation_state.nodes[node_id]
 
-	if not node then
+	if node == nil then
 		local is_ok, result = pcall(animation_state.get_node, node_id)
 		if not is_ok then
 			M.logger:warn("Can't get node", {
@@ -261,11 +261,16 @@ function M.get_node(animation_state, node_id)
 		animation_state.nodes[node_id] = node
 	end
 
-	if not node then
+	if node == nil then
 		M.logger:warn("Can't find node", {
 			animation_path = animation_state.animation_path,
 			node_id = node_id
 		})
+		return nil
+	end
+
+	if node and not animation_state.adapter.is_node_valid(node) then
+		animation_state.nodes[node_id] = false -- Mark as deleted if node is invalid
 		return nil
 	end
 

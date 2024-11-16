@@ -419,6 +419,7 @@ local M = {
 	tween_animation_key = tween_animation_key,
 	trigger_animation_key = trigger_animation_key,
 	create_get_node_function = create_get_node_function,
+	is_node_valid = function() return true end,
 }
 
 

@@ -245,8 +245,8 @@ local function tween_animation_key(node, property_id, easing, duration, end_valu
 	if duration == 0 then
 		set_node_property(node, property_id, end_value)
 	else
-		property_id = PROPERTY_TO_TWEEN_PROPERTY[property_id]
-		go.animate(node, property_id, go.PLAYBACK_ONCE_FORWARD, end_value, easing, duration)
+		local defold_property_id = PROPERTY_TO_TWEEN_PROPERTY[property_id]
+		go.animate(node, defold_property_id, go.PLAYBACK_ONCE_FORWARD, end_value, easing, duration)
 	end
 end
 
@@ -259,6 +259,7 @@ local M = {
 	stop_tween = stop_tween,
 	trigger_animation_key = trigger_animation_key,
 	create_get_node_function = create_get_node_function,
+	is_node_valid = go.exists,
 }
 
 
