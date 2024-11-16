@@ -59,6 +59,7 @@
 ---@field speed number|nil @Animation speed multiplier, default is 1
 ---@field callback (fun(animation_id: string):nil)|nil @Callback when animation is finished
 ---@field callback_event (fun(event_id: string, node: node|nil, string_value: string, number_value: number): nil)|nil @Callback when animation trigger event
+---@field is_detach boolean|nil @If true, the animation will be detached and played on separate track
 
 ---@class panthera.adapter
 ---@field get_node fun(node_id: string): node @Function to get node by node_id.

@@ -41,7 +41,7 @@ end
 ---@param animation_path_or_data string|table @Path to JSON animation file in custom resources or table with animation data
 ---@param adapter panthera.adapter
 ---@param get_node (fun(node_id: string): node) @Function to get node by node_id. Default is defined in adapter
----@return panthera.animation.state|nil @Animation data or nil if animation can't be loaded, error message
+---@return panthera.animation.state @Animation data or nil if animation can't be loaded, error message
 function M.create(animation_path_or_data, adapter, get_node)
 	local animation_data, animation_path, error_reason = panthera_internal.load(animation_path_or_data, false)
 
@@ -71,7 +71,7 @@ end
 
 ---Create identical copy of animation state to run it in parallel
 ---@param animation_state panthera.animation.state
----@return panthera.animation.state|nil @New animation state or nil if animation can't be cloned
+---@return panthera.animation.state @New animation state or nil if animation can't be cloned
 function M.clone_state(animation_state)
 	local adapter = animation_state.adapter
 	local get_node = animation_state.get_node
@@ -86,6 +86,11 @@ end
 function M.play(animation_state, animation_id, options)
 	if not animation_state then
 		panthera_internal.logger:error("Can't play animation, animation_state is nil")
+		return
+	end
+
+	if options and options.is_detach then
+		M.play_detached(animation_state, animation_id, options)
 		return
 	end
 
@@ -213,6 +218,31 @@ function M.update_animation(animation, animation_state, options)
 			M.play(animation_state, animation.animation_id, options)
 		end
 	end
+end
+
+
+---Play animation as a child of the current animation state
+---@param animation_state panthera.animation.state
+---@param animation_id string
+function M.play_detached(animation_state, animation_id, options)
+	local child_state = M.clone_state(animation_state)
+	if not child_state then
+		return
+	end
+
+	animation_state.childs = animation_state.childs or {}
+	table.insert(animation_state.childs, child_state)
+	M.play(child_state, animation_id, {
+		is_skip_init = options.is_skip_init,
+		speed = options.speed,
+		is_loop = options.is_loop,
+		callback = function(...)
+			if options.callback then
+				options.callback(...)
+			end
+			panthera_internal.remove_child_animation(animation_state, child_state)
+		end
+	})
 end
 
 
