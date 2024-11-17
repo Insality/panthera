@@ -64,6 +64,7 @@
 ---@field easing string|constant|nil Easing function for play animation with. Works currently only on play_tweener
 
 ---@class panthera.options_tweener
+---@field speed number|nil Animation speed multiplier, default is 1
 ---@field is_loop boolean|nil If true, the animation will loop with trigger callback each loop
 ---@field is_reverse boolean|nil If true, the animation will play in reverse
 ---@field easing string|constant|nil Easing function for play animation with. Works currently only on play_tweener

@@ -120,6 +120,7 @@ function M.play(animation_state, animation_id, options)
 	options = options or EMPTY_OPTIONS
 	animation_state.animation_id = animation.animation_id
 	animation_state.animation_keys_index = 1
+	animation_state.events = nil
 
 	if not options.is_skip_init then
 		-- Reset all previuosly animated nodes to initial state
@@ -184,7 +185,10 @@ function M.play_tweener(animation_state, animation_id, options)
 	end
 
 	local easing = options.easing or tweener.linear
-	animation_state.timer_id = tweener.tween(easing, 0, animation.duration, animation.duration, function(time, is_final_call)
+	animation_state.events = nil
+
+	local total_duration = animation.duration * (options.speed or 1)
+	animation_state.timer_id = tweener.tween(easing, 0, animation.duration, total_duration, function(time, is_final_call)
 		-- Off cause it stops current animation state
 		--M.set_time(animation_state, animation_id, time, options.callback_event)
 
