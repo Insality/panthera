@@ -1,7 +1,7 @@
+local tweener = require("tweener.tweener")
 local adapter_go = require("panthera.adapters.adapter_go")
 local adapter_gui = require("panthera.adapters.adapter_gui")
 local panthera_internal = require("panthera.panthera_internal")
-local tweener           = require("tweener.tweener")
 
 ---@class panthera
 local M = {}
@@ -184,8 +184,27 @@ function M.play_tweener(animation_state, animation_id, options)
 	end
 
 	local easing = options.easing or tweener.linear
-	tweener.tween(easing, 0, animation.duration, animation.duration, function(time, is_final_call)
-		M.set_time(animation_state, animation_id, time, options.callback_event)
+	animation_state.timer_id = tweener.tween(easing, 0, animation.duration, animation.duration, function(time, is_final_call)
+		-- Off cause it stops current animation state
+		--M.set_time(animation_state, animation_id, time, options.callback_event)
+
+		do -- TODO: it's a copy, make better this little piece
+			if animation_state.previous_animation_id then
+				panthera_internal.reset_animation_state(animation_state, animation_state.previous_animation_id)
+				animation_state.previous_animation_id = nil
+			end
+
+			if animation_state.current_time > time then
+				-- We count this as a new animation loop, we want to update animation state data
+				animation_state.events = nil
+			end
+
+			animation_state.current_time = time
+			animation_state.animation_id = animation.animation_id
+			animation_state.animation_keys_index = 1
+
+			panthera_internal.set_animation_state_at_time(animation_state, animation.animation_id, time, options.callback_event)
+		end
 
 		if is_final_call then
 			if options.callback then
@@ -197,6 +216,7 @@ function M.play_tweener(animation_state, animation_id, options)
 			end
 		end
 	end)
+	timer.trigger(animation_state.timer_id)
 end
 
 
@@ -272,6 +292,8 @@ end
 ---@param animation_state panthera.animation.state
 ---@param animation_id string
 function M.play_detached(animation_state, animation_id, options)
+	options = options or EMPTY_OPTIONS
+
 	local child_state = M.clone_state(animation_state)
 	if not child_state then
 		return
@@ -279,6 +301,7 @@ function M.play_detached(animation_state, animation_id, options)
 
 	animation_state.childs = animation_state.childs or {}
 	table.insert(animation_state.childs, child_state)
+
 	M.play(child_state, animation_id, {
 		is_skip_init = options.is_skip_init,
 		speed = options.speed,
