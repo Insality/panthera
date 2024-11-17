@@ -124,19 +124,27 @@ function M.set_animation_state_at_time(animation_state, animation_id, time)
 			for key_animation_id, keys in pairs(node_keys) do
 				-- Find the last triggered animation key
 				---@type panthera.animation.data.animation_key|nil
-				local last_key = nil
+				local animation_key = nil
 				for index = #keys, 1, -1 do
 					local key = keys[index]
-					if key.start_time <= time then
-						last_key = key
+					if key.start_time <= time and key.key_type == "animation" then
+						animation_key = key
 						break
 					end
 				end
 
-				if last_key and last_key.key_type == "animation" then
-					local animation_time = time - last_key.start_time
-					animation_time = math.min(animation_time, last_key.duration)
-					M.set_animation_state_at_time(animation_state, key_animation_id, animation_time)
+				if animation_key then
+					local animation_time_to_set = time - animation_key.start_time
+					local animation_to_play = M.get_animation_by_animation_id(animation_data, key_animation_id)
+					local animation_duration = animation_to_play and animation_to_play.duration or 0
+
+					if animation_key.duration == 0 then
+						animation_time_to_set = animation_duration
+					else
+						animation_time_to_set = animation_time_to_set * animation_duration / animation_key.duration
+					end
+
+					M.set_animation_state_at_time(animation_state, key_animation_id, animation_time_to_set)
 				end
 			end
 		end
