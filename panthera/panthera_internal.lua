@@ -97,7 +97,8 @@ end
 ---@param animation_state panthera.animation.state
 ---@param animation_id string
 ---@param time number
-function M.set_animation_state_at_time(animation_state, animation_id, time)
+---@param event_callback fun(event_id: string, node: node|nil, data: any, end_value: number)|nil
+function M.set_animation_state_at_time(animation_state, animation_id, time, event_callback)
 	local animation_data = M.get_animation_data(animation_state) --[[@as panthera.animation.data]]
 	local animation = M.get_animation_by_animation_id(animation_data, animation_id)
 	if not animation then
@@ -108,7 +109,7 @@ function M.set_animation_state_at_time(animation_state, animation_id, time)
 	if animation.initial_state then
 		local initial_animation = M.get_animation_by_animation_id(animation_data, animation.initial_state)
 		if initial_animation then
-			M.set_animation_state_at_time(animation_state, initial_animation.animation_id, initial_animation.duration)
+			M.set_animation_state_at_time(animation_state, initial_animation.animation_id, initial_animation.duration, event_callback)
 		end
 	end
 
@@ -119,33 +120,62 @@ function M.set_animation_state_at_time(animation_state, animation_id, time)
 			for property_id, _ in pairs(node_keys) do
 				M.set_node_value_at_time(animation_state, animation_id, node_id, property_id, time)
 			end
+
+			local events = node_keys["event"]
+			if events then
+				for index = 1, #events do
+					local key = events[index]
+					if key.start_time <= time then
+						animation_state.events = animation_state.events or {}
+
+						if not animation_state.events[key] then
+							M.event_animation_key(nil, key, key.duration, event_callback)
+							animation_state.events[key] = key
+						end
+					end
+				end
+			end
 		else
 			-- Animation keys
-			for key_animation_id, keys in pairs(node_keys) do
-				-- Find the last triggered animation key
-				---@type panthera.animation.data.animation_key|nil
-				local animation_key = nil
-				for index = #keys, 1, -1 do
-					local key = keys[index]
+			local animation_keys_to_trigger = {}
+			for _, animation_keys in pairs(node_keys) do
+				for index = #animation_keys, 1, -1 do
+					-- Find the last triggered animation key
+					local key = animation_keys[index]
 					if key.start_time <= time and key.key_type == "animation" then
-						animation_key = key
+						table.insert(animation_keys_to_trigger, key)
 						break
 					end
-				end
 
-				if animation_key then
-					local animation_time_to_set = time - animation_key.start_time
-					local animation_to_play = M.get_animation_by_animation_id(animation_data, key_animation_id)
-					local animation_duration = animation_to_play and animation_to_play.duration or 0
+					-- Trigger all not triggered events
+					if key.start_time <= time and key.key_type == "event" then
+						animation_state.events = animation_state.events or {}
 
-					if animation_key.duration == 0 then
-						animation_time_to_set = animation_duration
-					else
-						animation_time_to_set = animation_time_to_set * animation_duration / animation_key.duration
+						if not animation_state.events[key] then
+							M.event_animation_key(nil, key, key.duration, event_callback)
+							animation_state.events[key] = key
+						end
 					end
-
-					M.set_animation_state_at_time(animation_state, key_animation_id, animation_time_to_set)
 				end
+			end
+
+			table.sort(animation_keys_to_trigger, M.sort_keys_function)
+
+			for index = 1,	#animation_keys_to_trigger do
+				local animation_key = animation_keys_to_trigger[index]
+				local inner_animation_id = animation_key.property_id
+
+				local animation_time_to_set = time - animation_key.start_time
+				local animation_to_play = M.get_animation_by_animation_id(animation_data, inner_animation_id)
+				local animation_duration = animation_to_play and animation_to_play.duration or 0
+
+				if animation_key.duration == 0 then
+					animation_time_to_set = animation_duration
+				else
+					animation_time_to_set = animation_time_to_set * animation_duration / animation_key.duration
+				end
+
+				M.set_animation_state_at_time(animation_state, inner_animation_id, animation_time_to_set, event_callback)
 			end
 		end
 	end
@@ -336,7 +366,7 @@ end
 ---@param node node|nil
 ---@param key panthera.animation.data.animation_key
 ---@param duration number @Duration of the key, calculated with animation speed and time overflow
----@param callback_event fun(event_id: string, node: node|nil, data: any, end_value: number): nil
+---@param callback_event fun(event_id: string, node: node|nil, data: any, end_value: number)|nil
 function M.event_animation_key(node, key, duration, callback_event)
 	if not callback_event then
 		return

@@ -1,6 +1,7 @@
 local adapter_go = require("panthera.adapters.adapter_go")
 local adapter_gui = require("panthera.adapters.adapter_gui")
 local panthera_internal = require("panthera.panthera_internal")
+local tweener           = require("tweener.tweener")
 
 ---@class panthera
 local M = {}
@@ -153,6 +154,52 @@ function M.play(animation_state, animation_id, options)
 end
 
 
+---@param animation_state panthera.animation.state
+---@param animation_id string
+---@param options panthera.options_tweener|nil
+function M.play_tweener(animation_state, animation_id, options)
+	options = options or EMPTY_OPTIONS
+
+	if not animation_state then
+		panthera_internal.logger:error("Can't play animation, animation_state is nil")
+		return
+	end
+
+	local animation_data = panthera_internal.get_animation_data(animation_state)
+	if not animation_data then
+		panthera_internal.logger:warn("Can't play animation, animation_data is nil", {
+			animation_path = animation_state.animation_path,
+			animation_id = animation_id,
+		})
+		return nil
+	end
+
+	local animation = panthera_internal.get_animation_by_animation_id(animation_data, animation_id)
+	if not animation then
+		panthera_internal.logger:warn("Animation is not found", {
+			animation_path = animation_state.animation_path,
+			animation_id = animation_id,
+		})
+		return nil
+	end
+
+	local easing = options.easing or tweener.linear
+	tweener.tween(easing, 0, animation.duration, animation.duration, function(time, is_final_call)
+		M.set_time(animation_state, animation_id, time, options.callback_event)
+
+		if is_final_call then
+			if options.callback then
+				options.callback(animation_id)
+			end
+
+			if options.is_loop then
+				M.play_tweener(animation_state, animation_id, options)
+			end
+		end
+	end)
+end
+
+
 ---@private
 ---@param animation panthera.animation.data.animation
 ---@param animation_state panthera.animation.state
@@ -250,7 +297,8 @@ end
 ---@param animation_state panthera.animation.state
 ---@param animation_id string
 ---@param time number
-function M.set_time(animation_state, animation_id, time)
+---@param event_callback fun(event_id: string, node: node|nil, string_value: string, number_value: number)|nil
+function M.set_time(animation_state, animation_id, time, event_callback)
 	local animation_data = panthera_internal.get_animation_data(animation_state)
 	assert(animation_data, "Animation data is not loaded")
 
@@ -266,11 +314,16 @@ function M.set_time(animation_state, animation_id, time)
 		animation_state.previous_animation_id = nil
 	end
 
+	if animation_state.current_time > time then
+		-- We count this as a new animation loop, we want to update animation state data
+		animation_state.events = nil
+	end
+
 	animation_state.current_time = time
 	animation_state.animation_id = animation.animation_id
 	animation_state.animation_keys_index = 1
 
-	panthera_internal.set_animation_state_at_time(animation_state, animation.animation_id, time)
+	panthera_internal.set_animation_state_at_time(animation_state, animation.animation_id, time, event_callback)
 end
 
 
