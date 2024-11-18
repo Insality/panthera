@@ -182,7 +182,7 @@ function M.play_tweener(animation_state, animation_id, options)
 	local easing = options.easing or tweener.linear
 	animation_state.events = nil
 
-	local total_duration = animation.duration * (options.speed or 1)
+	local total_duration = animation.duration / (options.speed or 1)
 	local from, to = 0, animation.duration
 	if options.is_reverse then
 		from, to = to, from
