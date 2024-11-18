@@ -60,13 +60,10 @@
 ---@field speed number|nil Animation speed multiplier, default is 1
 ---@field callback (fun(animation_id: string):nil)|nil Callback when animation is finished
 ---@field callback_event (fun(event_id: string, node: node|nil, string_value: string, number_value: number): nil)|nil Callback when animation trigger event
----@field is_detach boolean|nil If true, the animation will be detached and played on separate track
----@field easing string|constant|nil Easing function for play animation with. Works currently only on play_tweener
 
 ---@class panthera.options_tweener
 ---@field speed number|nil Animation speed multiplier, default is 1
 ---@field is_loop boolean|nil If true, the animation will loop with trigger callback each loop
----@field is_reverse boolean|nil If true, the animation will play in reverse
 ---@field easing string|constant|nil Easing function for play animation with. Works currently only on play_tweener
 ---@field callback (fun(animation_id: string):nil)|nil Callback when animation is finished
 ---@field callback_event (fun(event_id: string, node: node|nil, string_value: string, number_value: number): nil)|nil Callback when animation trigger event

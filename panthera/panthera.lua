@@ -90,11 +90,6 @@ function M.play(animation_state, animation_id, options)
 		return
 	end
 
-	if options and options.is_detach then
-		M.play_detached(animation_state, animation_id, options)
-		return
-	end
-
 	local animation_data = panthera_internal.get_animation_data(animation_state)
 	if not animation_data then
 		panthera_internal.logger:warn("Can't play animation, animation_data is nil", {
@@ -188,7 +183,12 @@ function M.play_tweener(animation_state, animation_id, options)
 	animation_state.events = nil
 
 	local total_duration = animation.duration * (options.speed or 1)
-	animation_state.timer_id = tweener.tween(easing, 0, animation.duration, total_duration, function(time, is_final_call)
+	local from, to = 0, animation.duration
+	if options.is_reverse then
+		from, to = to, from
+	end
+
+	animation_state.timer_id = tweener.tween(easing, from, to, total_duration, function(time, is_final_call)
 		-- Off cause it stops current animation state
 		--M.set_time(animation_state, animation_id, time, options.callback_event)
 
