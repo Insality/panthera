@@ -90,7 +90,7 @@ end
 ---@param animation_id string
 ---@return panthera.animation.data.animation|nil
 function M.get_animation_by_animation_id(animation_data, animation_id)
-	return animation_data.animations_dict[animation_id]
+	return animation_data.animations_dict[animation_id] or animation_data.animations_dict[hash(animation_id)]
 end
 
 
@@ -529,6 +529,7 @@ function M.preprocess_animation_keys(data)
 	for index = 1, #data.animations do
 		local animation = data.animations[index]
 		data.animations_dict[animation.animation_id] = animation
+		data.animations_dict[hash(animation.animation_id)] = animation
 	end
 
 	data.group_animation_keys = M.get_group_animation_keys(data)
