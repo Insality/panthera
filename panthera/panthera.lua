@@ -103,6 +103,7 @@ function M.play(animation_state, animation_id, options)
 	if not animation then
 		panthera_internal.logger:warn("Animation is not found", {
 			animation_path = animation_state.animation_path,
+			animation_meta = animation_data.metadata and animation_data.metadata.gui_path,
 			animation_id = animation_id,
 		})
 		return nil
@@ -174,6 +175,7 @@ function M.play_tweener(animation_state, animation_id, options)
 	if not animation then
 		panthera_internal.logger:warn("Animation is not found", {
 			animation_path = animation_state.animation_path,
+			animation_meta = animation_data.metadata and animation_data.metadata.gui_path,
 			animation_id = animation_id,
 		})
 		return nil

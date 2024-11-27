@@ -3,6 +3,10 @@
 ---@class panthera.animation.data.node
 
 ---@class panthera.animation.data.metadata
+---@field gui_path string
+---@field fps number
+---@field settings table
+---@field gizmo_steps table
 
 ---@class panthera.animation.data.animation
 ---@field duration number
