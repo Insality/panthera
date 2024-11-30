@@ -4,7 +4,10 @@ local adapter_gui = require("panthera.adapters.adapter_gui")
 local panthera_internal = require("panthera.panthera_internal")
 
 ---@class panthera
+---@field SPEED number @Default speed of all animations
 local M = {}
+M.SPEED = 1
+
 local TIMER_DELAY = 1/60
 local EMPTY_OPTIONS = {}
 
@@ -142,7 +145,7 @@ function M.play(animation_state, animation_id, options)
 		local current_time = socket.gettime()
 		local dt = current_time - last_time
 		last_time = current_time
-		local speed = (options.speed or 1) * animation_state.speed
+		local speed = (options.speed or 1) * animation_state.speed * M.SPEED
 
 		animation_state.current_time = animation_state.current_time + dt * speed
 		M.update_animation(animation, animation_state, options)
@@ -244,7 +247,8 @@ function M.update_animation(animation, animation_state, options)
 			animation_state.animation_keys_index = index + 1
 
 			if key.key_type ~= "animation" then
-				panthera_internal.run_timeline_key(animation_state, key, options)
+				local speed = (options.speed or 1) * animation_state.speed * M.SPEED
+				panthera_internal.run_timeline_key(animation_state, key, options, speed)
 			else
 				local child_state = M.clone_state(animation_state)
 				if child_state then
@@ -257,7 +261,7 @@ function M.update_animation(animation, animation_state, options)
 					local animation_duration = M.get_duration(child_state, key.property_id)
 
 					if animation_duration > 0 and key.duration > 0 then
-						local speed = (options.speed or 1) * animation_state.speed
+						local speed = (options.speed or 1) * animation_state.speed * M.SPEED
 						local key_duration = (key.duration - time_overflow)
 						local play_speed = (animation_duration / key_duration) * speed
 

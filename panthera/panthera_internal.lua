@@ -321,9 +321,9 @@ end
 ---@param animation_state panthera.animation.state
 ---@param key panthera.animation.data.animation_key
 ---@param options panthera.options
+---@param speed number
 ---@return boolean @true if success
-function M.run_timeline_key(animation_state, key, options)
-	local speed = (options.speed or 1) * animation_state.speed
+function M.run_timeline_key(animation_state, key, options, speed)
 	assert(speed > 0, "Speed should be greater than 0")
 
 	local adapter = animation_state.adapter
