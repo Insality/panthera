@@ -193,7 +193,7 @@ function M.get_node_value_at_time(animation_state, animation_id, node_id, proper
 	local group_keys = animation_data.group_animation_keys[animation_id]
 
 	local keys = group_keys[node_id] and group_keys[node_id][property_id]
-	if not keys then
+	if not keys or #keys == 0 then
 		return nil
 	end
 
