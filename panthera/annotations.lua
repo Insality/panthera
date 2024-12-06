@@ -29,7 +29,7 @@
 ---@field type string Animation type. Example: "animation_editor", "atlas"
 
 ---@class panthera.animation.data.animation_key
----@field key_type string
+---@field key_type number
 ---@field node_id string
 ---@field property_id string
 ---@field start_time number
@@ -71,6 +71,7 @@
 ---@field easing string|constant|nil Easing function for play animation with. Works currently only on play_tweener
 ---@field callback (fun(animation_id: string):nil)|nil Callback when animation is finished
 ---@field callback_event (fun(event_id: string, node: node|nil, string_value: string, number_value: number): nil)|nil Callback when animation trigger event
+---@field is_reverse boolean|nil If true, the animation will play in reverse
 
 ---@class panthera.adapter
 ---@field get_node fun(node_id: string): node Function to get node by node_id.

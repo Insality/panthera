@@ -2,6 +2,17 @@ local tweener = require("tweener.tweener")
 
 local M = {}
 
+M.KEY_TYPE = {
+	TRIGGER = 0,
+	TWEEN = 1,
+	EVENT = 2,
+	ANIMATION = 3,
+	["trigger"] = 0,
+	["tween"] = 1,
+	["event"] = 2,
+	["animation"] = 3,
+}
+
 local TYPE_TABLE = "table"
 
 --- Use empty function to save a bit of memory
@@ -142,13 +153,13 @@ function M.set_animation_state_at_time(animation_state, animation_id, time, even
 				for index = #animation_keys, 1, -1 do
 					-- Find the last triggered animation key
 					local key = animation_keys[index]
-					if key.start_time <= time and key.key_type == "animation" then
+					if key.start_time <= time and key.key_type == M.KEY_TYPE.ANIMATION then
 						table.insert(animation_keys_to_trigger, key)
 						break
 					end
 
 					-- Trigger all not triggered events
-					if key.start_time <= time and key.key_type == "event" then
+					if key.start_time <= time and key.key_type == M.KEY_TYPE.EVENT then
 						animation_state.events = animation_state.events or {}
 
 						if not animation_state.events[key] then
@@ -192,7 +203,8 @@ function M.get_node_value_at_time(animation_state, animation_id, node_id, proper
 	local animation_data = M.get_animation_data(animation_state) --[[@as panthera.animation.data]]
 	local group_keys = animation_data.group_animation_keys[animation_id]
 
-	local keys = group_keys[node_id] and group_keys[node_id][property_id]
+	local group = group_keys[node_id]
+	local keys = group and group[property_id]
 	if not keys or #keys == 0 then
 		return nil
 	end
@@ -200,21 +212,21 @@ function M.get_node_value_at_time(animation_state, animation_id, node_id, proper
 	local initial_key = keys[1]
 
 	local set_value = nil
-	if initial_key.key_type == "trigger" then
+	if initial_key.key_type == M.KEY_TYPE.TRIGGER then
 		set_value = initial_key.start_data
 	end
-	if initial_key.key_type == "tween" then
+	if initial_key.key_type == M.KEY_TYPE.TWEEN then
 		set_value = initial_key.start_value
 	end
 
 	for index = #keys, 1, -1 do
 		local key = keys[index]
 		if key.start_time <= time  then
-			if key.key_type == "tween" then
+			if key.key_type == M.KEY_TYPE.TWEEN then
 				set_value = M.get_key_value_at_time(key, time)
 			end
 
-			if key.key_type == "trigger" then
+			if key.key_type == M.KEY_TYPE.TRIGGER then
 				set_value = key.data
 			end
 
@@ -234,11 +246,6 @@ end
 ---@return any|nil
 function M.set_node_value_at_time(animation_state, animation_id, node_id, property_id, time)
 	local adapter = animation_state.adapter
-	local animation_data = M.get_animation_data(animation_state) --[[@as panthera.animation.data]]
-	if not animation_data then
-		return nil
-	end
-
 	local node = M.get_node(animation_state, node_id)
 	if not node then
 		return nil
@@ -331,7 +338,7 @@ function M.run_timeline_key(animation_state, key, options, speed)
 	local time_overflow = animation_state.current_time - key.start_time
 	local key_duration = math.max(key.duration - time_overflow, 0) / speed
 
-	if key.key_type == "tween" then
+	if key.key_type == M.KEY_TYPE.TWEEN then
 		if node then
 			local easing = key.easing_custom or adapter.get_easing(key.easing)
 			local delta = key.end_value - key.start_value
@@ -348,13 +355,13 @@ function M.run_timeline_key(animation_state, key, options, speed)
 			return true
 		end
 		return false
-	elseif key.key_type == "trigger" then
+	elseif key.key_type == M.KEY_TYPE.TRIGGER then
 		if node then
 			adapter.trigger_animation_key(node, key.property_id, key.data)
 			return true
 		end
 		return false
-	elseif key.key_type == "event" then
+	elseif key.key_type == M.KEY_TYPE.EVENT then
 		M.event_animation_key(node, key, key_duration, options.callback_event)
 		return true
 	end
@@ -519,6 +526,9 @@ function M.preprocess_animation_keys(data)
 			if key.easing_custom and type(key.easing_custom) == "table" then
 				key.easing_custom = vmath.vector(key.easing_custom)
 			end
+
+			-- Replace key_type to number for faster comparison
+			key.key_type = M.KEY_TYPE[key.key_type] or key.key_type
 		end
 
 		table.sort(animation.animation_keys, M.sort_keys_function)

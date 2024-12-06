@@ -246,7 +246,7 @@ function M.update_animation(animation, animation_state, options)
 		if key.start_time <= animation_state.current_time then
 			animation_state.animation_keys_index = index + 1
 
-			if key.key_type ~= "animation" then
+			if key.key_type ~= panthera_internal.KEY_TYPE.ANIMATION then
 				local speed = (options.speed or 1) * animation_state.speed * M.SPEED
 				panthera_internal.run_timeline_key(animation_state, key, options, speed)
 			else
@@ -331,13 +331,27 @@ end
 ---@param animation_id string
 ---@param time number
 ---@param event_callback fun(event_id: string, node: node|nil, string_value: string, number_value: number)|nil
+---@return boolean result Animation state or nil if animation can't be set
 function M.set_time(animation_state, animation_id, time, event_callback)
 	local animation_data = panthera_internal.get_animation_data(animation_state)
-	assert(animation_data, "Animation data is not loaded")
+	if not animation_data then
+		panthera_internal.logger:warn("Can't set time, animation_data is nil", {
+			animation_path = animation_state.animation_path,
+			animation_id = animation_id
+		})
+		return false
+	end
 
 	local animation = panthera_internal.get_animation_by_animation_id(animation_data, animation_id)
-	assert(animation, "Animation is not found: " .. animation_id)
+	if not animation then
+		panthera_internal.logger:warn("Animation is not found", {
+			animation_path = animation_state.animation_path,
+			animation_id = animation_id
+		})
+		return false
+	end
 
+	-- TODO: What if we don't stop animations? Checking now
 	if M.is_playing(animation_state) then
 		M.stop(animation_state)
 	end
@@ -357,6 +371,8 @@ function M.set_time(animation_state, animation_id, time, event_callback)
 	animation_state.animation_keys_index = 1
 
 	panthera_internal.set_animation_state_at_time(animation_state, animation.animation_id, time, event_callback)
+
+	return true
 end
 
 
@@ -386,29 +402,29 @@ function M.stop(animation_state)
 	animation_state.previous_animation_id = previous_animation_id
 
 	-- Stop all tweens started by animation
-	if previous_animation_id then
-		local adapter = animation_state.adapter
-		local animation_data = panthera_internal.get_animation_data(animation_state)
-		if animation_data then
-			local group_keys = animation_data.group_animation_keys[previous_animation_id]
+	if not previous_animation_id then
+		panthera_internal.logger:warn("Can't stop animation, animation_data is nil", {
+			animation_path = animation_state.animation_path,
+			animation_id = previous_animation_id
+		})
+	end
+	local adapter = animation_state.adapter
 
-			for node_id, node_keys in pairs(group_keys) do
-				for property_id, keys in pairs(node_keys) do
-					if keys[1] and keys[1].key_type == "tween" then
-						local key_end_time = keys[1].start_time + keys[1].duration
-						local is_finished = key_end_time <= animation_state.current_time
-						local node = panthera_internal.get_node(animation_state, node_id)
-						if node and not is_finished then
-							adapter.stop_tween(node, property_id)
-						end
+	local animation_data = panthera_internal.get_animation_data(animation_state)
+	if animation_data then
+		local group_keys = animation_data.group_animation_keys[previous_animation_id]
+
+		for node_id, node_keys in pairs(group_keys) do
+			for property_id, keys in pairs(node_keys) do
+				if keys[1] and keys[1].key_type == panthera_internal.KEY_TYPE.TWEEN then
+					local key_end_time = keys[1].start_time + keys[1].duration
+					local is_finished = key_end_time <= animation_state.current_time
+					local node = panthera_internal.get_node(animation_state, node_id)
+					if node and not is_finished then
+						adapter.stop_tween(node, property_id)
 					end
 				end
 			end
-		else
-			panthera_internal.logger:warn("Can't stop animation, animation_data is nil", {
-				animation_path = animation_state.animation_path,
-				animation_id = previous_animation_id
-			})
 		end
 	end
 
