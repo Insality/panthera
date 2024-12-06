@@ -261,6 +261,39 @@ function M.set_node_value_at_time(animation_state, animation_id, node_id, proper
 end
 
 
+---@param animation_state panthera.animation.state
+---@param animation_id string
+---@return boolean is_success
+function M.stop_tweens(animation_state, animation_id)
+	local adapter = animation_state.adapter
+	local animation_data = M.get_animation_data(animation_state)
+
+	if not animation_data then
+		M.logger:warn("Can't stop animation, animation_data is nil", {
+			animation_path = animation_state.animation_path,
+			animation_id = animation_id
+		})
+		return false
+	end
+
+	local group_keys = animation_data.group_animation_keys[animation_id]
+	for node_id, node_keys in pairs(group_keys) do
+		for property_id, keys in pairs(node_keys) do
+			local key = keys[1]
+			if key and key.key_type == M.KEY_TYPE.TWEEN then
+				local key_end_time = key.start_time + key.duration
+				local is_finished = key_end_time <= animation_state.current_time
+				local node = M.get_node(animation_state, node_id)
+				if node and not is_finished then
+					adapter.stop_tween(node, property_id)
+				end
+			end
+		end
+	end
+
+	return true
+end
+
 ---Reset all animated values in animation id to initial state
 ---@param animation_state panthera.animation.state
 ---@param animation_id string

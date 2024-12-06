@@ -250,6 +250,7 @@ function M.update_animation(animation, animation_state, options)
 				local speed = (options.speed or 1) * animation_state.speed * M.SPEED
 				panthera_internal.run_timeline_key(animation_state, key, options, speed)
 			else
+				-- Create a child animation
 				local child_state = M.clone_state(animation_state)
 				if child_state then
 					-- Time Overflow
@@ -402,30 +403,8 @@ function M.stop(animation_state)
 	animation_state.previous_animation_id = previous_animation_id
 
 	-- Stop all tweens started by animation
-	if not previous_animation_id then
-		panthera_internal.logger:warn("Can't stop animation, animation_data is nil", {
-			animation_path = animation_state.animation_path,
-			animation_id = previous_animation_id
-		})
-	end
-	local adapter = animation_state.adapter
-
-	local animation_data = panthera_internal.get_animation_data(animation_state)
-	if animation_data then
-		local group_keys = animation_data.group_animation_keys[previous_animation_id]
-
-		for node_id, node_keys in pairs(group_keys) do
-			for property_id, keys in pairs(node_keys) do
-				if keys[1] and keys[1].key_type == panthera_internal.KEY_TYPE.TWEEN then
-					local key_end_time = keys[1].start_time + keys[1].duration
-					local is_finished = key_end_time <= animation_state.current_time
-					local node = panthera_internal.get_node(animation_state, node_id)
-					if node and not is_finished then
-						adapter.stop_tween(node, property_id)
-					end
-				end
-			end
-		end
+	if previous_animation_id then
+		panthera_internal.stop_tweens(animation_state, previous_animation_id)
 	end
 
 	animation_state.animation_id = nil
