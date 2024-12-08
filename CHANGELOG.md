@@ -41,3 +41,20 @@ Initial resease!
 - Add Defold Editor scripts to create and edit Panthera animations directly from the Defold Editor
 	- Panthera Editor should be started before using the scripts.
 - Add time overflow handling for more precise animation playback.
+
+
+## Version v5
+- Add shadow and outline for text labels support
+- Now you can use the hashed `animation_id` to play animations. Useful if you want to specify the animation from the script properties (via `go.property`).
+- The more precies animation timing with take care of time overflow.
+- The `panthera.set_time` now trigger the events in case of forward time change. If animation is played in reverse, events will be not triggered.
+- Add `panthera.play_tweener` and `panthera.play_detached` functions to play animations.
+	- This is kind of experimental, currently figure out how is it convenient to use.
+	- The `play_detached` function plays a animation as a child, able to easily create new "tracks" for animations. Other way is to clone state and play it.
+	- The `play_tweener` function plays a animation with a tweener easing. Now you able to adjust the "easing" of the animation and able to play it in reverse. Later should be able to specify the start and end time of the animation.
+- Additional checks for deleted nodes in the animation playback (currently only for game objects)
+- Add global Panthera speed modifier (panthera.SPEED)
+	- Now you can adjust speed with three modifiers: global (panthera.SPEED), state (animation_state.speed) and animation (animation.speed)
+- Refactor the animation playback system, should be more performant
+- Fix for `is_editor_only` key field
+- Various fixes

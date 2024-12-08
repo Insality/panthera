@@ -252,7 +252,8 @@ function M.update_animation(animation, animation_state, options)
 			else
 				-- Create a child animation
 				local child_state = M.clone_state(animation_state)
-				if child_state then
+				-- check if "" while only animation keys are working now
+				if child_state and key.node_id == "" then
 					-- Time Overflow
 					local time_overflow = math.max(0, animation_state.current_time - key.start_time)
 					child_state.current_time = time_overflow

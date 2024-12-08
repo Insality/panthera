@@ -126,10 +126,14 @@ function M.set_animation_state_at_time(animation_state, animation_id, time, even
 
 	local group_keys = animation_data.group_animation_keys[animation_id]
 	for node_id, node_keys in pairs(group_keys) do
+		-- It's a regular node
 		if node_id ~= "" then
 			-- Node keys
-			for property_id, _ in pairs(node_keys) do
-				M.set_node_value_at_time(animation_state, animation_id, node_id, property_id, time)
+			for property_id, keys in pairs(node_keys) do
+				local is_animation_keys = #keys > 0 and keys[1].key_type == M.KEY_TYPE.ANIMATION
+				if not is_animation_keys then
+					M.set_node_value_at_time(animation_state, animation_id, node_id, property_id, time)
+				end
 			end
 
 			local events = node_keys["event"]
@@ -146,7 +150,10 @@ function M.set_animation_state_at_time(animation_state, animation_id, time, even
 					end
 				end
 			end
-		else
+		end
+
+		-- Animation keys
+		if node_id == "" then
 			-- Animation keys
 			local animation_keys_to_trigger = {}
 			for _, animation_keys in pairs(node_keys) do
