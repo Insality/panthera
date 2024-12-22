@@ -301,6 +301,7 @@ function M.stop_tweens(animation_state, animation_id)
 	return true
 end
 
+
 ---Reset all animated values in animation id to initial state
 ---@param animation_state panthera.animation.state
 ---@param animation_id string
@@ -317,7 +318,10 @@ function M.reset_animation_state(animation_state, animation_id)
 
 	for node_id, node_keys in pairs(group_keys) do
 		for property_id, keys in pairs(node_keys) do
-			M.set_node_value_at_time(animation_state, animation_id, node_id, property_id, -1)
+			local is_animation_keys = #keys > 0 and keys[1].key_type == M.KEY_TYPE.ANIMATION
+			if not is_animation_keys then
+				M.set_node_value_at_time(animation_state, animation_id, node_id, property_id, -1)
+			end
 		end
 	end
 end

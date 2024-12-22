@@ -7,6 +7,7 @@
 ---@field fps number
 ---@field settings table
 ---@field gizmo_steps table
+---@field template_animation_paths table<string, string> template_animation_paths[node_id]: path. Value filled at loading animation data
 
 ---@class panthera.animation.data.animation
 ---@field duration number
@@ -62,6 +63,7 @@
 ---@field is_skip_init boolean|nil If true, the animation will skip the init state and starts from current state
 ---@field is_relative boolean|nil If true, all animation tween values will be relative to current state
 ---@field speed number|nil Animation speed multiplier, default is 1
+---@field easing string|constant|nil Easing function for play animation with. Will use tweener + set_time to play non-linear animation (slower performance)
 ---@field callback (fun(animation_id: string):nil)|nil Callback when animation is finished
 ---@field callback_event (fun(event_id: string, node: node|nil, string_value: string, number_value: number): nil)|nil Callback when animation trigger event
 

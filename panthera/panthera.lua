@@ -88,6 +88,8 @@ end
 ---@param animation_id string
 ---@param options panthera.options|nil
 function M.play(animation_state, animation_id, options)
+	options = options or EMPTY_OPTIONS
+
 	if not animation_state then
 		panthera_internal.logger:error("Can't play animation, animation_state is nil")
 		return
@@ -112,11 +114,15 @@ function M.play(animation_state, animation_id, options)
 		return nil
 	end
 
+	if options.easing and options.easing ~= "linear" then
+		M.play_tweener(animation_state, animation_id, options)
+		return nil
+	end
+
 	if animation_state.animation_id then
 		M.stop(animation_state)
 	end
 
-	options = options or EMPTY_OPTIONS
 	animation_state.animation_id = animation.animation_id
 	animation_state.animation_keys_index = 1
 	animation_state.events = nil
@@ -162,7 +168,7 @@ function M.play_tweener(animation_state, animation_id, options)
 
 	if not animation_state then
 		panthera_internal.logger:error("Can't play animation, animation_state is nil")
-		return
+		return nil
 	end
 
 	local animation_data = panthera_internal.get_animation_data(animation_state)
@@ -197,7 +203,7 @@ function M.play_tweener(animation_state, animation_id, options)
 		-- Off cause it stops current animation state
 		--M.set_time(animation_state, animation_id, time, options.callback_event)
 
-		do -- TODO: it's a copy, make better this little piece
+		do -- TODO: it's a copy paste from `M:play`, make better this little piece
 			if animation_state.previous_animation_id then
 				panthera_internal.reset_animation_state(animation_state, animation_state.previous_animation_id)
 				animation_state.previous_animation_id = nil
@@ -239,8 +245,8 @@ function M.update_animation(animation, animation_state, options)
 	end
 
 	local keys = animation.animation_keys
-	local key_start_index = animation_state.animation_keys_index
-	for index = key_start_index, #keys do
+	-- Process from the last processed key until the current time
+	for index = animation_state.animation_keys_index, #keys do
 		local key = keys[index]
 
 		if key.start_time <= animation_state.current_time then
@@ -250,10 +256,9 @@ function M.update_animation(animation, animation_state, options)
 				local speed = (options.speed or 1) * animation_state.speed * M.SPEED
 				panthera_internal.run_timeline_key(animation_state, key, options, speed)
 			else
-				-- Create a child animation
-				local child_state = M.clone_state(animation_state)
 				-- check if "" while only animation keys are working now
-				if child_state and key.node_id == "" then
+				if key.node_id == "" then
+					local child_state = M.clone_state(animation_state)
 					-- Time Overflow
 					local time_overflow = math.max(0, animation_state.current_time - key.start_time)
 					child_state.current_time = time_overflow
@@ -268,10 +273,50 @@ function M.update_animation(animation, animation_state, options)
 						local play_speed = (animation_duration / key_duration) * speed
 
 						M.play(child_state, key.property_id, {
+							easing = key.easing,
 							is_skip_init = true,
 							speed = play_speed,
 							callback = function()
 								panthera_internal.remove_child_animation(animation_state, child_state)
+							end
+						})
+					end
+				end
+
+				-- This is tempalte animations, the node_id is a template to run the new animations
+				if key.node_id ~= "" then
+					local animation_data = panthera_internal.get_animation_data(animation_state)
+					local paths = animation_data and animation_data.metadata.template_animation_paths
+					if not paths then
+						break
+					end
+					local template_animation_path = paths[key.node_id]
+
+					local adapter = animation_state.adapter
+					local get_node = function(node_id)
+						return animation_state.get_node(key.node_id .. "/" .. node_id)
+					end
+					local animation_path = template_animation_path
+					local template_state = M.create(animation_path, adapter, get_node)
+
+					local time_overflow = math.max(0, animation_state.current_time - key.start_time)
+					template_state.current_time = time_overflow
+
+					animation_state.childs = animation_state.childs or {}
+					table.insert(animation_state.childs, template_state)
+					local animation_duration = M.get_duration(template_state, key.property_id)
+
+					if animation_duration > 0 and key.duration > 0 then
+						local speed = (options.speed or 1) * animation_state.speed * M.SPEED
+						local key_duration = (key.duration - time_overflow)
+						local play_speed = (animation_duration / key_duration) * speed
+
+						M.play(template_state, key.property_id, {
+							is_skip_init = true,
+							easing = key.easing,
+							speed = play_speed,
+							callback = function()
+								panthera_internal.remove_child_animation(animation_state, template_state)
 							end
 						})
 					end
