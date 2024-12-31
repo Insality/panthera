@@ -38,11 +38,11 @@ M.logger = {
 
 
 ---The list of loaded animations.
----@type table<string, panthera.animation.data> @Animation path -> animation data
+---@type table<string, panthera.animation.data> Animation path -> animation data
 M.LOADED_ANIMATIONS = {}
 
 -- The list of animations that loaded directly from the table. We can't reload them on runtime, and we should not clear them on hot reload
----@type table<string, boolean> @Animation fake path -> true
+---@type table<string, boolean> Animation fake path -> true
 M.INLINE_ANIMATIONS = {}
 
 M.PROJECT_FOLDER = nil -- Current game project folder, used for hot reload animations in debug mode
@@ -50,8 +50,8 @@ M.IS_HOTRELOAD_ANIMATIONS = nil
 local IS_DEBUG = sys.get_engine_info().is_debug
 
 ---Load animation from file and store it in cache
----@param animation_path_or_data string|panthera.animation.project_file @Path to the animation file or animation table
----@param is_cache_reset boolean @If true - animation will be reloaded from file. Will be ignored for inline animations
+---@param animation_path_or_data string|panthera.animation.project_file Path to the animation file or animation table
+---@param is_cache_reset boolean If true - animation will be reloaded from file. Will be ignored for inline animations
 ---@return panthera.animation.data|nil, string|nil, string|nil @animation_data, animation_path, error_reason.
 function M.load(animation_path_or_data, is_cache_reset)
 	-- If we have already loaded animation table
@@ -130,9 +130,13 @@ function M.set_animation_state_at_time(animation_state, animation_id, time, even
 		if node_id ~= "" then
 			-- Node keys
 			for property_id, keys in pairs(node_keys) do
-				local is_animation_keys = #keys > 0 and keys[1].key_type == M.KEY_TYPE.ANIMATION
-				if not is_animation_keys then
+				local is_keys = #keys > 0
+				local is_animation_keys = keys[1].key_type == M.KEY_TYPE.ANIMATION
+				if is_keys and not is_animation_keys then
 					M.set_node_value_at_time(animation_state, animation_id, node_id, property_id, time)
+				end
+				if is_keys and is_animation_keys then
+					-- Grap template path and set it to the nodes
 				end
 			end
 
@@ -204,7 +208,7 @@ end
 ---@param animation_id string
 ---@param node_id string
 ---@param property_id string
----@param time number @Pass -1 to get initial value
+---@param time number Pass -1 to get initial value
 ---@return any|nil
 function M.get_node_value_at_time(animation_state, animation_id, node_id, property_id, time)
 	local animation_data = M.get_animation_data(animation_state) --[[@as panthera.animation.data]]
@@ -373,7 +377,7 @@ end
 ---@param key panthera.animation.data.animation_key
 ---@param options panthera.options
 ---@param speed number
----@return boolean @true if success
+---@return boolean result true if success
 function M.run_timeline_key(animation_state, key, options, speed)
 	assert(speed > 0, "Speed should be greater than 0")
 
@@ -633,10 +637,12 @@ function M.get_group_animation_keys(animation_data)
 		local group_keys = {}
 		for key_index = 1, #animation_keys do
 			local key = animation_keys[key_index]
-			group_keys[key.node_id] = group_keys[key.node_id] or {}
-			group_keys[key.node_id][key.property_id] = group_keys[key.node_id][key.property_id] or {}
+			local node_id = key.node_id
+			local property_id = key.property_id
 
-			table.insert(group_keys[key.node_id][key.property_id], key)
+			group_keys[node_id] = group_keys[node_id] or {}
+			group_keys[node_id][property_id] = group_keys[node_id][property_id] or {}
+			table.insert(group_keys[node_id][property_id], key)
 		end
 
 		group_animations[animation.animation_id] = group_keys
@@ -669,7 +675,7 @@ end
 
 ---Get current application folder (only desktop)
 ---@private
----@return string|nil @Current application folder, nil if failed
+---@return string|nil game_project_folder Current application folder, nil if failed
 function M.get_current_game_project_folder()
 	if not io.popen or html5 then
 		return nil
