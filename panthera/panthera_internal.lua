@@ -131,7 +131,7 @@ function M.set_animation_state_at_time(animation_state, animation_id, time, even
 			-- Node keys
 			for property_id, keys in pairs(node_keys) do
 				local is_keys = #keys > 0
-				local is_animation_keys = keys[1].key_type == M.KEY_TYPE.ANIMATION
+				local is_animation_keys = is_keys and keys[1].key_type == M.KEY_TYPE.ANIMATION
 				if is_keys and not is_animation_keys then
 					M.set_node_value_at_time(animation_state, animation_id, node_id, property_id, time)
 				end
