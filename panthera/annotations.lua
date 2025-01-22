@@ -74,6 +74,8 @@
 ---@field callback (fun(animation_id: string):nil)|nil Callback when animation is finished
 ---@field callback_event (fun(event_id: string, node: node|nil, string_value: string, number_value: number): nil)|nil Callback when animation trigger event
 ---@field is_reverse boolean|nil If true, the animation will play in reverse
+---@field from number|nil Start value for tween animation
+---@field to number|nil End value for tween animation
 
 ---@class panthera.adapter
 ---@field get_node fun(node_id: string): node Function to get node by node_id.

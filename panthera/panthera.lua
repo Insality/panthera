@@ -194,9 +194,15 @@ function M.play_tweener(animation_state, animation_id, options)
 	animation_state.events = nil
 
 	local total_duration = animation.duration / (options.speed or 1)
-	local from, to = 0, animation.duration
+	local from = options.from or 0
+	local to = options.to or animation.duration
 	if options.is_reverse then
 		from, to = to, from
+	end
+
+	if animation_state.timer_id then
+		timer.cancel(animation_state.timer_id)
+		animation_state.timer_id = nil
 	end
 
 	animation_state.timer_id = tweener.tween(easing, from, to, total_duration, function(time, is_final_call)
