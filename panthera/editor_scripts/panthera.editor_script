@@ -46,7 +46,7 @@ end
 function M.get_commands()
 	return {
 		{
-			label = "Edit Panthera Animation",
+			label = "[Panthera] Edit Panthera Animation",
 			locations = { "Assets" },
 			query = { selection = { type = "resource", cardinality = "one" } },
 			active = function(opts)
@@ -65,7 +65,7 @@ function M.get_commands()
 			end,
 			run = function(opts)
 				local path = editor.get(opts.selection, "path")
-				print("Edit Panthera Animation", path)
+				print("[Panthera] Edit Panthera Animation", path)
 				save_file_from_dependency("/panthera/editor_scripts/panthera_command.sh", "./build/panthera_command.sh")
 				return {
 					{
@@ -82,7 +82,7 @@ function M.get_commands()
 		},
 
 		{
-			label = "Create Panthera Animation",
+			label = "[Panthera] Create Panthera Animation",
 			locations = { "Assets" },
 			query = { selection = { type = "resource", cardinality = "one" } },
 			active = function(opts)
