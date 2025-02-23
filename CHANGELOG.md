@@ -54,7 +54,7 @@ Initial resease!
 	- The `play_tweener` function plays a animation with a tweener easing. Now you able to adjust the "easing" of the animation and able to play it in reverse. Later should be able to specify the start and end time of the animation.
 - Additional checks for deleted nodes in the animation playback (currently only for game objects)
 - Add global Panthera speed modifier (panthera.SPEED)
-	- Now you can adjust speed with three modifiers: global (panthera.SPEED), state (animation_state.speed) and animation (animation.speed)
+	- Now you can adjust speed with three modifiers: global (panthera.SPEED), state (animation_state.speed) and instance animation (animation.speed)
 - Refactor the animation playback system, should be more performant
 - Fix for `is_editor_only` key field
 - Various fixes

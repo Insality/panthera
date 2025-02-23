@@ -622,6 +622,26 @@ function M.preprocess_animation_keys(data)
 			end
 		end
 	end
+
+	do -- Include all children metadata template_animation_paths recursive
+		local paths = data.metadata.template_animation_paths
+		if paths then
+			-- For each path recursive go deep and record next path with path template/node
+			for node_id, animation_data_or_path in pairs(paths) do
+				if type(animation_data_or_path) == TYPE_TABLE then
+					local animation = animation_data_or_path --[[@as panthera.animation.project_file]]
+
+					local child_metapaths = animation.data.metadata.template_animation_paths
+					if child_metapaths then
+						for child_node_id, child_data in pairs(child_metapaths) do
+							paths[node_id .. "/" .. child_node_id] = child_data
+							print("Added path", node_id .. "/" .. child_node_id)
+						end
+					end
+				end
+			end
+		end
+	end
 end
 
 

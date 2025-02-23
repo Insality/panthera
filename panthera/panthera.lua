@@ -298,12 +298,10 @@ function M.update_animation(animation, animation_state, options)
 					end
 					local template_animation_path = paths[key.node_id]
 
-					local adapter = animation_state.adapter
 					local get_node = function(node_id)
 						return animation_state.get_node(key.node_id .. "/" .. node_id)
 					end
-					local animation_path = template_animation_path
-					local template_state = M.create(animation_path, adapter, get_node)
+					local template_state = M.create(template_animation_path, animation_state.adapter, get_node)
 
 					local time_overflow = math.max(0, animation_state.current_time - key.start_time)
 					template_state.current_time = time_overflow
@@ -404,7 +402,7 @@ function M.set_time(animation_state, animation_id, time, event_callback)
 		return false
 	end
 
-	-- TODO: What if we don't stop animations? Checking now
+	-- TODO: What if we don't stop animations?
 	if M.is_playing(animation_state) then
 		M.stop(animation_state)
 	end
