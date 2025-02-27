@@ -23,7 +23,7 @@ end
 ---@param animation_path_or_data string|table @Path to JSON animation file in custom resources or table with animation data
 ---@param collection_name string|nil @Collection name to load nodes from. Pass nil if no collection is used
 ---@param objects table<string|hash, string|hash>|nil @Table with game objects from collectionfactory. Pass nil if no objects are used
----@return panthera.animation.state|nil @Animation data or nil if animation can't be loaded, error message
+---@return panthera.animation.state @Animation data or nil if animation can't be loaded, error message
 function M.create_go(animation_path_or_data, collection_name, objects)
 	local get_node = adapter_go.create_get_node_function(collection_name, objects)
 	return M.create(animation_path_or_data, adapter_go, get_node)
@@ -34,7 +34,7 @@ end
 ---@param animation_path_or_data string|table @Path to JSON animation file in custom resources or table with animation data
 ---@param template string|nil @The GUI template id to load nodes from. Pass nil if no template is used
 ---@param nodes table<string|hash, node>|nil @Table with nodes from gui.clone_tree() function. Pass nil if no nodes are used
----@return panthera.animation.state|nil @Animation data or nil if animation can't be loaded, error message
+---@return panthera.animation.state @Animation data or nil if animation can't be loaded, error message
 function M.create_gui(animation_path_or_data, template, nodes)
 	local get_node = adapter_gui.create_get_node_function(template, nodes)
 	return M.create(animation_path_or_data, adapter_gui, get_node)
@@ -51,7 +51,7 @@ function M.create(animation_path_or_data, adapter, get_node)
 
 	if not animation_data or not animation_path then
 		panthera_internal.logger:error("Can't load Panthera animation", error_reason)
-		return nil
+		error(error_reason)
 	end
 
 	-- Create a data structure for animation
