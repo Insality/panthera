@@ -4,7 +4,7 @@ local panthera = require("panthera.panthera")
 local logger = log.get_logger("example")
 
 ---@class example.gui_script
----@field animation panthera.animation.state
+---@field animation panthera.animation
 ---@field animation_list string[] @Except "appear" and "stop"
 ---@field button node
 ---@field animation_control_zone node
@@ -49,7 +49,7 @@ function init(self)
 	panthera.set_logger(log.get_logger("panthera"))
 
 	-- Load and play animation
-	self.animation = panthera.create_gui("/resources/example.json") --[[@as panthera.animation.state]]
+	self.animation = panthera.create_gui("/resources/example.json") --[[@as panthera.animation]]
 
 	panthera.play(self.animation, "appear", {
 		callback_event = print_callback_event,

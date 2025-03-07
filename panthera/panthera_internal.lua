@@ -52,7 +52,9 @@ local IS_DEBUG = sys.get_engine_info().is_debug
 ---Load animation from file and store it in cache
 ---@param animation_path_or_data string|panthera.animation.project_file Path to the animation file or animation table
 ---@param is_cache_reset boolean If true - animation will be reloaded from file. Will be ignored for inline animations
----@return panthera.animation.data|nil, string|nil, string|nil @animation_data, animation_path, error_reason.
+---@return panthera.animation.data|nil animation_data
+---@return string|nil animation_path
+---@return string|nil error_reason
 function M.load(animation_path_or_data, is_cache_reset)
 	-- If we have already loaded animation table
 	local is_table = type(animation_path_or_data) == TYPE_TABLE
@@ -420,7 +422,7 @@ end
 
 ---@param node node|nil
 ---@param key panthera.animation.data.animation_key
----@param duration number @Duration of the key, calculated with animation speed and time overflow
+---@param duration number Duration of the key, calculated with animation speed and time overflow
 ---@param callback_event fun(event_id: string, node: node|nil, data: any, end_value: number)|nil
 function M.event_animation_key(node, key, duration, callback_event)
 	if not callback_event then

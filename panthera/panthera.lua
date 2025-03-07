@@ -4,9 +4,10 @@ local adapter_gui = require("panthera.adapters.adapter_gui")
 local panthera_internal = require("panthera.panthera_internal")
 
 ---@class panthera
----@field SPEED number @Default speed of all animations
-local M = {}
-M.SPEED = 1
+---@field SPEED number Default speed of all animations
+local M = {
+	SPEED = 1
+}
 
 local TIMER_DELAY = 1/60
 local EMPTY_OPTIONS = {}
@@ -20,10 +21,10 @@ end
 
 
 ---Load animation from JSON file or direct data and create it with Panthera GO adapter
----@param animation_path_or_data string|table @Path to JSON animation file in custom resources or table with animation data
----@param collection_name string|nil @Collection name to load nodes from. Pass nil if no collection is used
----@param objects table<string|hash, string|hash>|nil @Table with game objects from collectionfactory. Pass nil if no objects are used
----@return panthera.animation @Animation data or nil if animation can't be loaded, error message
+---@param animation_path_or_data string|table Path to JSON animation file in custom resources or table with animation data
+---@param collection_name string|nil Collection name to load nodes from. Pass nil if no collection is used
+---@param objects table<string|hash, string|hash>|nil Table with game objects from collectionfactory. Pass nil if no objects are used
+---@return panthera.animation Animation data or nil if animation can't be loaded, error message
 function M.create_go(animation_path_or_data, collection_name, objects)
 	local get_node = adapter_go.create_get_node_function(collection_name, objects)
 	return M.create(animation_path_or_data, adapter_go, get_node)
@@ -31,10 +32,10 @@ end
 
 
 ---Load animation from JSON file or direct data and create it with Panthera GUI adapter
----@param animation_path_or_data string|table @Path to JSON animation file in custom resources or table with animation data
----@param template string|nil @The GUI template id to load nodes from. Pass nil if no template is used
----@param nodes table<string|hash, node>|nil @Table with nodes from gui.clone_tree() function. Pass nil if no nodes are used
----@return panthera.animation @Animation data or nil if animation can't be loaded, error message
+---@param animation_path_or_data string|table Path to JSON animation file in custom resources or table with animation data
+---@param template string|nil The GUI template id to load nodes from. Pass nil if no template is used
+---@param nodes table<string|hash, node>|nil Table with nodes from gui.clone_tree() function. Pass nil if no nodes are used
+---@return panthera.animation Animation data or nil if animation can't be loaded, error message
 function M.create_gui(animation_path_or_data, template, nodes)
 	local get_node = adapter_gui.create_get_node_function(template, nodes)
 	return M.create(animation_path_or_data, adapter_gui, get_node)
@@ -42,10 +43,10 @@ end
 
 
 ---Load animation from JSON file
----@param animation_path_or_data string|table @Path to JSON animation file in custom resources or table with animation data
+---@param animation_path_or_data string|table Path to JSON animation file in custom resources or table with animation data
 ---@param adapter panthera.adapter
----@param get_node (fun(node_id: string): node) @Function to get node by node_id. Default is defined in adapter
----@return panthera.animation @Animation data or nil if animation can't be loaded, error message
+---@param get_node (fun(node_id: string): node) Function to get node by node_id. Default is defined in adapter
+---@return panthera.animation Animation data or nil if animation can't be loaded, error message
 function M.create(animation_path_or_data, adapter, get_node)
 	local animation_data, animation_path, error_reason = panthera_internal.load(animation_path_or_data, false)
 
@@ -75,7 +76,7 @@ end
 
 ---Create identical copy of animation state to run it in parallel
 ---@param animation_state panthera.animation
----@return panthera.animation @New animation state or nil if animation can't be cloned
+---@return panthera.animation New animation state or nil if animation can't be cloned
 function M.clone_state(animation_state)
 	local adapter = animation_state.adapter
 	local get_node = animation_state.get_node
@@ -162,6 +163,7 @@ function M.play(animation_state, animation_id, options)
 end
 
 
+-- TODO: make it inside play somehow
 ---@param animation_state panthera.animation
 ---@param animation_id string
 ---@param options panthera.options_tweener|nil
@@ -351,6 +353,7 @@ function M.update_animation(animation, animation_state, options)
 end
 
 
+-- TODO: make it inside play somehow
 ---Play animation as a child of the current animation state
 ---@param animation_state panthera.animation
 ---@param animation_id string
@@ -431,7 +434,7 @@ end
 
 ---Retrieve the current playback time in seconds of an animation. If the animation is not playing, the function returns 0.
 ---@param animation_state panthera.animation
----@return number @Current animation time in seconds
+---@return number Current animation time in seconds
 function M.get_time(animation_state)
 	return animation_state.current_time
 end
@@ -439,7 +442,7 @@ end
 
 ---Stop playing animation. The animation will be stopped at current time.
 ---@param animation_state panthera.animation
----@return boolean @True if animation was stopped, false if animation is not playing
+---@return boolean True if animation was stopped, false if animation is not playing
 function M.stop(animation_state)
 	if not animation_state then
 		panthera_internal.logger:warn("Can't stop animation, animation_state is nil")
@@ -497,8 +500,8 @@ end
 
 
 ---Get the ID of the last animation that was started.
----@param animation_state panthera.animation @Animation state
----@return string|nil @Animation id or nil if animation is not playing
+---@param animation_state panthera.animation Animation state
+---@return string|nil Animation id or nil if animation is not playing
 function M.get_latest_animation_id(animation_state)
 	return animation_state.animation_id or animation_state.previous_animation_id
 end
@@ -527,7 +530,7 @@ end
 ---or after the next set_time() function
 ---Animation will be reloaded only at desktop. Only if we have a Panthera file
 ---inside resources with the user folder directory path
----@param animation_path string|nil @If nil - reload all loaded animations
+---@param animation_path string|nil If nil - reload all loaded animations
 function M.reload_animation(animation_path)
 	if animation_path then
 		panthera_internal.load(animation_path, true)
