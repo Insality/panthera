@@ -44,19 +44,19 @@
 ---@field event_id string
 ---@field is_editor_only boolean
 
----@class panthera.animation.state
+---@class panthera.animation
 ---@field adapter panthera.adapter Adapter to use for animation
 ---@field speed number All animation speed multiplier
 ---@field current_time number Current animation time
 ---@field nodes table Animation nodes used in animation
----@field childs panthera.animation.state[]|nil List of active child animations
+---@field childs panthera.animation[]|nil List of active child animations
 ---@field get_node fun(node_id: string): node Function to get node by node_id. Default is defined in adapter
 ---@field animation_id string|nil Current animation id
 ---@field previous_animation_id string|nil Previous runned animation id
 ---@field animation_path string Animation path to JSON file
 ---@field animation_keys_index number Animation keys index
 ---@field events table|nil List of events triggered in this animation loop
----@field timer_id hash|nil Timer id for animation
+---@field timer_id number|nil Timer id for animation
 
 ---@class panthera.options
 ---@field is_loop boolean|nil If true, the animation will loop with trigger callback each loop

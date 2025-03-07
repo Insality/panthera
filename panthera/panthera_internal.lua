@@ -90,7 +90,7 @@ function M.load(animation_path_or_data, is_cache_reset)
 end
 
 
----@param animation_state panthera.animation.state
+---@param animation_state panthera.animation
 ---@return panthera.animation.data|nil
 function M.get_animation_data(animation_state)
 	return M.LOADED_ANIMATIONS[animation_state.animation_path]
@@ -105,7 +105,7 @@ function M.get_animation_by_animation_id(animation_data, animation_id)
 end
 
 
----@param animation_state panthera.animation.state
+---@param animation_state panthera.animation
 ---@param animation_id string
 ---@param time number
 ---@param event_callback fun(event_id: string, node: node|nil, data: any, end_value: number)|nil
@@ -204,7 +204,7 @@ function M.set_animation_state_at_time(animation_state, animation_id, time, even
 end
 
 
----@param animation_state panthera.animation.state
+---@param animation_state panthera.animation
 ---@param animation_id string
 ---@param node_id string
 ---@param property_id string
@@ -249,7 +249,7 @@ function M.get_node_value_at_time(animation_state, animation_id, node_id, proper
 end
 
 
----@param animation_state panthera.animation.state
+---@param animation_state panthera.animation
 ---@param animation_id string
 ---@param node_id string
 ---@param property_id string
@@ -272,7 +272,7 @@ function M.set_node_value_at_time(animation_state, animation_id, node_id, proper
 end
 
 
----@param animation_state panthera.animation.state
+---@param animation_state panthera.animation
 ---@param animation_id string
 ---@return boolean is_success
 function M.stop_tweens(animation_state, animation_id)
@@ -307,7 +307,7 @@ end
 
 
 ---Reset all animated values in animation id to initial state
----@param animation_state panthera.animation.state
+---@param animation_state panthera.animation
 ---@param animation_id string
 function M.reset_animation_state(animation_state, animation_id)
 	local animation_data = M.get_animation_data(animation_state) --[[@as panthera.animation.data]]
@@ -331,7 +331,7 @@ function M.reset_animation_state(animation_state, animation_id)
 end
 
 
----@param animation_state panthera.animation.state
+---@param animation_state panthera.animation
 ---@param node_id string
 ---@return node|nil
 function M.get_node(animation_state, node_id)
@@ -373,7 +373,7 @@ end
 
 --- Run animation key except "animation" key type
 --- It should be processed before as a separate animation
----@param animation_state panthera.animation.state
+---@param animation_state panthera.animation
 ---@param key panthera.animation.data.animation_key
 ---@param options panthera.options
 ---@param speed number
@@ -438,8 +438,8 @@ function M.event_animation_key(node, key, duration, callback_event)
 end
 
 
----@param animation_state panthera.animation.state
----@param child_animation_state panthera.animation.state
+---@param animation_state panthera.animation
+---@param child_animation_state panthera.animation
 ---@return boolean
 function M.remove_child_animation(animation_state, child_animation_state)
 	local childs = animation_state.childs

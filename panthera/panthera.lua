@@ -23,7 +23,7 @@ end
 ---@param animation_path_or_data string|table @Path to JSON animation file in custom resources or table with animation data
 ---@param collection_name string|nil @Collection name to load nodes from. Pass nil if no collection is used
 ---@param objects table<string|hash, string|hash>|nil @Table with game objects from collectionfactory. Pass nil if no objects are used
----@return panthera.animation.state @Animation data or nil if animation can't be loaded, error message
+---@return panthera.animation @Animation data or nil if animation can't be loaded, error message
 function M.create_go(animation_path_or_data, collection_name, objects)
 	local get_node = adapter_go.create_get_node_function(collection_name, objects)
 	return M.create(animation_path_or_data, adapter_go, get_node)
@@ -34,7 +34,7 @@ end
 ---@param animation_path_or_data string|table @Path to JSON animation file in custom resources or table with animation data
 ---@param template string|nil @The GUI template id to load nodes from. Pass nil if no template is used
 ---@param nodes table<string|hash, node>|nil @Table with nodes from gui.clone_tree() function. Pass nil if no nodes are used
----@return panthera.animation.state @Animation data or nil if animation can't be loaded, error message
+---@return panthera.animation @Animation data or nil if animation can't be loaded, error message
 function M.create_gui(animation_path_or_data, template, nodes)
 	local get_node = adapter_gui.create_get_node_function(template, nodes)
 	return M.create(animation_path_or_data, adapter_gui, get_node)
@@ -45,7 +45,7 @@ end
 ---@param animation_path_or_data string|table @Path to JSON animation file in custom resources or table with animation data
 ---@param adapter panthera.adapter
 ---@param get_node (fun(node_id: string): node) @Function to get node by node_id. Default is defined in adapter
----@return panthera.animation.state @Animation data or nil if animation can't be loaded, error message
+---@return panthera.animation @Animation data or nil if animation can't be loaded, error message
 function M.create(animation_path_or_data, adapter, get_node)
 	local animation_data, animation_path, error_reason = panthera_internal.load(animation_path_or_data, false)
 
@@ -55,7 +55,7 @@ function M.create(animation_path_or_data, adapter, get_node)
 	end
 
 	-- Create a data structure for animation
-	---@type panthera.animation.state
+	---@type panthera.animation
 	local animation_state = {
 		nodes = {},
 		speed = 1,
@@ -74,8 +74,8 @@ end
 
 
 ---Create identical copy of animation state to run it in parallel
----@param animation_state panthera.animation.state
----@return panthera.animation.state @New animation state or nil if animation can't be cloned
+---@param animation_state panthera.animation
+---@return panthera.animation @New animation state or nil if animation can't be cloned
 function M.clone_state(animation_state)
 	local adapter = animation_state.adapter
 	local get_node = animation_state.get_node
@@ -84,7 +84,7 @@ function M.clone_state(animation_state)
 end
 
 
----@param animation_state panthera.animation.state
+---@param animation_state panthera.animation
 ---@param animation_id string
 ---@param options panthera.options|nil
 function M.play(animation_state, animation_id, options)
@@ -115,7 +115,9 @@ function M.play(animation_state, animation_id, options)
 	end
 
 	if options.easing and options.easing ~= "linear" then
-		M.play_tweener(animation_state, animation_id, options)
+		local tweener_options = options --[[@as panthera.options_tweener]]
+
+		M.play_tweener(animation_state, animation_id, tweener_options)
 		return nil
 	end
 
@@ -160,7 +162,7 @@ function M.play(animation_state, animation_id, options)
 end
 
 
----@param animation_state panthera.animation.state
+---@param animation_state panthera.animation
 ---@param animation_id string
 ---@param options panthera.options_tweener|nil
 function M.play_tweener(animation_state, animation_id, options)
@@ -243,7 +245,7 @@ end
 
 ---@private
 ---@param animation panthera.animation.data.animation
----@param animation_state panthera.animation.state
+---@param animation_state panthera.animation
 ---@param options panthera.options
 function M.update_animation(animation, animation_state, options)
 	if not animation then
@@ -350,7 +352,7 @@ end
 
 
 ---Play animation as a child of the current animation state
----@param animation_state panthera.animation.state
+---@param animation_state panthera.animation
 ---@param animation_id string
 function M.play_detached(animation_state, animation_id, options)
 	options = options or EMPTY_OPTIONS
@@ -378,7 +380,7 @@ end
 
 
 ---Set animation state at specific time. This will stop animation if it's playing
----@param animation_state panthera.animation.state
+---@param animation_state panthera.animation
 ---@param animation_id string
 ---@param time number
 ---@param event_callback fun(event_id: string, node: node|nil, string_value: string, number_value: number)|nil
@@ -428,7 +430,7 @@ end
 
 
 ---Retrieve the current playback time in seconds of an animation. If the animation is not playing, the function returns 0.
----@param animation_state panthera.animation.state
+---@param animation_state panthera.animation
 ---@return number @Current animation time in seconds
 function M.get_time(animation_state)
 	return animation_state.current_time
@@ -436,7 +438,7 @@ end
 
 
 ---Stop playing animation. The animation will be stopped at current time.
----@param animation_state panthera.animation.state
+---@param animation_state panthera.animation
 ---@return boolean @True if animation was stopped, false if animation is not playing
 function M.stop(animation_state)
 	if not animation_state then
@@ -472,7 +474,7 @@ end
 
 
 ---Retrieve the total duration of a specific animation.
----@param animation_state panthera.animation.state
+---@param animation_state panthera.animation
 ---@param animation_id string
 ---@return number
 function M.get_duration(animation_state, animation_id)
@@ -487,7 +489,7 @@ end
 
 
 ---Check if an animation is currently playing.
----@param animation_state panthera.animation.state
+---@param animation_state panthera.animation
 ---@return boolean
 function M.is_playing(animation_state)
 	return animation_state.timer_id ~= nil
@@ -495,7 +497,7 @@ end
 
 
 ---Get the ID of the last animation that was started.
----@param animation_state panthera.animation.state @Animation state
+---@param animation_state panthera.animation @Animation state
 ---@return string|nil @Animation id or nil if animation is not playing
 function M.get_latest_animation_id(animation_state)
 	return animation_state.animation_id or animation_state.previous_animation_id
@@ -503,7 +505,7 @@ end
 
 
 --- Return a list of animation ids from the created animation state
----@param animation_state panthera.animation.state
+---@param animation_state panthera.animation
 ---@return string[]
 function M.get_animations(animation_state)
 	local animation_data = panthera_internal.get_animation_data(animation_state)
