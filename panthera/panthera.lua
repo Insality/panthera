@@ -27,7 +27,7 @@ end
 ---@return panthera.animation Animation data or nil if animation can't be loaded, error message
 function M.create_go(animation_path_or_data, collection_name, objects)
 	local get_node = adapter_go.create_get_node_function(collection_name, objects)
-	return M.create(animation_path_or_data, adapter_go, get_node)
+	return panthera_internal.create_animation_state(animation_path_or_data, adapter_go, get_node)
 end
 
 
@@ -38,7 +38,7 @@ end
 ---@return panthera.animation Animation data or nil if animation can't be loaded, error message
 function M.create_gui(animation_path_or_data, template, nodes)
 	local get_node = adapter_gui.create_get_node_function(template, nodes)
-	return M.create(animation_path_or_data, adapter_gui, get_node)
+	return panthera_internal.create_animation_state(animation_path_or_data, adapter_gui, get_node)
 end
 
 
@@ -48,29 +48,7 @@ end
 ---@param get_node (fun(node_id: string): node) Function to get node by node_id. Default is defined in adapter
 ---@return panthera.animation Animation data or nil if animation can't be loaded, error message
 function M.create(animation_path_or_data, adapter, get_node)
-	local animation_data, animation_path, error_reason = panthera_internal.load(animation_path_or_data, false)
-
-	if not animation_data or not animation_path then
-		panthera_internal.logger:error("Can't load Panthera animation", error_reason)
-		error(error_reason)
-	end
-
-	-- Create a data structure for animation
-	---@type panthera.animation
-	local animation_state = {
-		nodes = {},
-		speed = 1,
-		childs = nil,
-		timer_id = nil,
-		animation = nil,
-		current_time = 0,
-		adapter = adapter,
-		get_node = get_node,
-		animation_keys_index = 1,
-		animation_path = animation_path,
-	}
-
-	return animation_state
+	return panthera_internal.create_animation_state(animation_path_or_data, adapter, get_node)
 end
 
 
@@ -81,7 +59,8 @@ function M.clone_state(animation_state)
 	local adapter = animation_state.adapter
 	local get_node = animation_state.get_node
 	local animation_path = animation_state.animation_path
-	return M.create(animation_path, adapter, get_node)
+
+	return panthera_internal.create_animation_state(animation_path, adapter, get_node)
 end
 
 
@@ -240,7 +219,8 @@ function M.play_tweener(animation_state, animation_id, options)
 				M.play_tweener(animation_state, animation_id, options)
 			end
 		end
-	end)
+	end).timer_id
+
 	timer.trigger(animation_state.timer_id)
 end
 
@@ -320,7 +300,9 @@ function M.update_animation(animation, animation_state, options)
 						local play_speed = (animation_duration / key_duration) * speed
 
 						M.play(template_state, key.property_id, {
-							is_skip_init = true,
+								-- TODO: is any cases when we want to use false here? Editor works like it false now
+								-- Real case: looped animation should be reset to correct visuals
+							is_skip_init = false,
 							easing = key.easing,
 							speed = play_speed,
 							callback = function()

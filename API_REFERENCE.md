@@ -210,7 +210,6 @@ Customize animation behavior in Panthera Runtime using a table of options passed
 
 - **`is_loop`**: Loop the animation (`true`/`false`). Triggers the callback at each loop end if set to `true`.
 - **`is_skip_init`**: Start animation from its current state, skipping initial setup (`true`/`false`).
-- **`is_relative`**: Apply tween values relative to the object's current state (`true`/`false`).
 - **`speed`**: Playback speed multiplier (default `1`). Values >1 increase speed, <1 decrease.
 - **`callback`**: Function called when the animation finishes. Receives `animation_id`.
 - **`callback_event`**: Function triggered by animation events. Receives `event_id`, optional `node`, `string_value`, and `number_value`.

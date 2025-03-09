@@ -61,7 +61,6 @@
 ---@class panthera.options
 ---@field is_loop boolean|nil If true, the animation will loop with trigger callback each loop
 ---@field is_skip_init boolean|nil If true, the animation will skip the init state and starts from current state
----@field is_relative boolean|nil If true, all animation tween values will be relative to current state
 ---@field speed number|nil Animation speed multiplier, default is 1
 ---@field easing string|constant|nil Easing function for play animation with. Will use tweener + set_time to play non-linear animation (slower performance)
 ---@field callback (fun(animation_id: string):nil)|nil Callback when animation is finished

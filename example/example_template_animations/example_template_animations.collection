@@ -1,0 +1,10 @@
+name: "example_template_animations"
+scale_along_z: 0
+embedded_instances {
+  id: "go"
+  data: "components {\n"
+  "  id: \"example_template_animations\"\n"
+  "  component: \"/example/example_template_animations/example_template_animations.gui\"\n"
+  "}\n"
+  ""
+}

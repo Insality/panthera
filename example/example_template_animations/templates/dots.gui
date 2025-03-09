@@ -1,0 +1,94 @@
+fonts {
+  name: "troika"
+  font: "/example/assets/troika.font"
+}
+textures {
+  name: "example"
+  texture: "/example/assets/example.atlas"
+}
+nodes {
+  size {
+    x: 300.0
+    y: 300.0
+  }
+  color {
+    x: 0.8
+    y: 0.502
+    z: 0.6
+  }
+  type: TYPE_BOX
+  id: "root"
+  inherit_alpha: true
+  slice9 {
+    x: 16.0
+    y: 16.0
+    z: 16.0
+    w: 16.0
+  }
+  visible: false
+}
+nodes {
+  color {
+    x: 0.6
+    y: 0.502
+    z: 0.902
+  }
+  type: TYPE_BOX
+  texture: "example/ui_rect_round_16"
+  id: "dot"
+  parent: "root"
+  inherit_alpha: true
+  slice9 {
+    x: 16.0
+    y: 16.0
+    z: 16.0
+    w: 16.0
+  }
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  position {
+    x: -70.0
+  }
+  color {
+    x: 0.6
+    y: 0.502
+    z: 0.902
+  }
+  type: TYPE_BOX
+  texture: "example/ui_rect_round_16"
+  id: "dot1"
+  parent: "root"
+  inherit_alpha: true
+  slice9 {
+    x: 16.0
+    y: 16.0
+    z: 16.0
+    w: 16.0
+  }
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  position {
+    x: 70.0
+  }
+  color {
+    x: 0.6
+    y: 0.502
+    z: 0.902
+  }
+  type: TYPE_BOX
+  texture: "example/ui_rect_round_16"
+  id: "dot2"
+  parent: "root"
+  inherit_alpha: true
+  slice9 {
+    x: 16.0
+    y: 16.0
+    z: 16.0
+    w: 16.0
+  }
+  size_mode: SIZE_MODE_AUTO
+}
+material: "/builtins/materials/gui.material"
+adjust_reference: ADJUST_REFERENCE_PARENT

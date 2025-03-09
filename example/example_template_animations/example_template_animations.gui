@@ -1,0 +1,96 @@
+script: "/example/example_template_animations/example_template_animations.gui_script"
+textures {
+  name: "example"
+  texture: "/example/assets/example.atlas"
+}
+nodes {
+  position {
+    x: 480.0
+    y: 320.0
+  }
+  size {
+    x: 960.0
+    y: 640.0
+  }
+  type: TYPE_BOX
+  id: "root"
+  adjust_mode: ADJUST_MODE_STRETCH
+  inherit_alpha: true
+  size_mode: SIZE_MODE_AUTO
+  visible: false
+}
+nodes {
+  position {
+    x: -183.0
+  }
+  scale {
+    x: 0.5
+    y: 0.5
+  }
+  type: TYPE_BOX
+  texture: "example/ui_circle"
+  id: "circle"
+  parent: "root"
+  inherit_alpha: true
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  position {
+    x: 141.0
+  }
+  type: TYPE_TEMPLATE
+  id: "square_animation"
+  parent: "root"
+  inherit_alpha: true
+  template: "/example/example_template_animations/templates/square_animation.gui"
+}
+nodes {
+  type: TYPE_BOX
+  id: "square_animation/root"
+  parent: "square_animation"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "square_animation/square"
+  parent: "square_animation/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_TEXT
+  id: "square_animation/text"
+  parent: "square_animation/square"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_TEMPLATE
+  id: "square_animation/dots"
+  parent: "square_animation/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "square_animation/dots/root"
+  parent: "square_animation/dots"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "square_animation/dots/dot"
+  parent: "square_animation/dots/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "square_animation/dots/dot1"
+  parent: "square_animation/dots/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "square_animation/dots/dot2"
+  parent: "square_animation/dots/root"
+  template_node_child: true
+}
+material: "/builtins/materials/gui.material"
+adjust_reference: ADJUST_REFERENCE_PARENT

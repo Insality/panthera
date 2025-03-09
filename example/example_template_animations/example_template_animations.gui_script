@@ -1,0 +1,11 @@
+local panthera = require("panthera.panthera")
+local animation = require("example.example_template_animations.example_template_animations_panthera")
+
+function init(self)
+	self.aniamtion = panthera.create_gui(animation)
+	-- gui.animate
+	--panthera.play(self.aniamtion, "default", { is_loop = true })
+
+	-- Using set_time
+	panthera.play_tweener(self.aniamtion, "default", { is_loop = true })
+end

@@ -49,6 +49,39 @@ M.PROJECT_FOLDER = nil -- Current game project folder, used for hot reload anima
 M.IS_HOTRELOAD_ANIMATIONS = nil
 local IS_DEBUG = sys.get_engine_info().is_debug
 
+
+---Create animation state
+---@param animation_path_or_data string|table Path to JSON animation file in custom resources or table with animation data
+---@param adapter panthera.adapter
+---@param get_node (fun(node_id: string): node) Function to get node by node_id. Default is defined in adapter
+---@return panthera.animation Animation data or nil if animation can't be loaded, error message
+function M.create_animation_state(animation_path_or_data, adapter, get_node)
+	local animation_data, animation_path, error_reason = M.load(animation_path_or_data, false)
+
+	if not animation_data or not animation_path then
+		M.logger:error("Can't load Panthera animation", error_reason)
+		error(error_reason)
+	end
+
+	-- Create a data structure for animation
+	---@type panthera.animation
+	local animation_state = {
+		nodes = {},
+		speed = 1,
+		childs = nil,
+		timer_id = nil,
+		animation = nil,
+		current_time = 0,
+		adapter = adapter,
+		get_node = get_node,
+		animation_keys_index = 1,
+		animation_path = animation_path,
+	}
+
+	return animation_state
+end
+
+
 ---Load animation from file and store it in cache
 ---@param animation_path_or_data string|panthera.animation.project_file Path to the animation file or animation table
 ---@param is_cache_reset boolean If true - animation will be reloaded from file. Will be ignored for inline animations
@@ -134,11 +167,21 @@ function M.set_animation_state_at_time(animation_state, animation_id, time, even
 			for property_id, keys in pairs(node_keys) do
 				local is_keys = #keys > 0
 				local is_animation_keys = is_keys and keys[1].key_type == M.KEY_TYPE.ANIMATION
+				local template_paths = animation_data.metadata and animation_data.metadata.template_animation_paths
+				local template_path = template_paths[node_id]
+				local template_animation_id = property_id
+
 				if is_keys and not is_animation_keys then
 					M.set_node_value_at_time(animation_state, animation_id, node_id, property_id, time)
 				end
-				if is_keys and is_animation_keys then
+
+				if is_keys and is_animation_keys and template_path then
 					-- Grap template path and set it to the nodes
+					local get_node = function(animation_node_id)
+						return animation_state.get_node(node_id .. "/" .. animation_node_id)
+					end
+					local template_state = M.create_animation_state(template_path, animation_state.adapter, get_node)
+					M.set_animation_state_at_time(template_state, template_animation_id, time, event_callback)
 				end
 			end
 
@@ -158,7 +201,7 @@ function M.set_animation_state_at_time(animation_state, animation_id, time, even
 			end
 		end
 
-		-- Animation keys
+		-- It's Animation keys
 		if node_id == "" then
 			-- Animation keys
 			local animation_keys_to_trigger = {}
@@ -373,8 +416,8 @@ function M.get_node(animation_state, node_id)
 end
 
 
---- Run animation key except "animation" key type
---- It should be processed before as a separate animation
+---Run animation key except "animation" key type
+---It should be processed before as a separate animation
 ---@param animation_state panthera.animation
 ---@param key panthera.animation.data.animation_key
 ---@param options panthera.options
@@ -393,13 +436,6 @@ function M.run_timeline_key(animation_state, key, options, speed)
 			local easing = key.easing_custom or adapter.get_easing(key.easing)
 			local delta = key.end_value - key.start_value
 			local start_value = key.start_value
-
-			if options.is_relative then
-				local current_value = adapter.get_node_property(node, key.property_id) --[[@as number]]
-				if current_value then
-					start_value = current_value
-				end
-			end
 
 			adapter.tween_animation_key(node, key.property_id, easing, key_duration, start_value + delta)
 			return true
@@ -433,6 +469,7 @@ function M.event_animation_key(node, key, duration, callback_event)
 		callback_event(key.event_id, node, key.data, key.end_value)
 	else
 		local easing = key.easing_custom or tweener[key.easing] or tweener.linear
+		-- TODO: need to keep tween reference to cancel it
 		tweener.tween(easing, key.start_value, key.end_value, duration, function(value)
 			callback_event(key.event_id, node, key.data, value)
 		end)
@@ -463,7 +500,8 @@ end
 ---Load the file from full path (only desktop)
 ---@private
 ---@param path string The save path
----@return table|nil, string|nil
+---@return table|nil data
+---@return string|nil error_reason
 function M.load_by_path(path)
 	local file = io.open(path)
 	if file then
@@ -486,7 +524,8 @@ end
 ---Load the file from resource folder inside game
 ---@private
 ---@param path string The resource path
----@return table|nil, string|nil
+---@return table|nil data
+---@return string|nil error_reason
 function M.load_by_resource_path(path)
 	local data, error = sys.load_resource(path)
 	if error then
@@ -509,7 +548,8 @@ end
 ---Load animation from JSON file and return it
 ---@private
 ---@param path string
----@return panthera.animation.data|nil, string|nil
+---@return panthera.animation.data|nil animation_data
+---@return string|nil error_reason
 function M.get_animation_by_path(path)
 	local resource, error
 
@@ -637,7 +677,6 @@ function M.preprocess_animation_keys(data)
 					if child_metapaths then
 						for child_node_id, child_data in pairs(child_metapaths) do
 							paths[node_id .. "/" .. child_node_id] = child_data
-							print("Added path", node_id .. "/" .. child_node_id)
 						end
 					end
 				end
@@ -738,12 +777,9 @@ end
 -- Init hot reload animations
 if IS_DEBUG then
 	M.IS_HOTRELOAD_ANIMATIONS = sys.get_config_int("panthera.hotreload_animations", 0) == 1
-	if M.IS_HOTRELOAD_ANIMATIONS then
-		M.PROJECT_FOLDER = M.get_current_game_project_folder()
-		if not M.PROJECT_FOLDER then
-			M.logger:error("Can't get current game project folder")
-			M.IS_HOTRELOAD_ANIMATIONS = false
-		end
+	M.PROJECT_FOLDER = M.IS_HOTRELOAD_ANIMATIONS and M.get_current_game_project_folder()
+	if not M.PROJECT_FOLDER then
+		M.IS_HOTRELOAD_ANIMATIONS = false
 	end
 end
 
