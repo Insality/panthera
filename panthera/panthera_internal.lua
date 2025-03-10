@@ -167,15 +167,15 @@ function M.set_animation_state_at_time(animation_state, animation_id, time, even
 			for property_id, keys in pairs(node_keys) do
 				local is_keys = #keys > 0
 				local is_animation_keys = is_keys and keys[1].key_type == M.KEY_TYPE.ANIMATION
-				local template_paths = animation_data.metadata and animation_data.metadata.template_animation_paths
-				local template_path = template_paths[node_id]
 				local template_animation_id = property_id
 
 				if is_keys and not is_animation_keys then
 					M.set_node_value_at_time(animation_state, animation_id, node_id, property_id, time)
 				end
 
-				if is_keys and is_animation_keys and template_path then
+				local template_paths = animation_data.metadata and animation_data.metadata.template_animation_paths or {}
+				local template_path = template_paths[node_id]
+				if template_path and is_keys and is_animation_keys then
 					-- Grap template path and set it to the nodes
 					local get_node = function(animation_node_id)
 						return animation_state.get_node(node_id .. "/" .. animation_node_id)

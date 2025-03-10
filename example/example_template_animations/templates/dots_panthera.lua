@@ -6,13 +6,12 @@ return {
                 animation_keys = {
                 },
                 duration = 1,
-                formatted_duration = "1.0",
             },
             {
                 animation_id = "flip",
                 animation_keys = {
                     {
-                        duration = 0.33,
+                        duration = 0.23,
                         easing = "outsine",
                         end_value = 45,
                         key_type = "tween",
@@ -21,7 +20,7 @@ return {
                     },
                     {
                         duration = 1,
-                        easing = "outsine",
+                        easing = "outcubic",
                         end_value = -70,
                         key_type = "tween",
                         node_id = "dot",
@@ -29,7 +28,7 @@ return {
                     },
                     {
                         duration = 1,
-                        easing = "outsine",
+                        easing = "outcubic",
                         key_type = "tween",
                         node_id = "dot2",
                         property_id = "position_x",
@@ -45,17 +44,16 @@ return {
                         start_value = -70,
                     },
                     {
-                        duration = 0.39,
-                        easing = "outsine",
+                        duration = 0.77,
+                        easing = "insine",
                         key_type = "tween",
                         node_id = "dot1",
                         property_id = "position_y",
-                        start_time = 0.61,
+                        start_time = 0.23,
                         start_value = 45,
                     },
                 },
                 duration = 1,
-                formatted_duration = "1.0",
             },
         },
         metadata = {

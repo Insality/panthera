@@ -285,7 +285,7 @@ function M.update_animation(animation, animation_state, options)
 					local get_node = function(node_id)
 						return animation_state.get_node(key.node_id .. "/" .. node_id)
 					end
-					local template_state = M.create(template_animation_path, animation_state.adapter, get_node)
+					local template_state = panthera_internal.create_animation_state(template_animation_path, animation_state.adapter, get_node)
 
 					local time_overflow = math.max(0, animation_state.current_time - key.start_time)
 					template_state.current_time = time_overflow
