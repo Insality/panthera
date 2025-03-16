@@ -300,14 +300,15 @@ function M.update_animation(animation, animation_state, options)
 						local play_speed = (animation_duration / key_duration) * speed
 
 						M.play(template_state, key.property_id, {
-								-- TODO: is any cases when we want to use false here? Editor works like it false now
-								-- Real case: looped animation should be reset to correct visuals
+							-- TODO: is any cases when we want to use false here? Editor works like it false now
+							-- Real case: looped animation should be reset to correct visuals
 							is_skip_init = false,
 							easing = key.easing,
 							speed = play_speed,
 							callback = function()
 								panthera_internal.remove_child_animation(animation_state, template_state)
-							end
+							end,
+							callback_event = options.callback_event
 						})
 					end
 				end
