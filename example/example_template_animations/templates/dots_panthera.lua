@@ -2,12 +2,6 @@ return {
     data = {
         animations = {
             {
-                animation_id = "default",
-                animation_keys = {
-                },
-                duration = 1,
-            },
-            {
                 animation_id = "flip",
                 animation_keys = {
                     {
@@ -55,10 +49,100 @@ return {
                 },
                 duration = 1,
             },
+            {
+                animation_id = "bounce",
+                animation_keys = {
+                    {
+                        duration = 0.2,
+                        easing = "outsine",
+                        end_value = 55,
+                        key_type = "tween",
+                        node_id = "dot1",
+                        property_id = "position_y",
+                    },
+                    {
+                        duration = 0.2,
+                        easing = "outsine",
+                        end_value = 75,
+                        key_type = "tween",
+                        node_id = "dot",
+                        property_id = "position_y",
+                        start_time = 0.1,
+                    },
+                    {
+                        duration = 0.2,
+                        easing = "outsine",
+                        end_value = -55,
+                        key_type = "tween",
+                        node_id = "dot1",
+                        property_id = "position_y",
+                        start_time = 0.2,
+                        start_value = 55,
+                    },
+                    {
+                        duration = 0.2,
+                        easing = "outsine",
+                        end_value = 95,
+                        key_type = "tween",
+                        node_id = "dot2",
+                        property_id = "position_y",
+                        start_time = 0.2,
+                    },
+                    {
+                        duration = 0.2,
+                        easing = "outsine",
+                        end_value = -55,
+                        key_type = "tween",
+                        node_id = "dot",
+                        property_id = "position_y",
+                        start_time = 0.3,
+                        start_value = 75,
+                    },
+                    {
+                        duration = 0.2,
+                        easing = "outsine",
+                        end_value = -55,
+                        key_type = "tween",
+                        node_id = "dot2",
+                        property_id = "position_y",
+                        start_time = 0.4,
+                        start_value = 95,
+                    },
+                    {
+                        duration = 0.4,
+                        easing = "outback",
+                        key_type = "tween",
+                        node_id = "dot1",
+                        property_id = "position_y",
+                        start_time = 0.4,
+                        start_value = -55,
+                    },
+                    {
+                        duration = 0.4,
+                        easing = "outback",
+                        key_type = "tween",
+                        node_id = "dot",
+                        property_id = "position_y",
+                        start_time = 0.5,
+                        start_value = -55,
+                    },
+                    {
+                        duration = 0.4,
+                        easing = "outback",
+                        key_type = "tween",
+                        node_id = "dot2",
+                        property_id = "position_y",
+                        start_time = 0.6,
+                        start_value = -55,
+                    },
+                },
+                duration = 1,
+            },
         },
         metadata = {
             fps = 60,
             gizmo_steps = {
+                time = 0.1,
             },
             gui_path = "/example/example_template_animations/templates/dots.gui",
             layers = {

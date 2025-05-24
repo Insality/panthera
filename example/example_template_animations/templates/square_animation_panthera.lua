@@ -25,7 +25,7 @@ return {
                     {
                         duration = 0.51,
                         easing = "outsine",
-                        end_value = 0.502,
+                        end_value = 0.5,
                         key_type = "tween",
                         node_id = "square",
                         property_id = "color_r",
@@ -34,7 +34,7 @@ return {
                     {
                         duration = 0.51,
                         easing = "outsine",
-                        end_value = 0.679,
+                        end_value = 0.68,
                         key_type = "tween",
                         node_id = "square",
                         property_id = "color_b",
@@ -79,7 +79,7 @@ return {
                     {
                         duration = 0.49,
                         easing = "outsine",
-                        end_value = 0.502,
+                        end_value = 0.5,
                         key_type = "tween",
                         node_id = "square",
                         property_id = "color_g",
@@ -94,7 +94,7 @@ return {
                         node_id = "square",
                         property_id = "color_b",
                         start_time = 0.51,
-                        start_value = 0.679,
+                        start_value = 0.68,
                     },
                     {
                         duration = 0.49,
@@ -104,17 +104,40 @@ return {
                         node_id = "square",
                         property_id = "color_r",
                         start_time = 0.51,
-                        start_value = 0.502,
+                        start_value = 0.5,
                     },
                 },
                 duration = 1,
+                formatted_duration = "1.0",
+            },
+            {
+                animation_id = "bounced",
+                animation_keys = {
+                    {
+                        duration = 1,
+                        easing = "linear",
+                        key_type = "animation",
+                        node_id = "dots",
+                        property_id = "bounce",
+                    },
+                    {
+                        duration = 0.39,
+                        easing = "linear",
+                        key_type = "animation",
+                        node_id = "dots",
+                        property_id = "flip",
+                        start_time = 0.43,
+                    },
+                },
+                duration = 1,
+                formatted_duration = "1.0",
             },
         },
         metadata = {
             fps = 60,
             gizmo_steps = {
             },
-            gui_path = "/example/example_template_animations/templates/square_animation.gui",
+            gui_path = "example/example_template_animations/templates/square_animation.gui",
             layers = {
             },
             settings = {

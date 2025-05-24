@@ -33,7 +33,7 @@ M.logger = {
 	debug = function(_, msg, data) pprint("DEBUG: " .. msg, data) end,
 	info = function(_, msg, data) pprint("INFO: " .. msg, data) end,
 	warn = function(_, msg, data) pprint("WARN: " .. msg, data) end,
-	error = function(_, msg, data) pprint("ERROR: " .. msg, data) end
+	error = function(_, msg, data) pprint(data) error(msg) end
 }
 
 
@@ -145,7 +145,7 @@ end
 ---@param time number
 ---@param event_callback fun(event_id: string, node: node|nil, data: any, end_value: number)|nil
 function M.set_animation_state_at_time(animation_state, animation_id, time, event_callback)
-	local animation_data = M.get_animation_data(animation_state) --[[@as panthera.animation.data]]
+	local animation_data = M.LOADED_ANIMATIONS[animation_state.animation_path]
 	local animation = M.get_animation_by_animation_id(animation_data, animation_id)
 	if not animation then
 		return nil

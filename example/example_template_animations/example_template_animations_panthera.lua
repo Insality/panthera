@@ -17,7 +17,7 @@ return {
                         easing = "linear",
                         key_type = "animation",
                         node_id = "square_animation",
-                        property_id = "default",
+                        property_id = "bounced",
                     },
                     {
                         duration = 0.41,

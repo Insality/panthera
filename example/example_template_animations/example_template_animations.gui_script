@@ -1,11 +1,34 @@
 local panthera = require("panthera.panthera")
 local animation = require("example.example_template_animations.example_template_animations_panthera")
 
+local druid = require("druid.druid")
+local memory_panel = require("druid.widget.memory_panel.memory_panel")
+local fps_panel = require("druid.widget.fps_panel.fps_panel")
+
 function init(self)
+	self.druid = druid.new(self)
+	self.druid:new_widget(memory_panel, "memory_panel")
+	self.druid:new_widget(fps_panel, "fps_panel")
+
 	self.animation = panthera.create_gui(animation)
-	-- gui.animate
-	panthera.play(self.animation, "default", { is_loop = true })
 
 	-- Using set_time
 	--panthera.play_tweener(self.animation, "default", { is_loop = true })
+
+	timer.trigger(timer.delay(4, true, function()
+		self._is_playing = not self._is_playing
+		if self._is_playing then
+			panthera.play(self.animation, "default", { is_loop = true })
+		else
+			panthera.stop(self.animation)
+		end
+	end))
+end
+
+function remove(self)
+	self.druid:remove()
+end
+
+function update(self, dt)
+	self.druid:update(dt)
 end

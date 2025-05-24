@@ -68,16 +68,12 @@ end
 ---@param animation_id string
 ---@param options panthera.options|nil
 function M.play(animation_state, animation_id, options)
+	assert(animation_state, "Can't play animation, animation_state is nil")
 	options = options or EMPTY_OPTIONS
-
-	if not animation_state then
-		panthera_internal.logger:error("Can't play animation, animation_state is nil")
-		return
-	end
 
 	local animation_data = panthera_internal.get_animation_data(animation_state)
 	if not animation_data then
-		panthera_internal.logger:warn("Can't play animation, animation_data is nil", {
+		panthera_internal.logger:error("Can't play animation, animation_data is nil", {
 			animation_path = animation_state.animation_path,
 			animation_id = animation_id,
 		})
@@ -86,9 +82,9 @@ function M.play(animation_state, animation_id, options)
 
 	local animation = panthera_internal.get_animation_by_animation_id(animation_data, animation_id)
 	if not animation then
-		panthera_internal.logger:warn("Animation is not found", {
+		panthera_internal.logger:error("Animation is not found", {
 			animation_path = animation_state.animation_path,
-			animation_meta = animation_data.metadata and animation_data.metadata.gui_path,
+			binded_to = animation_data.metadata and animation_data.metadata.gui_path,
 			animation_id = animation_id,
 		})
 		return nil
@@ -264,7 +260,7 @@ function M.update_animation(animation, animation_state, options)
 
 						M.play(child_state, key.property_id, {
 							easing = key.easing,
-							is_skip_init = true,
+							is_skip_init = false, -- Editor works in "false" mode always, so until editor support this, we should use false
 							speed = play_speed,
 							callback = function()
 								panthera_internal.remove_child_animation(animation_state, child_state)
@@ -302,7 +298,7 @@ function M.update_animation(animation, animation_state, options)
 						M.play(template_state, key.property_id, {
 							-- TODO: is any cases when we want to use false here? Editor works like it false now
 							-- Real case: looped animation should be reset to correct visuals
-							is_skip_init = false,
+							is_skip_init = false, -- Editor works in "false" mode always, so until editor support this, we should use false
 							easing = key.easing,
 							speed = play_speed,
 							callback = function()
@@ -370,7 +366,7 @@ end
 ---@param animation_id string
 ---@param options panthera.options?
 ---@async
-function M.play_async(animation_state, animation_id, options)
+function M.async_play(animation_state, animation_id, options)
 	local co = coroutine.running()
 	if not co then
 		panthera_internal.logger:error("Can't play animation, coroutine is not running")
