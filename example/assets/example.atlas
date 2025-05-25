@@ -1,34 +1,58 @@
 images {
   image: "/example/assets/panthera.png"
-  sprite_trim_mode: SPRITE_TRIM_MODE_OFF
 }
 images {
   image: "/example/assets/ui_circle.png"
-  sprite_trim_mode: SPRITE_TRIM_MODE_OFF
 }
 images {
   image: "/example/assets/ui_rect_round_16.png"
-  sprite_trim_mode: SPRITE_TRIM_MODE_OFF
 }
 images {
   image: "/example/assets/empty.png"
-  sprite_trim_mode: SPRITE_TRIM_MODE_OFF
 }
 images {
   image: "/example/assets/pixel.png"
-  sprite_trim_mode: SPRITE_TRIM_MODE_OFF
 }
 images {
   image: "/example/assets/ui_rect_round_32.png"
-  sprite_trim_mode: SPRITE_TRIM_MODE_OFF
 }
 images {
   image: "/example/assets/ui_rect_round_64.png"
-  sprite_trim_mode: SPRITE_TRIM_MODE_OFF
 }
-margin: 0
+images {
+  image: "/tmpfile/avatar_bandit.png"
+}
+images {
+  image: "/tmpfile/avatar_dragon.png"
+}
+images {
+  image: "/tmpfile/avatar_dumb.png"
+}
+images {
+  image: "/tmpfile/avatar_girl.png"
+}
+images {
+  image: "/tmpfile/avatar_king.png"
+}
+images {
+  image: "/tmpfile/avatar_monkey.png"
+}
+images {
+  image: "/tmpfile/avatar_octopus.png"
+}
+images {
+  image: "/tmpfile/avatar_pirate.png"
+}
+images {
+  image: "/tmpfile/avatar_queen.png"
+}
+images {
+  image: "/tmpfile/avatar_unipig.png"
+}
+images {
+  image: "/tmpfile/avatar_voodoo.png"
+}
+images {
+  image: "/tmpfile/avatar_wizard.png"
+}
 extrude_borders: 2
-inner_padding: 0
-max_page_width: 0
-max_page_height: 0
-rename_patterns: ""

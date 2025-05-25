@@ -14,18 +14,10 @@ function init(self)
 
 	-- Using set_time
 	--panthera.play_tweener(self.animation, "default", { is_loop = true })
-
-	timer.trigger(timer.delay(4, true, function()
-		self._is_playing = not self._is_playing
-		if self._is_playing then
-			panthera.play(self.animation, "default", { is_loop = true })
-		else
-			panthera.stop(self.animation)
-		end
-	end))
+	panthera.play(self.animation, "default", { is_loop = true, speed = 0.4 })
 end
 
-function remove(self)
+function final(self)
 	self.druid:remove()
 end
 

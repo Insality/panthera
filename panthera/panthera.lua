@@ -11,6 +11,9 @@ local M = {
 
 local TIMER_DELAY = 1/60
 local EMPTY_OPTIONS = {}
+M.OPTIONS_LOOP = { is_loop = true }
+M.OPTIONS_SKIP_INIT = { is_skip_init = true }
+M.OPTIONS_SKIP_INIT_LOOP = { is_skip_init = true, is_loop = true }
 
 
 ---Customize the logging mechanism used by **Panthera Runtime**. You can use **Defold Log** library or provide a custom logger.
@@ -128,6 +131,11 @@ function M.play(animation_state, animation_id, options)
 	animation_state.timer_id = timer.delay(TIMER_DELAY, true, function()
 		local current_time = socket.gettime()
 		local dt = current_time - last_time
+
+		if dt < 0.001 then
+			return
+		end
+
 		last_time = current_time
 		local speed = (options.speed or 1) * animation_state.speed * M.SPEED
 
@@ -175,9 +183,6 @@ function M.play_tweener(animation_state, animation_id, options)
 	local total_duration = animation.duration / (options.speed or 1)
 	local from = options.from or 0
 	local to = options.to or animation.duration
-	if options.is_reverse then
-		from, to = to, from
-	end
 
 	if animation_state.timer_id then
 		timer.cancel(animation_state.timer_id)
@@ -253,9 +258,10 @@ function M.update_animation(animation, animation_state, options)
 					table.insert(animation_state.childs, child_state)
 					local animation_duration = M.get_duration(child_state, key.property_id)
 
-					if animation_duration > 0 and key.duration > 0 then
+					local key_duration = (key.duration - time_overflow)
+					-- TODO: Do we need set time if key_duration is <= 0?
+					if animation_duration > 0 and key_duration > 0 then
 						local speed = (options.speed or 1) * animation_state.speed * M.SPEED
-						local key_duration = (key.duration - time_overflow)
 						local play_speed = (animation_duration / key_duration) * speed
 
 						M.play(child_state, key.property_id, {
