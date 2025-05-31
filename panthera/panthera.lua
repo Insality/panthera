@@ -367,28 +367,6 @@ function M.play_detached(animation_state, animation_id, options)
 end
 
 
----Play animation asynchronously
----@param animation_state panthera.animation
----@param animation_id string
----@param options panthera.options?
----@async
-function M.async_play(animation_state, animation_id, options)
-	local co = coroutine.running()
-	if not co then
-		panthera_internal.logger:error("Can't play animation, coroutine is not running")
-		return
-	end
-
-	options = options or {}
-	options.callback = function(...)
-		coroutine.resume(co, ...)
-	end
-	M.play(animation_state, animation_id, options)
-
-	return coroutine.yield()
-end
-
-
 ---Set animation state at specific time. This will stop animation if it's playing
 ---@param animation_state panthera.animation
 ---@param animation_id string
