@@ -19,10 +19,11 @@ Defold integration allows you to start create animations directly from the Defol
 
 - **🎯 Template Animations** - Reuse animations from your GUI templates and collection files which is already created or create new animation files for these templates directly from the **Panthera 2.0 Editor**.
 
-- **📦 Lightweight & Fast** - Tiny editor download under 10MB with minimal system requirements. Runs smoothly on any modern computer without heavy dependencies or bloated installation.
+- **🎨 Intuitive Interface** - Simple and easy to use interface with a focus on creating animations quickly and efficiently. I put a lot of effort to make the interface as simple as possible.
+
+- **📦 Lightweight & Fast** - Tiny editor download under 10MB. Runs smoothly on any modern computer without any dependencies or bloated installation.
 
 - **🌟 Standalone Flexibility** - While built specifically for Defold, can be used independently or adapted for other game engines. Create layouts manually inside Panthera for non-Defold projects _(custom runtime implementation required)_.
-
 
 
 ## Download
