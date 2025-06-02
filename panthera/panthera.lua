@@ -3,6 +3,28 @@ local adapter_go = require("panthera.adapters.adapter_go")
 local adapter_gui = require("panthera.adapters.adapter_gui")
 local panthera_internal = require("panthera.panthera_internal")
 
+---@class panthera.animation
+---@field adapter panthera.adapter Adapter to use for animation
+---@field speed number All animation speed multiplier
+---@field current_time number Current animation time
+---@field nodes table Animation nodes used in animation
+---@field childs panthera.animation[]|nil List of active child animations
+---@field get_node fun(node_id: string): node Function to get node by node_id. Default is defined in adapter
+---@field animation_id string|nil Current animation id
+---@field previous_animation_id string|nil Previous runned animation id
+---@field animation_path string Animation path to JSON file
+---@field animation_keys_index number Animation keys index
+---@field events table|nil List of events triggered in this animation loop
+---@field timer_id number|nil Timer id for animation
+
+---@class panthera.options
+---@field is_loop boolean|nil If true, the animation will loop with trigger callback each loop
+---@field is_skip_init boolean|nil If true, the animation will skip the init state and starts from current state
+---@field speed number|nil Animation speed multiplier, default is 1
+---@field easing string|constant|nil Easing function for play animation with. Will use tweener + set_time to play non-linear animation (slower performance)
+---@field callback (fun(animation_id: string):nil)|nil Callback when animation is finished
+---@field callback_event (fun(event_id: string, node: node|nil, string_value: string, number_value: number): nil)|nil Callback when animation trigger event
+
 ---@class panthera
 ---@field SPEED number Default speed of all animations
 local M = {
@@ -11,6 +33,8 @@ local M = {
 
 local TIMER_DELAY = 1/60
 local EMPTY_OPTIONS = {}
+
+-- Set of predefined options
 M.OPTIONS_LOOP = { is_loop = true }
 M.OPTIONS_SKIP_INIT = { is_skip_init = true }
 M.OPTIONS_SKIP_INIT_LOOP = { is_skip_init = true, is_loop = true }

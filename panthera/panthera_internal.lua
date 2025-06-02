@@ -1,5 +1,23 @@
 local tweener = require("tweener.tweener")
 
+---@class panthera.adapter
+---@field get_node fun(node_id: string): node Function to get node by node_id.
+---@field get_easing fun(easing_id: string): hash Function to get defold easing by easing_id. Default is gui.EASING
+---@field tween_animation_key fun(node: node, property_id: string, easing: hash|number[], duration: number, end_value: number): nil Function to tween animation key.
+---@field trigger_animation_key fun(node: node, property_id: string, value: any): nil Function to trigger animation key.
+---@field event_animation_key fun(node: node, key: panthera.animation.data.animation_key): nil Function to trigger event in animation.
+---@field set_node_property fun(node: node, property_id: string, value: number|string): boolean Function to set node property. Return true if success
+---@field get_node_property fun(node: node, property_id: string): number|string|boolean|nil Function to get node property
+---@field stop_tween fun(node: node, property_id: string): nil Function to stop tween animation key
+---@field is_node_valid fun(node: node): boolean Function to check if node is valid
+
+---@class panthera.logger
+---@field trace fun(logger: panthera.logger, message: string, data: any|nil)
+---@field debug fun(logger: panthera.logger, message: string, data: any|nil)
+---@field info fun(logger: panthera.logger, message: string, data: any|nil)
+---@field warn fun(logger: panthera.logger, message: string, data: any|nil)
+---@field error fun(logger: panthera.logger, message: string, data: any|nil)
+
 local M = {}
 
 M.KEY_TYPE = {
