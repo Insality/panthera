@@ -5,25 +5,25 @@ local panthera_internal = require("panthera.panthera_internal")
 
 ---@class panthera.animation
 ---@field adapter panthera.adapter Adapter to use for animation
----@field speed number All animation speed multiplier
+---@field speed number Animation speed multiplier
 ---@field current_time number Current animation time
 ---@field nodes table Animation nodes used in animation
----@field childs panthera.animation[]|nil List of active child animations
----@field get_node fun(node_id: string): node Function to get node by node_id. Default is defined in adapter
----@field animation_id string|nil Current animation id
----@field previous_animation_id string|nil Previous runned animation id
+---@field childs panthera.animation[]? List of active child animations
+---@field get_node fun(node_id: string): node Function to get node by node_id
+---@field animation_id string? Current animation ID
+---@field previous_animation_id string? Previous animation ID
 ---@field animation_path string Animation path to JSON file
 ---@field animation_keys_index number Animation keys index
----@field events table|nil List of events triggered in this animation loop
----@field timer_id number|nil Timer id for animation
+---@field events table? List of events triggered in this animation loop
+---@field timer_id number? Timer ID for animation
 
 ---@class panthera.options
----@field is_loop boolean|nil If true, the animation will loop with trigger callback each loop
----@field is_skip_init boolean|nil If true, the animation will skip the init state and starts from current state
----@field speed number|nil Animation speed multiplier, default is 1
----@field easing string|constant|nil Easing function for play animation with. Will use tweener + set_time to play non-linear animation (slower performance)
----@field callback (fun(animation_id: string):nil)|nil Callback when animation is finished
----@field callback_event (fun(event_id: string, node: node|nil, string_value: string, number_value: number): nil)|nil Callback when animation trigger event
+---@field is_loop boolean? Loop the animation. Triggers the callback at each loop end if set to `true`
+---@field is_skip_init boolean? Start animation from its current state, skipping initial setup
+---@field speed number? Playback speed multiplier (default `1`). Values >1 increase speed, <1 decrease
+---@field easing string|constant? Easing function for animation. Will use tweener for non-linear animation (slower performance)
+---@field callback (fun(animation_id: string):nil)? Function called when the animation finishes. Receives `animation_id`
+---@field callback_event (fun(event_id: string, node: node?, string_value: string, number_value: number): nil)? Function triggered by animation events
 
 ---@class panthera
 ---@field SPEED number Default speed of all animations
@@ -40,48 +40,48 @@ M.OPTIONS_SKIP_INIT = { is_skip_init = true }
 M.OPTIONS_SKIP_INIT_LOOP = { is_skip_init = true, is_loop = true }
 
 
----Customize the logging mechanism used by **Panthera Runtime**. You can use **Defold Log** library or provide a custom logger.
----@param logger_instance panthera.logger|table|nil
+---Customize the logging mechanism used by Panthera Runtime. You can use Defold Log library or provide a custom logger.
+---@param logger_instance panthera.logger|table? A logger object that follows the specified logging interface. Pass nil to use empty logger
 function M.set_logger(logger_instance)
 	panthera_internal.logger = logger_instance or panthera_internal.empty_logger
 end
 
 
----Load animation from JSON file or direct data and create it with Panthera GO adapter
----@param animation_path_or_data string|table Path to JSON animation file in custom resources or table with animation data
----@param collection_name string|nil Collection name to load nodes from. Pass nil if no collection is used
----@param objects table<string|hash, string|hash>|nil Table with game objects from collectionfactory. Pass nil if no objects are used
----@return panthera.animation Animation data or nil if animation can't be loaded, error message
+---Load and create a game object animation state from a Lua table or JSON file.
+---@param animation_path_or_data string|table Lua table with animation data or path to JSON animation file in custom resources
+---@param collection_name string? Collection name to load nodes from. Pass nil if no collection is used
+---@param objects table<string|hash, string|hash>? Table with game objects from collectionfactory. Pass nil if no objects are used
+---@return panthera.animation? Animation state or nil if animation can't be loaded
 function M.create_go(animation_path_or_data, collection_name, objects)
 	local get_node = adapter_go.create_get_node_function(collection_name, objects)
 	return panthera_internal.create_animation_state(animation_path_or_data, adapter_go, get_node)
 end
 
 
----Load animation from JSON file or direct data and create it with Panthera GUI adapter
----@param animation_path_or_data string|table Path to JSON animation file in custom resources or table with animation data
----@param template string|nil The GUI template id to load nodes from. Pass nil if no template is used
----@param nodes table<string|hash, node>|nil Table with nodes from gui.clone_tree() function. Pass nil if no nodes are used
----@return panthera.animation Animation data or nil if animation can't be loaded, error message
+---Load and create a GUI animation state from a Lua table or JSON file.
+---@param animation_path_or_data string|table Lua table with animation data or path to JSON animation file in custom resources
+---@param template string? The GUI template ID to load nodes from. Pass nil if no template is used
+---@param nodes table<string|hash, node>? Table with nodes from gui.clone_tree() function. Pass nil if no nodes are used
+---@return panthera.animation? Animation state or nil if animation can't be loaded
 function M.create_gui(animation_path_or_data, template, nodes)
 	local get_node = adapter_gui.create_get_node_function(template, nodes)
 	return panthera_internal.create_animation_state(animation_path_or_data, adapter_gui, get_node)
 end
 
 
----Load animation from JSON file
----@param animation_path_or_data string|table Path to JSON animation file in custom resources or table with animation data
----@param adapter panthera.adapter
----@param get_node (fun(node_id: string): node) Function to get node by node_id. Default is defined in adapter
----@return panthera.animation Animation data or nil if animation can't be loaded, error message
+---Load an animation from a Lua table or JSON file and create an animation state using a specified adapter.
+---@param animation_path_or_data string|table Lua table with animation data or path to JSON animation file in custom resources
+---@param adapter panthera.adapter An adapter object that specifies how Panthera Runtime interacts with Engine
+---@param get_node (fun(node_id: string): node) Function to get node by node_id. A custom function to resolve nodes by their ID
+---@return panthera.animation? Animation state or nil if animation can't be loaded
 function M.create(animation_path_or_data, adapter, get_node)
 	return panthera_internal.create_animation_state(animation_path_or_data, adapter, get_node)
 end
 
 
----Create identical copy of animation state to run it in parallel
----@param animation_state panthera.animation
----@return panthera.animation New animation state or nil if animation can't be cloned
+---Clone an existing animation state object, enabling multiple instances of the same animation to play simultaneously or independently.
+---@param animation_state panthera.animation The animation state object to clone
+---@return panthera.animation? New animation state object that is a copy of the original
 function M.clone_state(animation_state)
 	local adapter = animation_state.adapter
 	local get_node = animation_state.get_node
@@ -91,9 +91,10 @@ function M.clone_state(animation_state)
 end
 
 
----@param animation_state panthera.animation
----@param animation_id string
----@param options panthera.options|nil
+---Play an animation with specified ID and options.
+---@param animation_state panthera.animation The animation state object returned by `create_go` or `create_gui`
+---@param animation_id string The ID of the animation to play
+---@param options panthera.options? Options for the animation playback
 function M.play(animation_state, animation_id, options)
 	assert(animation_state, "Can't play animation, animation_state is nil")
 	options = options or EMPTY_OPTIONS
@@ -170,10 +171,10 @@ function M.play(animation_state, animation_id, options)
 end
 
 
--- TODO: make it inside play somehow
----@param animation_state panthera.animation
----@param animation_id string
----@param options panthera.options_tweener|nil
+---Play animation with easing support using tweener. Allows for non-linear animation playback with custom easing functions.
+---@param animation_state panthera.animation The animation state object
+---@param animation_id string The ID of the animation to play
+---@param options panthera.options_tweener? Options including easing function, speed, and callbacks
 function M.play_tweener(animation_state, animation_id, options)
 	options = options or EMPTY_OPTIONS
 
@@ -362,10 +363,13 @@ function M.update_animation(animation, animation_state, options)
 end
 
 
--- TODO: make it inside play somehow
----Play animation as a child of the current animation state
----@param animation_state panthera.animation
----@param animation_id string
+---Play animation as a child of the current animation state, allowing multiple animations to run independently and simultaneously.
+---
+---This creates a detached animation that runs in parallel with the main animation state without affecting it.
+---The child animation will be automatically cleaned up when it completes.
+---@param animation_state panthera.animation The parent animation state object
+---@param animation_id string The ID of the animation to play as a detached child
+---@param options panthera.options? Options for the detached animation playback
 function M.play_detached(animation_state, animation_id, options)
 	options = options or EMPTY_OPTIONS
 
@@ -391,12 +395,12 @@ function M.play_detached(animation_state, animation_id, options)
 end
 
 
----Set animation state at specific time. This will stop animation if it's playing
----@param animation_state panthera.animation
----@param animation_id string
----@param time number
+---Set the current time of an animation. This function stops any currently playing animation.
+---@param animation_state panthera.animation The animation state object returned by `create_go` or `create_gui`.
+---@param animation_id string The ID of the animation to modify.
+---@param time number The target time in seconds to which the animation should be set.
 ---@param event_callback fun(event_id: string, node: node|nil, string_value: string, number_value: number)|nil
----@return boolean result Animation state or nil if animation can't be set
+---@return boolean result True if animation state was set successfully, false if animation can't be set
 function M.set_time(animation_state, animation_id, time, event_callback)
 	local animation_data = panthera_internal.get_animation_data(animation_state)
 	if not animation_data then
@@ -442,15 +446,15 @@ end
 
 
 ---Retrieve the current playback time in seconds of an animation. If the animation is not playing, the function returns 0.
----@param animation_state panthera.animation
+---@param animation_state panthera.animation The animation state object
 ---@return number Current animation time in seconds
 function M.get_time(animation_state)
 	return animation_state.current_time
 end
 
 
----Stop playing animation. The animation will be stopped at current time.
----@param animation_state panthera.animation
+---Stop a currently playing animation. The animation will be stopped at current time.
+---@param animation_state panthera.animation The animation state object to stop
 ---@return boolean True if animation was stopped, false if animation is not playing
 function M.stop(animation_state)
 	if not animation_state then
@@ -486,9 +490,9 @@ end
 
 
 ---Retrieve the total duration of a specific animation.
----@param animation_state panthera.animation
----@param animation_id string
----@return number
+---@param animation_state panthera.animation The animation state object
+---@param animation_id string The ID of the animation whose duration you want to retrieve
+---@return number The total duration of the animation in seconds
 function M.get_duration(animation_state, animation_id)
 	local animation_data = panthera_internal.get_animation_data(animation_state)
 	assert(animation_data, "Animation data is not loaded")
@@ -501,24 +505,24 @@ end
 
 
 ---Check if an animation is currently playing.
----@param animation_state panthera.animation
----@return boolean
+---@param animation_state panthera.animation The animation state object
+---@return boolean True if the animation is currently playing, false otherwise
 function M.is_playing(animation_state)
 	return animation_state.timer_id ~= nil
 end
 
 
 ---Get the ID of the last animation that was started.
----@param animation_state panthera.animation Animation state
----@return string|nil Animation id or nil if animation is not playing
+---@param animation_state panthera.animation The animation state object
+---@return string? Animation ID or nil if no animation was started
 function M.get_latest_animation_id(animation_state)
 	return animation_state.animation_id or animation_state.previous_animation_id
 end
 
 
---- Return a list of animation ids from the created animation state
----@param animation_state panthera.animation
----@return string[]
+---Return a list of animation IDs from the created animation state.
+---@param animation_state panthera.animation The animation state object
+---@return string[] Array of animation IDs available in the animation state
 function M.get_animations(animation_state)
 	local animation_data = panthera_internal.get_animation_data(animation_state)
 	if not animation_data then
@@ -535,11 +539,11 @@ function M.get_animations(animation_state)
 end
 
 
----Desktop Only. Reload animation from JSON file. All current animation will be updated on the next play() function
----or after the next set_time() function
----Animation will be reloaded only at desktop. Only if we have a Panthera file
----inside resources with the user folder directory path
----@param animation_path string|nil If nil - reload all loaded animations
+---Reload animations from JSON files, useful for development and debugging.
+---
+---The animations loaded from Lua tables will not be reloaded.
+---Animation will be reloaded only at desktop.
+---@param animation_path string? Specific animation to reload. If omitted, all loaded animations are reloaded
 function M.reload_animation(animation_path)
 	if animation_path then
 		panthera_internal.load(animation_path, true)
