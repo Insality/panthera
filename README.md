@@ -49,6 +49,36 @@ After that, select `Project ▸ Fetch Libraries` to update [library dependencies
 | HTML5            | **12.42 KB** |
 | Desktop / Mobile | **21.35 KB** |
 
+## Basic Usage
+
+### GUI
+
+```lua
+local panthera = require("panthera.panthera")
+local animation = require("gui.my_gui_panthera") -- Path to Lua animation file
+
+function init(self)
+	self.animation = panthera.create_gui(animation)
+	panthera.play(self.animation, "default", {
+		is_loop = true
+	})
+end
+```
+
+### Collections
+
+```lua
+local panthera = require("panthera.panthera")
+local animation = require("entities.my_entity_panthera") -- Path to Lua animation file
+
+function init(self)
+	self.animation = panthera.create_go(animation)
+	panthera.play(self.animation, "default", {
+		is_loop = true
+	})
+end
+```
+
 
 ## API Reference
 
