@@ -61,7 +61,7 @@ end
 ---@param animation_path_or_data string|table Lua table with animation data or path to JSON animation file in custom resources
 ---@param collection_name string? Collection name to load nodes from. Pass nil if no collection is used
 ---@param objects table<string|hash, string|hash>? Table with game objects from collectionfactory. Pass nil if no objects are used
----@return panthera.animation? Animation state or nil if animation can't be loaded
+---@return panthera.animation animation Animation state or nil if animation can't be loaded
 function M.create_go(animation_path_or_data, collection_name, objects)
 	local get_node = adapter_go.create_get_node_function(collection_name, objects)
 	return panthera_internal.create_animation_state(animation_path_or_data, adapter_go, get_node)
@@ -72,7 +72,7 @@ end
 ---@param animation_path_or_data string|table Lua table with animation data or path to JSON animation file in custom resources
 ---@param template string? The GUI template ID to load nodes from. Pass nil if no template is used
 ---@param nodes table<string|hash, node>? Table with nodes from gui.clone_tree() function. Pass nil if no nodes are used
----@return panthera.animation? Animation state or nil if animation can't be loaded
+---@return panthera.animation animation Animation state or nil if animation can't be loaded
 function M.create_gui(animation_path_or_data, template, nodes)
 	local get_node = adapter_gui.create_get_node_function(template, nodes)
 	return panthera_internal.create_animation_state(animation_path_or_data, adapter_gui, get_node)
@@ -83,7 +83,7 @@ end
 ---@param animation_path_or_data string|table Lua table with animation data or path to JSON animation file in custom resources
 ---@param adapter panthera.adapter An adapter object that specifies how Panthera Runtime interacts with Engine
 ---@param get_node (fun(node_id: string): node) Function to get node by node_id. A custom function to resolve nodes by their ID
----@return panthera.animation? Animation state or nil if animation can't be loaded
+---@return panthera.animation animation Animation state or nil if animation can't be loaded
 function M.create(animation_path_or_data, adapter, get_node)
 	return panthera_internal.create_animation_state(animation_path_or_data, adapter, get_node)
 end
