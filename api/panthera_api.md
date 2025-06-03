@@ -47,13 +47,13 @@ Customize the logging mechanism used by **Panthera Runtime**. You can use **Defo
 
 ---
 ```lua
-panthera.create_go(animation_path_or_data, [collection_name], [objects])
+panthera.create_go(animation_data_or_path, [collection_name], [objects])
 ```
 
 Load animation from JSON file or direct data and create it with Panthera GO adapter
 
 - **Parameters:**
-	- `animation_path_or_data` *(string|table)*: Path to JSON animation file in custom resources or table with animation data
+	- `animation_data_or_path` *(string|table)*: Path to JSON animation file in custom resources or table with animation data
 	- `[collection_name]` *(string|nil)*: Collection name to load nodes from. Pass nil if no collection is used
 	- `[objects]` *(table<string|hash, string|hash>|nil)*: Table with game objects from collectionfactory. Pass nil if no objects are used
 
@@ -64,13 +64,13 @@ Load animation from JSON file or direct data and create it with Panthera GO adap
 
 ---
 ```lua
-panthera.create_gui(animation_path_or_data, [template], [nodes])
+panthera.create_gui(animation_data_or_path, [template], [nodes])
 ```
 
 Load animation from JSON file or direct data and create it with Panthera GUI adapter
 
 - **Parameters:**
-	- `animation_path_or_data` *(string|table)*: Path to JSON animation file in custom resources or table with animation data
+	- `animation_data_or_path` *(string|table)*: Path to JSON animation file in custom resources or table with animation data
 	- `[template]` *(string|nil)*: The GUI template id to load nodes from. Pass nil if no template is used
 	- `[nodes]` *(table<string|hash, node>|nil)*: Table with nodes from gui.clone_tree() function. Pass nil if no nodes are used
 
@@ -81,13 +81,13 @@ Load animation from JSON file or direct data and create it with Panthera GUI ada
 
 ---
 ```lua
-panthera.create(animation_path_or_data, adapter, get_node)
+panthera.create(animation_data_or_path, adapter, get_node)
 ```
 
 Load animation from JSON file
 
 - **Parameters:**
-	- `animation_path_or_data` *(string|table)*: Path to JSON animation file in custom resources or table with animation data
+	- `animation_data_or_path` *(string|table)*: Path to JSON animation file in custom resources or table with animation data
 	- `adapter` *(panthera.adapter)*:
 	- `get_node` *(fun(node_id: string):node)*: Function to get node by node_id. Default is defined in adapter
 

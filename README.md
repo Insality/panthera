@@ -58,9 +58,9 @@ Read the [API Reference](api/panthera_api.md) file to see the full API documenta
 
 ```lua
 -- Create animation states
-panthera.create_gui(animation_path_or_data, [template], [nodes])
-panthera.create_go(animation_path_or_data, [collection_name], [objects])
-panthera.create(animation_path_or_data, adapter, get_node)
+panthera.create_gui(animation_data_or_path, [template], [nodes])
+panthera.create_go(animation_data_or_path, [collection_name], [objects])
+panthera.create(animation_data_or_path, adapter, get_node)
 panthera.clone_state(animation_state)
 
 -- Animation control

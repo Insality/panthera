@@ -56,7 +56,7 @@ local tweener = require("tweener.tweener")
 ---@field start_value number
 ---@field end_value number
 ---@field easing string
----@field easing_custom number[]|nil
+---@field easing_custom number[]|vector|nil
 ---@field start_data string
 ---@field data string
 ---@field event_id string
@@ -114,12 +114,12 @@ local IS_DEBUG = sys.get_engine_info().is_debug
 
 
 ---Create animation state
----@param animation_path_or_data string|table Path to JSON animation file in custom resources or table with animation data
+---@param animation_data_or_path string|table Path to JSON animation file in custom resources or table with animation data
 ---@param adapter panthera.adapter
 ---@param get_node (fun(node_id: string): node) Function to get node by node_id. Default is defined in adapter
 ---@return panthera.animation Animation data or nil if animation can't be loaded, error message
-function M.create_animation_state(animation_path_or_data, adapter, get_node)
-	local animation_data, animation_path, error_reason = M.load(animation_path_or_data, false)
+function M.create_animation_state(animation_data_or_path, adapter, get_node)
+	local animation_data, animation_path, error_reason = M.load(animation_data_or_path, false)
 
 	if not animation_data or not animation_path then
 		M.logger:error("Can't load Panthera animation", error_reason)
@@ -146,17 +146,17 @@ end
 
 
 ---Load animation from file and store it in cache
----@param animation_path_or_data string|panthera.animation.project_file Path to the animation file or animation table
+---@param animation_data_or_path string|panthera.animation.project_file Path to the animation file or animation table
 ---@param is_cache_reset boolean If true - animation will be reloaded from file. Will be ignored for inline animations
 ---@return panthera.animation.data|nil animation_data
 ---@return string|nil animation_path
 ---@return string|nil error_reason
-function M.load(animation_path_or_data, is_cache_reset)
+function M.load(animation_data_or_path, is_cache_reset)
 	-- If we have already loaded animation table
-	local is_table = type(animation_path_or_data) == TYPE_TABLE
+	local is_table = type(animation_data_or_path) == TYPE_TABLE
 	if is_table then
 		local animation_path = M.get_fake_animation_path()
-		local project_data = animation_path_or_data --[[@as panthera.animation.project_file]]
+		local project_data = animation_data_or_path --[[@as panthera.animation.project_file]]
 
 		local data = project_data.data
 		M.preprocess_animation_keys(data)
@@ -167,8 +167,8 @@ function M.load(animation_path_or_data, is_cache_reset)
 	end
 
 	-- If we have path to the file
-	assert(type(animation_path_or_data) == "string", "Path should be a string")
-	local animation_path = animation_path_or_data --[[@as string]]
+	assert(type(animation_data_or_path) == "string", "Path should be a string")
+	local animation_path = animation_data_or_path --[[@as string]]
 	local is_inline_animation = M.INLINE_ANIMATIONS[animation_path]
 	if is_cache_reset and not is_inline_animation then
 		M.LOADED_ANIMATIONS[animation_path] = nil
@@ -677,7 +677,8 @@ function M.preprocess_animation_keys(data)
 
 			-- Custom easings have more priority than easing and Defold requires vector for custom easing
 			if key.easing_custom and type(key.easing_custom) == "table" then
-				key.easing_custom = vmath.vector(key.easing_custom)
+				local easing_custom = key.easing_custom --[=[@as number[]]=]
+				key.easing_custom = vmath.vector(easing_custom)
 			end
 
 			-- Replace key_type to number for faster comparison
@@ -833,7 +834,7 @@ local path_counter = 0
 ---@private
 function M.get_fake_animation_path()
 	path_counter = path_counter + 1
-	return "panthera_animation_table_" .. path_counter
+	return "panthera_animation_" .. path_counter
 end
 
 
