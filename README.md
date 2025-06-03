@@ -6,13 +6,13 @@
 
 # Panthera Runtime
 
-**Panthera Runtime** - a [Defold](https://defold.com/) library designed to integrate animations created with [**Panthera 2.0 Editor**](/docs_editor/README.md), seamlessly integrate **Panthera 2.0** animations into your Defold projects. This runtime can play animation for Game Objects and GUI nodes with a also a animation cursor support.
+**Panthera Runtime** - a [Defold](https://defold.com/) library designed to seamlessly integrate animations created with [**Panthera 2.0 Editor**](/docs_editor/README.md). This runtime can play animation for Collections and GUI nodes with also a animation cursor support.
 
 ## Features
 
 - **Seamless Integration**: Import and use **Panthera 2.0** directly in Defold with one click.
 - **Full Animation Support**: Supports all animation features provided by **Panthera 2.0**, including events, nested animations, all available properties and more.
-- **Flexible Usage**: Compatible with both Game Objects and GUI nodes in Defold, allowing for flexible usage across different game elements.
+- **Flexible Usage**: Compatible with both Collections and GUI nodes in Defold, allowing for flexible usage across different game elements.
 - **Animation Cursor**: Provides a way to control animation manually, allowing for precise control over playback and synchronization with game events.
 
 ## Panthera 2.0 Editor

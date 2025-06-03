@@ -189,7 +189,7 @@ end
 
 
 ---@param animation_state panthera.animation
----@return panthera.animation.data|nil
+---@return panthera.animation.data
 function M.get_animation_data(animation_state)
 	return M.LOADED_ANIMATIONS[animation_state.animation_path]
 end

@@ -20,6 +20,7 @@ local panthera_internal = require("panthera.panthera_internal")
 ---@class panthera.options
 ---@field is_loop boolean? Loop the animation. Triggers the callback at each loop end if set to `true`
 ---@field is_skip_init boolean? Start animation from its current state, skipping initial setup
+---@field is_detached boolean? Play animation as a detached child of the current animation state, allowing multiple animations to run independently and simultaneously.
 ---@field speed number? Playback speed multiplier (default `1`). Values >1 increase speed, <1 decrease
 ---@field easing string|constant? Easing function for animation. Will use tweener for non-linear animation (slower performance)
 ---@field callback (fun(animation_id: string):nil)? Function called when the animation finishes. Receives `animation_id`
@@ -91,7 +92,7 @@ end
 
 ---Clone an existing animation state object, enabling multiple instances of the same animation to play simultaneously or independently.
 ---@param animation_state panthera.animation The animation state object to clone
----@return panthera.animation? New animation state object that is a copy of the original
+---@return panthera.animation animation New animation state object that is a copy of the original
 function M.clone_state(animation_state)
 	local adapter = animation_state.adapter
 	local get_node = animation_state.get_node
@@ -110,14 +111,6 @@ function M.play(animation_state, animation_id, options)
 	options = options or EMPTY_OPTIONS
 
 	local animation_data = panthera_internal.get_animation_data(animation_state)
-	if not animation_data then
-		panthera_internal.logger:error("Can't play animation, animation_data is nil", {
-			animation_path = animation_state.animation_path,
-			animation_id = animation_id,
-		})
-		return nil
-	end
-
 	local animation = panthera_internal.get_animation_by_animation_id(animation_data, animation_id)
 	if not animation then
 		panthera_internal.logger:error("Animation is not found", {
@@ -167,6 +160,7 @@ function M.play(animation_state, animation_id, options)
 		local current_time = socket.gettime()
 		local dt = current_time - last_time
 
+		-- Weird thing, but when app lose focus for small time, we got a lot of callbacks
 		if dt < 0.001 then
 			return
 		end
