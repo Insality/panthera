@@ -11,7 +11,7 @@
 ## Features
 
 - **Seamless Integration**: Import and use **Panthera 2.0** directly in Defold with one click.
-- **Full Animation Support**: Supports all animation features provided by **Panthera 2.0**, including events, nested animations, all available properties and more.
+- **Full Animation Support**: Supports all animation features provided by **Panthera 2.0** including all available properties, game events, template animations and more.
 - **Flexible Usage**: Compatible with both Collections and GUI nodes in Defold, allowing for flexible usage across different game elements.
 - **Animation Cursor**: Provides a way to control animation manually, allowing for precise control over playback and synchronization with game events.
 
@@ -88,9 +88,9 @@ Read the [API Reference](api/panthera_api.md) file to see the full API documenta
 
 ```lua
 -- Create animation states
-panthera.create_gui(animation_data_or_path, [template], [nodes])
-panthera.create_go(animation_data_or_path, [collection_name], [objects])
-panthera.create(animation_data_or_path, adapter, get_node)
+panthera.create_gui(animation_or_path, [template], [nodes])
+panthera.create_go(animation_or_path, [collection_name], [objects])
+panthera.create(animation_or_path, adapter, get_node)
 panthera.clone_state(animation_state)
 
 -- Animation control

@@ -114,12 +114,12 @@ local IS_DEBUG = sys.get_engine_info().is_debug
 
 
 ---Create animation state
----@param animation_data_or_path string|table Path to JSON animation file in custom resources or table with animation data
+---@param animation_or_path string|table Path to JSON animation file in custom resources or table with animation data
 ---@param adapter panthera.adapter
 ---@param get_node (fun(node_id: string): node) Function to get node by node_id. Default is defined in adapter
----@return panthera.animation Animation data or nil if animation can't be loaded, error message
-function M.create_animation_state(animation_data_or_path, adapter, get_node)
-	local animation_data, animation_path, error_reason = M.load(animation_data_or_path, false)
+---@return panthera.animation animation New animation state object
+function M.create_animation_state(animation_or_path, adapter, get_node)
+	local animation_data, animation_path, error_reason = M.load(animation_or_path, false)
 
 	if not animation_data or not animation_path then
 		M.logger:error("Can't load Panthera animation", error_reason)
@@ -146,17 +146,17 @@ end
 
 
 ---Load animation from file and store it in cache
----@param animation_data_or_path string|panthera.animation.project_file Path to the animation file or animation table
+---@param animation_or_path string|panthera.animation.project_file Path to the animation file or animation table
 ---@param is_cache_reset boolean If true - animation will be reloaded from file. Will be ignored for inline animations
 ---@return panthera.animation.data|nil animation_data
 ---@return string|nil animation_path
 ---@return string|nil error_reason
-function M.load(animation_data_or_path, is_cache_reset)
+function M.load(animation_or_path, is_cache_reset)
 	-- If we have already loaded animation table
-	local is_table = type(animation_data_or_path) == TYPE_TABLE
+	local is_table = type(animation_or_path) == TYPE_TABLE
 	if is_table then
 		local animation_path = M.get_fake_animation_path()
-		local project_data = animation_data_or_path --[[@as panthera.animation.project_file]]
+		local project_data = animation_or_path --[[@as panthera.animation.project_file]]
 
 		local data = project_data.data
 		M.preprocess_animation_keys(data)
@@ -167,8 +167,8 @@ function M.load(animation_data_or_path, is_cache_reset)
 	end
 
 	-- If we have path to the file
-	assert(type(animation_data_or_path) == "string", "Path should be a string")
-	local animation_path = animation_data_or_path --[[@as string]]
+	assert(type(animation_or_path) == "string", "Path should be a string")
+	local animation_path = animation_or_path --[[@as string]]
 	local is_inline_animation = M.INLINE_ANIMATIONS[animation_path]
 	if is_cache_reset and not is_inline_animation then
 		M.LOADED_ANIMATIONS[animation_path] = nil
@@ -733,9 +733,9 @@ function M.preprocess_animation_keys(data)
 		local paths = data.metadata.template_animation_paths
 		if paths then
 			-- For each path recursive go deep and record next path with path template/node
-			for node_id, animation_data_or_path in pairs(paths) do
-				if type(animation_data_or_path) == TYPE_TABLE then
-					local animation = animation_data_or_path --[[@as panthera.animation.project_file]]
+			for node_id, animation_or_path in pairs(paths) do
+				if type(animation_or_path) == TYPE_TABLE then
+					local animation = animation_or_path --[[@as panthera.animation.project_file]]
 
 					local child_metapaths = animation.data.metadata.template_animation_paths
 					if child_metapaths then
