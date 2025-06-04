@@ -69,7 +69,7 @@ function M.get_commands()
 				local absolute_path = project_path .. editor.get(opts.selection, "path")
 
 				print("Send Panthera Editor 2.0 Open Command...")
-				http.request("http://localhost:16114/open", {
+				local is_ok, _ = pcall(http.request, "http://localhost:16114/open", {
 					method = "POST",
 					as = "json",
 					body = json.encode({
@@ -77,6 +77,12 @@ function M.get_commands()
 						path = absolute_path
 					})
 				})
+
+				if not is_ok then
+					print("The Panthera Editor 2.0 is not running, please start it first.")
+					print("Download Editor from https://github.com/Insality/panthera/releases")
+					error("The Panthera Editor 2.0 is not running, please start it first.")
+				end
 			end
 		},
 
