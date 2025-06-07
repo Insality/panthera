@@ -451,8 +451,12 @@ function M.get_node(animation_state, node_id)
 
 	if node == nil then
 		local is_ok, result = pcall(animation_state.get_node, node_id)
+		local animation_data = M.get_animation_data(animation_state)
+		local binded_to = animation_data.metadata and animation_data.metadata.gui_path
+
 		if not is_ok then
 			M.logger:warn("Can't get node", {
+				binded_to = binded_to,
 				animation_path = animation_state.animation_path,
 				node_id = node_id,
 			})
