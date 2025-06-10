@@ -467,7 +467,10 @@ function M.get_node(animation_state, node_id)
 	end
 
 	if node == nil then
+		local animation_data = M.get_animation_data(animation_state)
+		local binded_to = animation_data.metadata and animation_data.metadata.gui_path
 		M.logger:warn("Can't find node", {
+			binded_to = binded_to,
 			animation_path = animation_state.animation_path,
 			node_id = node_id
 		})
