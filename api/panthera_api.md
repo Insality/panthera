@@ -154,7 +154,7 @@ Retrieve the current playback time in seconds of an animation. If the animation 
 	- `animation_state` *(panthera.animation)*: The animation state object
 
 - **Returns:**
-	- `Current` *(number)*: animation time in seconds
+	- `seconds` *(number)*: Current animation time in seconds
 
 ### stop
 
@@ -169,7 +169,7 @@ Stop a currently playing animation. The animation will be stopped at current tim
 	- `animation_state` *(panthera.animation)*: The animation state object to stop
 
 - **Returns:**
-	- `True` *(boolean)*: if animation was stopped, false if animation is not playing
+	- `is_stopped` *(boolean)*: True if animation was stopped, false if animation is not playing
 
 ### get_duration
 
@@ -185,7 +185,7 @@ Retrieve the total duration of a specific animation.
 	- `animation_id` *(string)*: The ID of the animation whose duration you want to retrieve
 
 - **Returns:**
-	- `The` *(number)*: total duration of the animation in seconds
+	- `seconds` *(number)*: The total duration of the animation in seconds
 
 ### is_playing
 
@@ -200,7 +200,7 @@ Check if an animation is currently playing.
 	- `animation_state` *(panthera.animation)*: The animation state object
 
 - **Returns:**
-	- `True` *(boolean)*: if the animation is currently playing, false otherwise
+	- `is_playing` *(boolean)*: True if the animation is currently playing, false otherwise
 
 ### get_latest_animation_id
 
@@ -215,7 +215,7 @@ Get the ID of the last animation that was started.
 	- `animation_state` *(panthera.animation)*: The animation state object
 
 - **Returns:**
-	- `Animation` *(string?)*: ID or nil if no animation was started
+	- `animation_id` *(string?)*: Animation ID or nil if no animation was started
 
 ### get_animations
 
@@ -230,7 +230,7 @@ Return a list of animation IDs from the created animation state.
 	- `animation_state` *(panthera.animation)*: The animation state object
 
 - **Returns:**
-	- `Array` *(string[])*: of animation IDs available in the animation state
+	- `animation_ids` *(string[])*: Array of animation IDs available in the animation state
 
 ### reload_animation
 
