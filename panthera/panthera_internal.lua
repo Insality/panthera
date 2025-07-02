@@ -1,6 +1,80 @@
 local tweener = require("tweener.tweener")
 
+---@class panthera.adapter
+---@field get_node fun(node_id: string): node Function to get node by node_id.
+---@field get_easing fun(easing_id: string): hash Function to get defold easing by easing_id. Default is gui.EASING
+---@field tween_animation_key fun(node: node, property_id: string, easing: hash|number[], duration: number, end_value: number): nil Function to tween animation key.
+---@field trigger_animation_key fun(node: node, property_id: string, value: any): nil Function to trigger animation key.
+---@field event_animation_key fun(node: node, key: panthera.animation.data.animation_key): nil Function to trigger event in animation.
+---@field set_node_property fun(node: node, property_id: string, value: number|string): boolean Function to set node property. Return true if success
+---@field get_node_property fun(node: node, property_id: string): number|string|boolean|nil Function to get node property
+---@field stop_tween fun(node: node, property_id: string): nil Function to stop tween animation key
+---@field is_node_valid fun(node: node): boolean Function to check if node is valid
+
+---@class panthera.logger
+---@field trace fun(logger: panthera.logger, message: string, data: any|nil)
+---@field debug fun(logger: panthera.logger, message: string, data: any|nil)
+---@field info fun(logger: panthera.logger, message: string, data: any|nil)
+---@field warn fun(logger: panthera.logger, message: string, data: any|nil)
+---@field error fun(logger: panthera.logger, message: string, data: any|nil)
+
+---@class panthera.animation.data.node
+
+---@class panthera.animation.data.metadata
+---@field gui_path string
+---@field fps number
+---@field settings table
+---@field gizmo_steps table
+---@field template_animation_paths table<string, string> template_animation_paths[node_id]: path. Value filled at loading animation data
+
+---@class panthera.animation.data.animation
+---@field duration number
+---@field animation_id string
+---@field initial_state string
+---@field animation_keys panthera.animation.data.animation_key[]
+
+---@class panthera.animation.data
+---@field name string
+---@field nodes panthera.animation.data.node[]
+---@field animations panthera.animation.data.animation[]
+---@field metadata panthera.animation.data.metadata
+---@field group_animation_keys table<string, table<string, table<string, panthera.animation.data.animation_key[]>>> group_animation_keys[animation_id][node_id][property_id]: keys[]. Value filled at loading animation data
+---@field animations_dict table<string, panthera.animation.data.animation> animations_dict[animation_id]: animation. Value filled at loading animation data
+
+---@class panthera.animation.project_file
+---@field data panthera.animation.data Animation data
+---@field format string Animation format
+---@field version string Animation version
+---@field type string Animation type. Example: "animation_editor", "atlas"
+
+---@class panthera.animation.data.animation_key
+---@field key_type number
+---@field node_id string
+---@field property_id string
+---@field start_time number
+---@field duration number
+---@field start_value number
+---@field end_value number
+---@field easing string
+---@field easing_custom number[]|vector|nil
+---@field start_data string
+---@field data string
+---@field event_id string
+---@field is_editor_only boolean
+
+
 local M = {}
+
+M.KEY_TYPE = {
+	TRIGGER = 0,
+	TWEEN = 1,
+	EVENT = 2,
+	ANIMATION = 3,
+	["trigger"] = 0,
+	["tween"] = 1,
+	["event"] = 2,
+	["animation"] = 3,
+}
 
 local TYPE_TABLE = "table"
 
@@ -22,32 +96,67 @@ M.logger = {
 	debug = function(_, msg, data) pprint("DEBUG: " .. msg, data) end,
 	info = function(_, msg, data) pprint("INFO: " .. msg, data) end,
 	warn = function(_, msg, data) pprint("WARN: " .. msg, data) end,
-	error = function(_, msg, data) pprint("ERROR: " .. msg, data) end
+	error = function(_, msg, data) pprint(data) error(msg) end
 }
 
 
 ---The list of loaded animations.
----@type table<string, panthera.animation.data> @Animation path -> animation data
+---@type table<string, panthera.animation.data> Animation path -> animation data
 M.LOADED_ANIMATIONS = {}
 
 -- The list of animations that loaded directly from the table. We can't reload them on runtime, and we should not clear them on hot reload
----@type table<string, boolean> @Animation fake path -> true
+---@type table<string, boolean> Animation fake path -> true
 M.INLINE_ANIMATIONS = {}
 
 M.PROJECT_FOLDER = nil -- Current game project folder, used for hot reload animations in debug mode
 M.IS_HOTRELOAD_ANIMATIONS = nil
 local IS_DEBUG = sys.get_engine_info().is_debug
 
+
+---Create animation state
+---@param animation_or_path string|table Path to JSON animation file in custom resources or table with animation data
+---@param adapter panthera.adapter
+---@param get_node (fun(node_id: string): node) Function to get node by node_id. Default is defined in adapter
+---@return panthera.animation animation New animation state object
+function M.create_animation_state(animation_or_path, adapter, get_node)
+	local animation_data, animation_path, error_reason = M.load(animation_or_path, false)
+
+	if not animation_data or not animation_path then
+		M.logger:error("Can't load Panthera animation", error_reason)
+		error(error_reason)
+	end
+
+	-- Create a data structure for animation
+	---@type panthera.animation
+	local animation_state = {
+		nodes = {},
+		speed = 1,
+		childs = nil,
+		timer_id = nil,
+		animation = nil,
+		current_time = 0,
+		adapter = adapter,
+		get_node = get_node,
+		animation_keys_index = 1,
+		animation_path = animation_path,
+	}
+
+	return animation_state
+end
+
+
 ---Load animation from file and store it in cache
----@param animation_path_or_data string|panthera.animation.project_file @Path to the animation file or animation table
----@param is_cache_reset boolean @If true - animation will be reloaded from file. Will be ignored for inline animations
----@return panthera.animation.data|nil, string|nil, string|nil @animation_data, animation_path, error_reason.
-function M.load(animation_path_or_data, is_cache_reset)
+---@param animation_or_path string|panthera.animation.project_file Path to the animation file or animation table
+---@param is_cache_reset boolean If true - animation will be reloaded from file. Will be ignored for inline animations
+---@return panthera.animation.data|nil animation_data
+---@return string|nil animation_path
+---@return string|nil error_reason
+function M.load(animation_or_path, is_cache_reset)
 	-- If we have already loaded animation table
-	local is_table = type(animation_path_or_data) == TYPE_TABLE
+	local is_table = type(animation_or_path) == TYPE_TABLE
 	if is_table then
 		local animation_path = M.get_fake_animation_path()
-		local project_data = animation_path_or_data --[[@as panthera.animation.project_file]]
+		local project_data = animation_or_path --[[@as panthera.animation.project_file]]
 
 		local data = project_data.data
 		M.preprocess_animation_keys(data)
@@ -58,8 +167,8 @@ function M.load(animation_path_or_data, is_cache_reset)
 	end
 
 	-- If we have path to the file
-	assert(type(animation_path_or_data) == "string", "Path should be a string")
-	local animation_path = animation_path_or_data --[[@as string]]
+	assert(type(animation_or_path) == "string", "Path should be a string")
+	local animation_path = animation_or_path --[[@as string]]
 	local is_inline_animation = M.INLINE_ANIMATIONS[animation_path]
 	if is_cache_reset and not is_inline_animation then
 		M.LOADED_ANIMATIONS[animation_path] = nil
@@ -79,8 +188,8 @@ function M.load(animation_path_or_data, is_cache_reset)
 end
 
 
----@param animation_state panthera.animation.state
----@return panthera.animation.data|nil
+---@param animation_state panthera.animation
+---@return panthera.animation.data
 function M.get_animation_data(animation_state)
 	return M.LOADED_ANIMATIONS[animation_state.animation_path]
 end
@@ -90,15 +199,16 @@ end
 ---@param animation_id string
 ---@return panthera.animation.data.animation|nil
 function M.get_animation_by_animation_id(animation_data, animation_id)
-	return animation_data.animations_dict[animation_id]
+	return animation_data.animations_dict[animation_id] or animation_data.animations_dict[hash(animation_id)]
 end
 
 
----@param animation_state panthera.animation.state
+---@param animation_state panthera.animation
 ---@param animation_id string
 ---@param time number
-function M.set_animation_state_at_time(animation_state, animation_id, time)
-	local animation_data = M.get_animation_data(animation_state) --[[@as panthera.animation.data]]
+---@param event_callback fun(event_id: string, node: node|nil, data: any, end_value: number)|nil
+function M.set_animation_state_at_time(animation_state, animation_id, time, event_callback)
+	local animation_data = M.LOADED_ANIMATIONS[animation_state.animation_path]
 	local animation = M.get_animation_by_animation_id(animation_data, animation_id)
 	if not animation then
 		return nil
@@ -108,75 +218,134 @@ function M.set_animation_state_at_time(animation_state, animation_id, time)
 	if animation.initial_state then
 		local initial_animation = M.get_animation_by_animation_id(animation_data, animation.initial_state)
 		if initial_animation then
-			M.set_animation_state_at_time(animation_state, initial_animation.animation_id, initial_animation.duration)
+			M.set_animation_state_at_time(animation_state, initial_animation.animation_id, initial_animation.duration, event_callback)
 		end
 	end
 
 	local group_keys = animation_data.group_animation_keys[animation_id]
 	for node_id, node_keys in pairs(group_keys) do
+		-- It's a regular node
 		if node_id ~= "" then
 			-- Node keys
-			for property_id, _ in pairs(node_keys) do
-				M.set_node_value_at_time(animation_state, animation_id, node_id, property_id, time)
-			end
-		else
-			-- Animation keys
-			for key_animation_id, keys in pairs(node_keys) do
-				-- Find the last triggered animation key
-				---@type panthera.animation.data.animation_key|nil
-				local last_key = nil
-				for index = #keys, 1, -1 do
-					local key = keys[index]
-					if key.start_time <= time then
-						last_key = key
-						break
-					end
+			for property_id, keys in pairs(node_keys) do
+				local is_keys = #keys > 0
+				local is_animation_keys = is_keys and keys[1].key_type == M.KEY_TYPE.ANIMATION
+				local template_animation_id = property_id
+
+				if is_keys and not is_animation_keys then
+					M.set_node_value_at_time(animation_state, animation_id, node_id, property_id, time)
 				end
 
-				if last_key and last_key.key_type == "animation" then
-					local animation_time = time - last_key.start_time
-					animation_time = math.min(animation_time, last_key.duration)
-					M.set_animation_state_at_time(animation_state, key_animation_id, animation_time)
+				local template_paths = animation_data.metadata and animation_data.metadata.template_animation_paths or {}
+				local template_path = template_paths[node_id]
+				if template_path and is_keys and is_animation_keys then
+					-- Grap template path and set it to the nodes
+					local get_node = function(animation_node_id)
+						return animation_state.get_node(node_id .. "/" .. animation_node_id)
+					end
+					local template_state = M.create_animation_state(template_path, animation_state.adapter, get_node)
+					M.set_animation_state_at_time(template_state, template_animation_id, time, event_callback)
 				end
+			end
+
+			local events = node_keys["event"]
+			if events then
+				for index = 1, #events do
+					local key = events[index]
+					if key.start_time <= time then
+						animation_state.events = animation_state.events or {}
+
+						if not animation_state.events[key] then
+							M.event_animation_key(nil, key, key.duration, event_callback)
+							animation_state.events[key] = key
+						end
+					end
+				end
+			end
+		end
+
+		-- It's Animation keys
+		if node_id == "" then
+			-- Animation keys
+			local animation_keys_to_trigger = {}
+			for _, animation_keys in pairs(node_keys) do
+				for index = #animation_keys, 1, -1 do
+					-- Find the last triggered animation key
+					local key = animation_keys[index]
+					if key.start_time <= time and key.key_type == M.KEY_TYPE.ANIMATION then
+						table.insert(animation_keys_to_trigger, key)
+						break
+					end
+
+					-- Trigger all not triggered events
+					if key.start_time <= time and key.key_type == M.KEY_TYPE.EVENT then
+						animation_state.events = animation_state.events or {}
+
+						if not animation_state.events[key] then
+							M.event_animation_key(nil, key, key.duration, event_callback)
+							animation_state.events[key] = key
+						end
+					end
+				end
+			end
+
+			table.sort(animation_keys_to_trigger, M.sort_keys_function)
+
+			for index = 1,	#animation_keys_to_trigger do
+				local animation_key = animation_keys_to_trigger[index]
+				local inner_animation_id = animation_key.property_id
+
+				local animation_time_to_set = time - animation_key.start_time
+				local animation_to_play = M.get_animation_by_animation_id(animation_data, inner_animation_id)
+				local animation_duration = animation_to_play and animation_to_play.duration or 0
+
+				if animation_key.duration == 0 then
+					animation_time_to_set = animation_duration
+				else
+					animation_time_to_set = animation_time_to_set * animation_duration / animation_key.duration
+				end
+
+				M.set_animation_state_at_time(animation_state, inner_animation_id, animation_time_to_set, event_callback)
 			end
 		end
 	end
 end
 
 
----@param animation_state panthera.animation.state
+---@param animation_state panthera.animation
 ---@param animation_id string
 ---@param node_id string
 ---@param property_id string
----@param time number @Pass -1 to get initial value
+---@param time number Pass -1 to get initial value
 ---@return any|nil
 function M.get_node_value_at_time(animation_state, animation_id, node_id, property_id, time)
 	local animation_data = M.get_animation_data(animation_state) --[[@as panthera.animation.data]]
 	local group_keys = animation_data.group_animation_keys[animation_id]
 
-	local keys = group_keys[node_id] and group_keys[node_id][property_id]
-	if not keys then
+	local group = group_keys[node_id]
+	local keys = group and group[property_id]
+	if not keys or #keys == 0 then
 		return nil
 	end
 
 	local initial_key = keys[1]
 
 	local set_value = nil
-	if initial_key.key_type == "trigger" then
+	if initial_key.key_type == M.KEY_TYPE.TRIGGER then
 		set_value = initial_key.start_data
 	end
-	if initial_key.key_type == "tween" then
+	if initial_key.key_type == M.KEY_TYPE.TWEEN then
 		set_value = initial_key.start_value
 	end
 
 	for index = #keys, 1, -1 do
 		local key = keys[index]
 		if key.start_time <= time  then
-			if key.key_type == "tween" then
+			if key.key_type == M.KEY_TYPE.TWEEN then
 				set_value = M.get_key_value_at_time(key, time)
 			end
 
-			if key.key_type == "trigger" then
+			if key.key_type == M.KEY_TYPE.TRIGGER then
 				set_value = key.data
 			end
 
@@ -188,7 +357,7 @@ function M.get_node_value_at_time(animation_state, animation_id, node_id, proper
 end
 
 
----@param animation_state panthera.animation.state
+---@param animation_state panthera.animation
 ---@param animation_id string
 ---@param node_id string
 ---@param property_id string
@@ -196,11 +365,6 @@ end
 ---@return any|nil
 function M.set_node_value_at_time(animation_state, animation_id, node_id, property_id, time)
 	local adapter = animation_state.adapter
-	local animation_data = M.get_animation_data(animation_state) --[[@as panthera.animation.data]]
-	if not animation_data then
-		return nil
-	end
-
 	local node = M.get_node(animation_state, node_id)
 	if not node then
 		return nil
@@ -216,8 +380,42 @@ function M.set_node_value_at_time(animation_state, animation_id, node_id, proper
 end
 
 
+---@param animation_state panthera.animation
+---@param animation_id string
+---@return boolean is_success
+function M.stop_tweens(animation_state, animation_id)
+	local adapter = animation_state.adapter
+	local animation_data = M.get_animation_data(animation_state)
+
+	if not animation_data then
+		M.logger:warn("Can't stop animation, animation_data is nil", {
+			animation_path = animation_state.animation_path,
+			animation_id = animation_id
+		})
+		return false
+	end
+
+	local group_keys = animation_data.group_animation_keys[animation_id]
+	for node_id, node_keys in pairs(group_keys) do
+		for property_id, keys in pairs(node_keys) do
+			local key = keys[1]
+			if key and key.key_type == M.KEY_TYPE.TWEEN then
+				local key_end_time = key.start_time + key.duration
+				local is_finished = key_end_time <= animation_state.current_time
+				local node = M.get_node(animation_state, node_id)
+				if node and not is_finished then
+					adapter.stop_tween(node, property_id)
+				end
+			end
+		end
+	end
+
+	return true
+end
+
+
 ---Reset all animated values in animation id to initial state
----@param animation_state panthera.animation.state
+---@param animation_state panthera.animation
 ---@param animation_id string
 function M.reset_animation_state(animation_state, animation_id)
 	local animation_data = M.get_animation_data(animation_state) --[[@as panthera.animation.data]]
@@ -232,13 +430,16 @@ function M.reset_animation_state(animation_state, animation_id)
 
 	for node_id, node_keys in pairs(group_keys) do
 		for property_id, keys in pairs(node_keys) do
-			M.set_node_value_at_time(animation_state, animation_id, node_id, property_id, -1)
+			local is_animation_keys = #keys > 0 and keys[1].key_type == M.KEY_TYPE.ANIMATION
+			if not is_animation_keys then
+				M.set_node_value_at_time(animation_state, animation_id, node_id, property_id, -1)
+			end
 		end
 	end
 end
 
 
----@param animation_state panthera.animation.state
+---@param animation_state panthera.animation
 ---@param node_id string
 ---@return node|nil
 function M.get_node(animation_state, node_id)
@@ -248,10 +449,14 @@ function M.get_node(animation_state, node_id)
 
 	local node = animation_state.nodes[node_id]
 
-	if not node then
+	if node == nil then
 		local is_ok, result = pcall(animation_state.get_node, node_id)
+		local animation_data = M.get_animation_data(animation_state)
+		local binded_to = animation_data.metadata and animation_data.metadata.gui_path
+
 		if not is_ok then
 			M.logger:warn("Can't get node", {
+				binded_to = binded_to,
 				animation_path = animation_state.animation_path,
 				node_id = node_id,
 			})
@@ -261,11 +466,19 @@ function M.get_node(animation_state, node_id)
 		animation_state.nodes[node_id] = node
 	end
 
-	if not node then
+	if node == nil then
+		local animation_data = M.get_animation_data(animation_state)
+		local binded_to = animation_data.metadata and animation_data.metadata.gui_path
 		M.logger:warn("Can't find node", {
+			binded_to = binded_to,
 			animation_path = animation_state.animation_path,
 			node_id = node_id
 		})
+		return nil
+	end
+
+	if node and not animation_state.adapter.is_node_valid(node) then
+		animation_state.nodes[node_id] = false -- Mark as deleted if node is invalid
 		return nil
 	end
 
@@ -273,14 +486,14 @@ function M.get_node(animation_state, node_id)
 end
 
 
---- Run animation key except "animation" key type
---- It should be processed before as a separate animation
----@param animation_state panthera.animation.state
+---Run animation key except "animation" key type
+---It should be processed before as a separate animation
+---@param animation_state panthera.animation
 ---@param key panthera.animation.data.animation_key
 ---@param options panthera.options
----@return boolean @true if success
-function M.run_timeline_key(animation_state, key, options)
-	local speed = (options.speed or 1) * animation_state.speed
+---@param speed number
+---@return boolean result true if success
+function M.run_timeline_key(animation_state, key, options, speed)
 	assert(speed > 0, "Speed should be greater than 0")
 
 	local adapter = animation_state.adapter
@@ -288,30 +501,23 @@ function M.run_timeline_key(animation_state, key, options)
 	local time_overflow = animation_state.current_time - key.start_time
 	local key_duration = math.max(key.duration - time_overflow, 0) / speed
 
-	if key.key_type == "tween" then
+	if key.key_type == M.KEY_TYPE.TWEEN then
 		if node then
 			local easing = key.easing_custom or adapter.get_easing(key.easing)
 			local delta = key.end_value - key.start_value
 			local start_value = key.start_value
 
-			if options.is_relative then
-				local current_value = adapter.get_node_property(node, key.property_id) --[[@as number]]
-				if current_value then
-					start_value = current_value
-				end
-			end
-
 			adapter.tween_animation_key(node, key.property_id, easing, key_duration, start_value + delta)
 			return true
 		end
 		return false
-	elseif key.key_type == "trigger" then
+	elseif key.key_type == M.KEY_TYPE.TRIGGER then
 		if node then
 			adapter.trigger_animation_key(node, key.property_id, key.data)
 			return true
 		end
 		return false
-	elseif key.key_type == "event" then
+	elseif key.key_type == M.KEY_TYPE.EVENT then
 		M.event_animation_key(node, key, key_duration, options.callback_event)
 		return true
 	end
@@ -322,8 +528,8 @@ end
 
 ---@param node node|nil
 ---@param key panthera.animation.data.animation_key
----@param duration number @Duration of the key, calculated with animation speed and time overflow
----@param callback_event fun(event_id: string, node: node|nil, data: any, end_value: number): nil
+---@param duration number Duration of the key, calculated with animation speed and time overflow
+---@param callback_event fun(event_id: string, node: node|nil, data: any, end_value: number)|nil
 function M.event_animation_key(node, key, duration, callback_event)
 	if not callback_event then
 		return
@@ -333,6 +539,7 @@ function M.event_animation_key(node, key, duration, callback_event)
 		callback_event(key.event_id, node, key.data, key.end_value)
 	else
 		local easing = key.easing_custom or tweener[key.easing] or tweener.linear
+		-- TODO: need to keep tween reference to cancel it
 		tweener.tween(easing, key.start_value, key.end_value, duration, function(value)
 			callback_event(key.event_id, node, key.data, value)
 		end)
@@ -340,8 +547,8 @@ function M.event_animation_key(node, key, duration, callback_event)
 end
 
 
----@param animation_state panthera.animation.state
----@param child_animation_state panthera.animation.state
+---@param animation_state panthera.animation
+---@param child_animation_state panthera.animation
 ---@return boolean
 function M.remove_child_animation(animation_state, child_animation_state)
 	local childs = animation_state.childs
@@ -363,7 +570,8 @@ end
 ---Load the file from full path (only desktop)
 ---@private
 ---@param path string The save path
----@return table|nil, string|nil
+---@return table|nil data
+---@return string|nil error_reason
 function M.load_by_path(path)
 	local file = io.open(path)
 	if file then
@@ -386,7 +594,8 @@ end
 ---Load the file from resource folder inside game
 ---@private
 ---@param path string The resource path
----@return table|nil, string|nil
+---@return table|nil data
+---@return string|nil error_reason
 function M.load_by_resource_path(path)
 	local data, error = sys.load_resource(path)
 	if error then
@@ -409,7 +618,8 @@ end
 ---Load animation from JSON file and return it
 ---@private
 ---@param path string
----@return panthera.animation.data|nil, string|nil
+---@return panthera.animation.data|nil animation_data
+---@return string|nil error_reason
 function M.get_animation_by_path(path)
 	local resource, error
 
@@ -472,15 +682,14 @@ function M.preprocess_animation_keys(data)
 			key.duration = key.duration or 0
 			key.node_id = key.node_id or ""
 
-			-- Remove editor only keys, they are used only in Panthera Editor to preview animations
-			if key.is_editor_only then
-				table.remove(animation.animation_keys, key_index)
+			-- Custom easings have more priority than easing and Defold requires vector for custom easing
+			if key.easing_custom and type(key.easing_custom) == "table" then
+				local easing_custom = key.easing_custom --[=[@as number[]]=]
+				key.easing_custom = vmath.vector(easing_custom)
 			end
 
-			-- Custom easings have more priority than easing and Defold requires vector for custom easing
-			if key.easing_custom then
-				key.easing_custom = vmath.vector(key.easing_custom)
-			end
+			-- Replace key_type to number for faster comparison
+			key.key_type = M.KEY_TYPE[key.key_type] or key.key_type
 		end
 
 		table.sort(animation.animation_keys, M.sort_keys_function)
@@ -491,9 +700,60 @@ function M.preprocess_animation_keys(data)
 	for index = 1, #data.animations do
 		local animation = data.animations[index]
 		data.animations_dict[animation.animation_id] = animation
+		data.animations_dict[hash(animation.animation_id)] = animation
 	end
 
 	data.group_animation_keys = M.get_group_animation_keys(data)
+
+	do -- Process editor_only keys: update start_value and clear them
+		for _, animation in pairs(data.group_animation_keys) do
+			for _, node_keys in pairs(animation) do
+				for _, keys in pairs(node_keys) do
+					for key_index = #keys, 1, -1 do
+						local key = keys[key_index]
+						if key.is_editor_only then
+							local next_key = keys[key_index + 1]
+							if next_key then
+								next_key.start_value = key.start_value
+							end
+
+							table.remove(keys, key_index)
+						end
+					end
+				end
+			end
+		end
+
+		-- Remove editor only keys
+		for index = 1, #data.animations do
+			local animation = data.animations[index]
+			for key_index = #animation.animation_keys, 1, -1 do
+				local key = animation.animation_keys[key_index]
+				if key.is_editor_only then
+					table.remove(animation.animation_keys, key_index)
+				end
+			end
+		end
+	end
+
+	do -- Include all children metadata template_animation_paths recursive
+		local paths = data.metadata.template_animation_paths
+		if paths then
+			-- For each path recursive go deep and record next path with path template/node
+			for node_id, animation_or_path in pairs(paths) do
+				if type(animation_or_path) == TYPE_TABLE then
+					local animation = animation_or_path --[[@as panthera.animation.project_file]]
+
+					local child_metapaths = animation.data.metadata.template_animation_paths
+					if child_metapaths then
+						for child_node_id, child_data in pairs(child_metapaths) do
+							paths[node_id .. "/" .. child_node_id] = child_data
+						end
+					end
+				end
+			end
+		end
+	end
 end
 
 
@@ -509,10 +769,12 @@ function M.get_group_animation_keys(animation_data)
 		local group_keys = {}
 		for key_index = 1, #animation_keys do
 			local key = animation_keys[key_index]
-			group_keys[key.node_id] = group_keys[key.node_id] or {}
-			group_keys[key.node_id][key.property_id] = group_keys[key.node_id][key.property_id] or {}
+			local node_id = key.node_id
+			local property_id = key.property_id
 
-			table.insert(group_keys[key.node_id][key.property_id], key)
+			group_keys[node_id] = group_keys[node_id] or {}
+			group_keys[node_id][property_id] = group_keys[node_id][property_id] or {}
+			table.insert(group_keys[node_id][property_id], key)
 		end
 
 		group_animations[animation.animation_id] = group_keys
@@ -545,7 +807,7 @@ end
 
 ---Get current application folder (only desktop)
 ---@private
----@return string|nil @Current application folder, nil if failed
+---@return string|nil game_project_folder Current application folder, nil if failed
 function M.get_current_game_project_folder()
 	if not io.popen or html5 then
 		return nil
@@ -579,19 +841,16 @@ local path_counter = 0
 ---@private
 function M.get_fake_animation_path()
 	path_counter = path_counter + 1
-	return "panthera_animation_table_" .. path_counter
+	return "panthera_animation_" .. path_counter
 end
 
 
 -- Init hot reload animations
 if IS_DEBUG then
 	M.IS_HOTRELOAD_ANIMATIONS = sys.get_config_int("panthera.hotreload_animations", 0) == 1
-	if M.IS_HOTRELOAD_ANIMATIONS then
-		M.PROJECT_FOLDER = M.get_current_game_project_folder()
-		if not M.PROJECT_FOLDER then
-			M.logger:error("Can't get current game project folder")
-			M.IS_HOTRELOAD_ANIMATIONS = false
-		end
+	M.PROJECT_FOLDER = M.IS_HOTRELOAD_ANIMATIONS and M.get_current_game_project_folder()
+	if not M.PROJECT_FOLDER then
+		M.IS_HOTRELOAD_ANIMATIONS = false
 	end
 end
 

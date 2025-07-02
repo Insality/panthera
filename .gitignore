@@ -10,3 +10,4 @@ deployer_build_stats.csv
 deployer_version_settings.txt
 
 .cache_deployer
+/.editor_settings

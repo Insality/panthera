@@ -273,7 +273,7 @@ local DEFOLD_TRIGGER_SETTER = {
 ---@return fun(node_id: string): node
 local function create_get_node_function(template, nodes)
 	return function(node_id)
-		if template then
+		if template and template ~= "" then
 			node_id = template .. "/" .. node_id
 		end
 
@@ -419,6 +419,7 @@ local M = {
 	tween_animation_key = tween_animation_key,
 	trigger_animation_key = trigger_animation_key,
 	create_get_node_function = create_get_node_function,
+	is_node_valid = function() return true end,
 }
 
 

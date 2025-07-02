@@ -15,6 +15,14 @@ local PROPERTY_TO_TWEEN_PROPERTY = {
 	["color_g"] = hash("color.y"),
 	["color_b"] = hash("color.z"),
 	["color_a"] = hash("color.w"),
+	["shadow_r"] = hash("shadow.x"),
+	["shadow_g"] = hash("shadow.y"),
+	["shadow_b"] = hash("shadow.z"),
+	["shadow_a"] = hash("shadow.w"),
+	["outline_r"] = hash("outline.x"),
+	["outline_g"] = hash("outline.y"),
+	["outline_b"] = hash("outline.z"),
+	["outline_a"] = hash("outline.w"),
 	["slice9_left"] = hash("slice.x"),
 	["slice9_top"] = hash("slice.y"),
 	["slice9_right"] = hash("slice.z"),
@@ -118,7 +126,7 @@ local function create_get_node_function(collection_name, objects)
 			return object_url
 		end
 
-		local object_path = hash("/" .. node_id)
+		local object_path = go.get_id(node_id)
 		if objects then
 			object_path = objects[object_path] --[[@as hash]]
 		end
@@ -175,8 +183,11 @@ end
 ---@param node node
 ---@param property_id string
 local function stop_tween(node, property_id)
-	property_id = PROPERTY_TO_TWEEN_PROPERTY[property_id]
-	go.cancel_animations(node, property_id)
+	local defold_property_id = PROPERTY_TO_TWEEN_PROPERTY[property_id]
+
+	if go.exists(node) then
+		go.cancel_animations(node, defold_property_id)
+	end
 end
 
 
@@ -242,8 +253,8 @@ local function tween_animation_key(node, property_id, easing, duration, end_valu
 	if duration == 0 then
 		set_node_property(node, property_id, end_value)
 	else
-		property_id = PROPERTY_TO_TWEEN_PROPERTY[property_id]
-		go.animate(node, property_id, go.PLAYBACK_ONCE_FORWARD, end_value, easing, duration)
+		local defold_property_id = PROPERTY_TO_TWEEN_PROPERTY[property_id]
+		go.animate(node, defold_property_id, go.PLAYBACK_ONCE_FORWARD, end_value, easing, duration)
 	end
 end
 
@@ -256,6 +267,7 @@ local M = {
 	stop_tween = stop_tween,
 	trigger_animation_key = trigger_animation_key,
 	create_get_node_function = create_get_node_function,
+	is_node_valid = go.exists,
 }
 
 

@@ -14,13 +14,13 @@ input_method = HiddenInputField
 
 [project]
 title = Panthera Runtime
-version = 2.0
+version = 5.0
 publisher = Insality
-developer = Maksim Tuprikov, Insality
-custom_resources = /resources
-dependencies#0 = https://github.com/Insality/defold-log/archive/refs/tags/2.zip
-dependencies#1 = https://github.com/Insality/defold-tweener/archive/refs/tags/3.zip
-dependencies#2 = https://github.com/Insality/druid/archive/refs/tags/0.11.0.zip
+developer = Maksim Tuprikov
+dependencies#0 = https://github.com/Insality/defold-log/archive/refs/heads/develop.zip
+dependencies#1 = https://github.com/Insality/defold-tweener/archive/refs/tags/5.zip
+dependencies#2 = https://github.com/Insality/druid/archive/refs/heads/develop.zip
+dependencies#3 = https://github.com/Insality/defold-event/archive/refs/heads/develop.zip
 
 [library]
 include_dirs = panthera

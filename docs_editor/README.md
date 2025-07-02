@@ -6,31 +6,24 @@
 
 # Panthera 2.0 Editor
 
-**Panthera 2.0 Editor** is a cross-platform animation software solution developed using the [Defold](https://defold.com/) engine, with the goal of streamlining the process of designing layouts and animations for game projects.
+**Panthera 2.0 Editor** is a cross-platform animation software developed using the [Defold](https://defold.com/) engine and [Druid UI framework](https://github.com/Insality/druid). **Panthera 2.0** is tightly integrated with **Defold**, allowing you to create animations for your Defold projects with ease.
 
-Integrated tightly with Defold, Panthera allows the import of **Defold** files, which can then be animated directly within the editor interface. This tool offers support for various animation techniques, including tweening, triggering, events, and animation keys, allowing users to create complex animations effortlessly.
-
-**Panthera 2.0 Editor** uses a simple [animation format](/docs_editor/animation_data_format.md) for animation files. If you are not using Defold, the animation runtime can be easily implemented in any game engine or framework.
+Defold integration allows you to start create animations directly from the Defold Editor, supporting to import your existing GUI and Collection files.
 
 
 ## Features
 
-- **Intuitive Layout Creation**: Design and arrange your scene elements effortlessly.
-- **Advanced Animation Tools**: Craft smooth and complex animations to bring your game to life.
-- **Simple Animation Format**: Export animations in a simple [JSON format](/docs_editor/animation_data_format.md) or as Lua table for easy integration into your projects.
-- **Compact Size**: Lightweight and easy to install, with no additional dependencies required.
-- **Defold Tight Integration**: Seamlessly import **Defold** `*.gui`, `*.go` and `*.collection` files for direct animation within the editor.
+- **🚀 One-Click Defold Integration** - Right-click any GUI/Collection/GO file in Defold Editor → Create Panthera Animation → Start animating immediately. Zero setup, zero file conversion needed.
 
+- **⚡ Live Timeline Editor** - Create animation keys for any property (position, rotation, scale, color) with precise timing, easing curves, and real-time preview.
 
-## Animation Editor Features
+- **🎯 Template Animations** - Reuse animations from your GUI templates and collection files which is already created or create new animation files for these templates directly from the **Panthera 2.0 Editor**.
 
-- **Tween Keys**: Create tween animation keys to animate number properties over time, like `position`, `rotation`, `scale` and `color`.
-- **Trigger Keys**: Create trigger animation keys to change non-number properties at a specific time, properties like `pivot`, `enabled`, `image` and `text`.
-- **Event Keys**: Create event animation keys to trigger custom events at specific times like `play sound` or `start spine animation`. Event keys can have a duration and easing functions.
-- **Animation Keys**: Create animation keys to run included animations at specific times. Animation keys can have a duration and easing functions.
-- **Easing Functions**: Choose from a variety of easing functions to add smooth transitions to your animations.
-- **Animation Blending**: Blend multiple animations simultaneously to create complex, layered animations.
-- **Fast Loading**: Load project files swiftly to dive into animation creation without delay.
+- **🎨 Intuitive Interface** - Simple and easy to use interface with a focus on creating animations quickly and efficiently. I put a lot of effort to make the interface as simple as possible.
+
+- **📦 Lightweight & Fast** - Tiny editor download under 10MB. Runs smoothly on any modern computer without any dependencies or bloated installation.
+
+- **🌟 Standalone Flexibility** - While built specifically for Defold, can be used independently or adapted for other game engines. Create layouts manually inside Panthera for non-Defold projects _(custom runtime implementation required)_.
 
 
 ## Download

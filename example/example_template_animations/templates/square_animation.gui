@@ -1,0 +1,95 @@
+fonts {
+  name: "troika"
+  font: "/example/assets/troika.font"
+}
+textures {
+  name: "example"
+  texture: "/example/assets/example.atlas"
+}
+nodes {
+  size {
+    x: 200.0
+    y: 100.0
+  }
+  type: TYPE_BOX
+  id: "root"
+  inherit_alpha: true
+  size_mode: SIZE_MODE_AUTO
+  visible: false
+}
+nodes {
+  size {
+    x: 300.0
+    y: 300.0
+  }
+  color {
+    x: 0.8
+    y: 0.502
+    z: 0.6
+  }
+  type: TYPE_BOX
+  texture: "example/ui_rect_round_16"
+  id: "square"
+  parent: "root"
+  inherit_alpha: true
+  slice9 {
+    x: 16.0
+    y: 16.0
+    z: 16.0
+    w: 16.0
+  }
+}
+nodes {
+  scale {
+    x: 1.5
+    y: 1.5
+  }
+  size {
+    x: 200.0
+    y: 100.0
+  }
+  type: TYPE_TEXT
+  text: "Hello"
+  font: "troika"
+  id: "text"
+  parent: "square"
+  inherit_alpha: true
+  outline_alpha: 0.0
+  shadow_alpha: 0.0
+}
+nodes {
+  position {
+    y: 200.0
+  }
+  type: TYPE_TEMPLATE
+  id: "dots"
+  parent: "root"
+  inherit_alpha: true
+  template: "/example/example_template_animations/templates/dots.gui"
+}
+nodes {
+  type: TYPE_BOX
+  id: "dots/root"
+  parent: "dots"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "dots/dot"
+  parent: "dots/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "dots/dot1"
+  parent: "dots/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "dots/dot2"
+  parent: "dots/root"
+  template_node_child: true
+}
+material: "/builtins/materials/gui.material"
+adjust_reference: ADJUST_REFERENCE_PARENT

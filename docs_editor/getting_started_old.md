@@ -4,15 +4,19 @@ Quickly dive into creating animations with **Panthera Editor 2.0** using this st
 
 # Table of Contents
 
-
 - [Getting Started](#getting-started)
 - [Important Notes](#important-notes)
 - [Interface Overview](#interface-overview)
    * [Home Screen Interface](#home-screen-interface)
    * [Animation Editor Interface](#animation-editor-interface)
-   * [Interface adjustments](#interface-adjustments)
-- [Create an Animation Project from Defold File](#create-an-animation-project-from-defold-file)
-- [Manual Create Animation Project](#manual-create-animation-project)
+   * [Atlas Editor Interface](#atlas-editor-interface)
+- [Create a New Project](#create-a-new-project)
+- [Create a Scene Layout](#create-a-scene-layout)
+   * [Add a Box Node](#add-a-box-node)
+   * [Add a Text Node](#add-a-text-node)
+- [Import Image Assets](#import-image-assets)
+   * [Import Images from Image Picker](#import-images-from-image-picker)
+   * [Bind Defold Atlas](#bind-defold-atlas)
 - [Create an Animation](#create-an-animation)
    * [Change Animation Duration](#change-animation-duration)
    * [Create a Tween Key](#create-a-tween-key)
@@ -20,10 +24,11 @@ Quickly dive into creating animations with **Panthera Editor 2.0** using this st
    * [Animation Preview](#animation-preview)
 - [Export Animation Data](#export-animation-data)
    * [How to Find Animation File](#how-to-find-animation-file)
+- [Import Defold GUI Layout](#import-defold-gui-layout)
+- [Create Animations from Defold Editor](#create-animations-from-defold-editor)
 - [Working with Node Properties](#working-with-node-properties)
    * [Copy and Paste Properties](#copy-and-paste-properties)
    * [Discarding Changes](#discarding-changes)
-   * [Set Empty or Default Value](#set-empty-or-default-value)
 - [Working with Timeline Keys](#working-with-timeline-keys)
    * [Select and Modify Keys](#select-and-modify-keys)
    * [Copy and Paste Keys](#copy-and-paste-keys)
@@ -36,7 +41,6 @@ Quickly dive into creating animations with **Panthera Editor 2.0** using this st
 - [Working with Nested Animations](#working-with-nested-animations)
    * [Add Nested Animation](#add-nested-animation)
    * [Cyclic References](#cyclic-references)
-   * [Template Animations](#template-animations)
 - [Workflow Example](#workflow-example)
 - [Adjust Gizmo Settings](#adjust-gizmo-settings)
    * [Scene Gizmo Settings](#scene-gizmo-settings)
@@ -48,9 +52,8 @@ Quickly dive into creating animations with **Panthera Editor 2.0** using this st
 
 Here are some fast helpful tips and reminders for using Panthera Editor:
 
-- Usually you should create animation over your existing GUI or Collection layout directly from the Defold Editor.
-- To create animation right click on the `.gui` or `.collection` file in the Defold Editor and select `[Panthera] Create Panthera Animation`.
-- Switch to **Animation mode** and start creating animations.
+- To create animation you have to create a layout with nodes in **Layout mode** (or export GUI/Collection/GO layout from **[Defold](https://defold.com/)** project).
+- Then layout created, you can switch to **Animation mode** and start making animations.
 - Pan the editor view by holding `Ctrl` or `Alt` and dragging the view.
 - Property names in 🔸 orange indicate unapplied changes. ![changed_property](/docs_editor/media/icon_changed_property.png)
 - Click on **🔸 Orange Property Name** to apply changes.
@@ -66,7 +69,7 @@ Here are some fast helpful tips and reminders for using Panthera Editor:
 - Move keys by dragging the 🔸 square at the middle of the selection.
 - Animation timeline keys can start other animations (don't cycle them! ;) ).
 - Keep your animation files under version control to avoid losing your work.
-- Hit `Ctrl` + `S` to save the project file. Do it often and use Version Control to avoid losing your work.
+- Hit `Ctrl` + `S` to save the project file.
 - Toggle Editor Gizmo visible state with `W` key.
 
 # Interface Overview
@@ -83,19 +86,13 @@ Contains the information, latest news and quick access buttons to leave feedback
 
 > Project list
 ---
-List of all your projects. Here you can open, delete, or create a new project. Projects are sorted by the last modified date. After creation you can rename the project by `right click -> Rename`. This rename is not affecting the saved file name and can be used for better navigation.
+List of all your projects. Here you can open, delete, or create a new project. Projects are sorted by the last modified date. After creation you can rename the project by right click -> Rename. This rename is not affecting the saved file name and can be used for better navigation.
 
-The same for deleting projects: the source file will be not deleted, only the project info inside the editor will be deleted.
-
-To create first animation project, click on the "Plus" button and select "New Animation".
+To create first animation project, click on the "Plus" button and select "New Animation". As file extension use `.lua` or `.json`.
 
 > Project Tabs
 ---
 All currently opened projects are displayed here. You can switch between them by clicking on the tab.
-
-> Animation Information
----
-Contains the information about the selected animation. It contains a list of all the animations in the project and all affected nodes.
 
 
 ## Animation Editor Interface
@@ -104,7 +101,7 @@ Contains the information about the selected animation. It contains a list of all
 
 > Nodes Panel
 ---
-Contains all the nodes in the scene. Contains all the nodes from the imported layout.
+Contains all the nodes in the scene. You can add new nodes here in Layout Mode.
 
 > Editor View
 ---
@@ -128,6 +125,23 @@ Appears only in Animation mode. Contains the all the keys of the selected animat
 ---
 Appears only in Animation mode. Contains the properties of the selected key. You can change the properties here.
 
+## Atlas Editor Interface
+
+![overview_interface_atlas](/docs_editor/media/overview_interface_atlas.png)
+
+> Editor View
+---
+The main view where you can see the atlas. You can pan the view by holding `Ctrl` or `Alt` and dragging the view. Use the mouse wheel to zoom in and out.
+
+> Properties Panel
+---
+Displays the properties of the selected node. You can view the properties here. Only `image_id` property is editable.
+
+> Images List
+---
+Contains all the images in the atlas. You can add new images here.
+
+
 ## Interface adjustments
 
 You can change the UI scale by pressing `Ctrl` + `Shift` + `-` to scale down and `Ctrl` + `Shift` + `+` to scale up.
@@ -138,32 +152,76 @@ You can adjust the width of the Node panel and Timeline panel by dragging the sp
 
 https://github.com/user-attachments/assets/ef0e9d38-eb39-4001-83de-5bdbaf9cc47d
 
-# Create an Animation Project from Defold File
+# Create a New Project
 
-To open project to edit, right click on the `.gui` or `.collection` file in the Defold Editor and select `[Panthera] Open Panthera Animation`. The Panthera 2.0 Editor should be started before using the scripts. It will create a new lua animation file nearby with a `_panthera` postfix. If file already exists, it will be opened instead.
+https://github.com/Insality/panthera/assets/3294627/cf59240b-2279-4791-843f-3ea6ebcbc813
 
-https://github.com/Insality/panthera/assets/3294627/ed082b26-cfaf-4567-93ac-41d2169b2444
+To create a new project, follow these steps:
 
-The layout will be imported and displayed in the Editor View. The file state is changed to linked. The file will be reloaded automatically when the project is opened, or manually by clicking the "Reload Binded File" button.
+1. Click on the "New Project" button on the home screen.
+2. Choose the project type: "New Animation" or "New Atlas".
+3. Select the location where you want to save the project file.
+4. Click "Save".
 
-The layout nodes can't be modified. But you can animate them. Nodes layout data will be not stored in the animation file. Only the animation data will be stored.
+The project will be created and opened in the Panthera Editor.
 
-https://github.com/user-attachments/assets/b39445d1-ebe8-4f02-ac54-418e952d9b84
 
-To open Panthera animation (both in json or lua formars) from Defold Editor, press right click on the Panthera animation file and select `[Panthera] Edit Panthera Animation`. The Panthera Editor will be opened with the selected animation project.
+# Create a Scene Layout
 
-https://github.com/user-attachments/assets/5e649807-f030-4c81-8264-a0e54191da2a
+https://github.com/Insality/panthera/assets/3294627/cb3115ab-e43f-44f6-abb2-c4df2d1b55b4
 
-# Manual Create Animation Project
+You can create a scene layout by adding nodes to the scene. Here's several ways to add nodes:
 
-You can open the project manually from Panthera Editor:
 
-1. Click on plus icon in the Projects tab.
-2. Select "New Animation".
-3. Select the project file.
-4. In project, in layout mode, click on plus icon in the Nodes panel.
-5. Select "Bind Defold File".
-6. Choose the `.gui` or `.collection` file to import.
+## Add a Box Node
+
+1. Click on plus icon in the Nodes panel.
+2. Select "Add Box Node".
+3. Enter the node name.
+
+The node will be added inside as a child of the selected node.
+
+## Add a Text Node
+
+1. Click on plus icon in the Nodes panel.
+2. Select "Add Text Node".
+3. Enter the node name.
+
+The node will be added inside as a child of the selected node. The font can't be changed in the current version. The font size is `40` px at default scale.
+
+
+# Import Image Assets
+
+https://github.com/Insality/panthera/assets/3294627/9d956f0a-b62d-4132-bbce-cf05b818ebb9
+
+To import image assets, follow these steps:
+
+1. Create an Atlas project.
+2. Click on plus icon in the Images panel.
+3. Select "Add Images".
+4. Choose the PNG files you want to import.
+
+
+## Import Images from Image Picker
+
+You can add images from the Image Picker in Animation Editor scene.
+
+1. Select the node in the scene.
+2. Click on the "Image" property in the Properties panel.
+3. Select required atlas project.
+4. Click on the plus icon.
+5. Choose the image from the Image Picker.
+
+
+## Bind Defold Atlas
+
+https://github.com/Insality/panthera/assets/3294627/c7b7e0a8-91bf-42be-b15b-3c13041a168a
+
+You can bind the Defold atlas to the Atlas project. All images from the Defold atlas will be imported to the Atlas project. The atlas project file should be placed inside your Defold project folder.
+
+1. Click on plus icon in the Images panel.
+2. Select "Bind Defold Atlas".
+3. Choose the Defold atlas file.
 
 
 # Create an Animation
@@ -187,8 +245,6 @@ To change the animation duration, follow these steps:
 1. Select the animation in the Animations panel.
 2. Change the duration in the Properties panel.
 
-If animation time is decreasing and some timeline keys should be affected, the all timeline keys will be resized to fit the new animation duration.
-
 
 ## Create a Tween Key
 
@@ -197,7 +253,7 @@ To create a new animation key, follow these steps:
 1. Select the node in the scene.
 2. Change the node properties in the Properties panel or on Editor View.
 3. Left Click on the orange property name to create a key at the current time.
-4. Move the timeline key slider to adjust the animation time.
+4. Move the timeline slider to adjust the animation time.
 
 All created keys will be displayed and selected in the Timeline panel.
 
@@ -224,7 +280,9 @@ You can adjust the animation preview speed and zoom in the Timeline panel. These
 
 https://github.com/Insality/panthera/assets/3294627/867e4116-2015-4de8-ad3b-b464bbdca50a
 
-Panthera Editor used a Lua or JSON file for animation data. This file serves a dual purpose: it is used directly within the editor for creating and modifying animations, and it is also read by the runtime to display the animations. There is no separate export process; the runtime uses the same file that the editor uses.
+<!-- File used in Panthera editor is the same for runtime -->
+
+Panthera Editor used a JSON file for animation data. This file serves a dual purpose: it is used directly within the editor for creating and modifying animations, and it is also read by the runtime to display the animations. There is no separate export process; the runtime uses the same JSON file that the editor uses.
 
 ## How to Find Animation File
 
@@ -233,6 +291,10 @@ Panthera Editor used a Lua or JSON file for animation data. This file serves a d
 
 The file will be opened in the file explorer window.
 
+# Import Defold Layout
+<!-- animation file should be placed inside your Defold Project folder -->
+
+https://github.com/Insality/panthera/assets/3294627/ed082b26-cfaf-4567-93ac-41d2169b2444
 
 You can import the Defold GUI/Collection/GO layout to the Panthera Editor. The animation file should be placed inside your Defold project folder to correct reloading in the future (it uses relative path's from `game.project` file).
 
@@ -241,6 +303,26 @@ You can import the Defold GUI/Collection/GO layout to the Panthera Editor. The a
 3. Select "Bind Defold File".
 4. Choose the `.gui` file from your Defold project.
 
+The layout will be imported and displayed in the Editor View. The file state is changed to linked. The file will be reloaded automatically when the project is opened, or manually by clicking the "Reload Binded File" button.
+
+The layout nodes can't be modified. But you can animate them. Nodes layout data will be not stored in the animation file. Only the animation data will be stored.
+
+# Create Animations from Defold Editor
+
+> Panthera Runtime v4 is required for this feature.
+
+You can create and open animations directly from Defold Editor. Prerequisites:
+
+- The Panthera Editor should be opened.
+- The Panthera Runtime library should be included in your Defold project.
+
+To create new animation from Defold Editor, press right click on the `.gui`, `.go` or `.collection` file in the Defold Editor and select "Create Panthera Animation". The Panthera Editor will be opened with the new animation project. The new file will be created in the same folder as the `.gui`, `.go` or `.collection` file. The name will be `{file_name}_panthera.lua`.
+
+https://github.com/user-attachments/assets/b39445d1-ebe8-4f02-ac54-418e952d9b84
+
+To open Panthera animation (both in json or lua formars) from Defold Editor, press right click on the Panthera animation file and select "Open Panthera Animation". The Panthera Editor will be opened with the selected animation project.
+
+https://github.com/user-attachments/assets/5e649807-f030-4c81-8264-a0e54191da2a
 
 # Working with Node Properties
 
@@ -266,7 +348,7 @@ To discard changes in the Properties panel, follow these steps:
 2. Right click on the property name in the Properties panel.
 3. Select "Discard Changes".
 
-> Note: You can use "Reset all" button in the Properties panel to reset all the properties to the initial state. If there are no changed properties, the node will be reset to the initial state.
+> Note: You can use "Reset all" button in the Properties panel to reset all the properties to the initial state. If there are no changed properties., the node will be reset to the initial state.
 
 ## Set Empty or Default Value
 
@@ -309,13 +391,13 @@ To create an instant timeline key (with zero duration), follow these steps:
 
 > Note: the `ctrl` will also works with "Commit All" button in the Properties panel.
 
-> Note: You also can set manually a duration to 0 of new created keys to make them instant.
 
 ## Animation Keys
 
 The animation itself can have keys. The keys will be displayed in the Timeline panel. You can adjust the keys in the Timeline panel. To view the animation keys, select the animation in the Animations panel.
 
 ## Overlapping Keys
+<!--Keys when set scale at 0 at instantly run the animation key - valid-->
 
 The overlapping keys is valid. The previous key will be applied until the next key. The keys with zero duration will be applied instantly.
 
@@ -335,7 +417,7 @@ To add an event key, follow these steps:
 
 ## Event Keys with Duration
 
-The event keys can have a duration. The event will be triggered at the start of the key and will be stopped at the end of the key. This type of event has a start and end value and easing. The event callback will be called for each frame in update loop for the key duration.
+The event keys can have a duration. The event will be triggered at the start of the key and will be stopped at the end of the key. This type of event has a start and end value and easing. The event callback will be called for each frame in the key duration.
 
 1. Create a new event key.
 2. Set the duration greated than 0 in the Timeline Properties panel.
@@ -357,15 +439,6 @@ You can add a nested animation to the scene. Nested animations can be created in
 
 In the current version, the cyclic references are not protected. The cyclic references can cause the infinite loop in the animation playback. Be careful with it.
 
-## Template Animations
-
-The nested GUI template or Collections can have their own animations. If the `*_panthera.lua` file is placed in the same folder as the template or collection, it will be used as a template animation. If it's not created, you can double click on the template or collection to create it. To add animation from template, you should do next steps:
-
-1. Select the template or collection in the scene.
-2. In field `Play Animation` select the template animation.
-3. Adjust the animation key in the Timeline properties panel.
-
-> Note: Sometimes after creation of new template animation the template will be not visible in the scene. You can reopen the project to update the scene.
 
 # Workflow Example
 

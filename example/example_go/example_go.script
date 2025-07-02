@@ -1,7 +1,8 @@
 local panthera = require("panthera.panthera")
+local animation = require("example.example_go.example_go_panthera")
 
 function init(self)
-	self.animation = panthera.create_go("/resources/example_go.json")
+	self.animation = panthera.create_go(animation)
 	panthera.play(self.animation, "default", {
 		is_loop = true
 	})

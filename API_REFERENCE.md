@@ -36,11 +36,11 @@ Load and create a GUI animation state from a JSON file or Lua table.
 The Panthera uses `sys.load_resource` to load the JSON animation file. Place your animation files inside your [custom resources folder](https://defold.com/manuals/project-settings/#custom-resources) to ensure they are included in the build.
 
 ```lua
-panthera.create_gui(animation_path_or_data, [template], [nodes])
+panthera.create_gui(animation_or_path, [template], [nodes])
 ```
 
 - **Parameters:**
-  - `animation_path_or_data`: The path to the animation JSON file or a table with animation data. Example: `/animations/my_gui_animation.json`.
+  - `animation_or_path`: The path to the animation JSON file or a table with animation data. Example: `/animations/my_gui_animation.json`.
   - `template` (optional): The GUI template id to load nodes from. Pass nil if no template is used.
   - `nodes` (optional): Table with nodes from `gui.clone_tree()` function. Pass nil if nodes are not cloned.
 
@@ -80,11 +80,11 @@ Load and create a game object (GO) animation state from a JSON file or Lua table
 The Panthera uses `sys.load_resource` to load the JSON animation file. Place your animation files inside your [custom resources folder](https://defold.com/manuals/project-settings/#custom-resources) to ensure they are included in the build.
 
 ```lua
-panthera.create_go(animation_path_or_data, [collection_name], [objects])
+panthera.create_go(animation_or_path, [collection_name], [objects])
 ```
 
 - **Parameters:**
-  - `animation_path_or_data`: The path to the animation JSON file or a table with animation data. Example: `/animations/my_animation.json`.
+  - `animation_or_path`: The path to the animation JSON file or a table with animation data. Example: `/animations/my_animation.json`.
   - `collection_name` (optional): The name of the collection to load objects from. Pass `nil` if no collection is used.
   - `objects` (optional): Table with object ids from collectionfactory.create() function. Pass `nil` if objects are not created.
 
@@ -130,11 +130,11 @@ Load an animation from a JSON file or Lua table and create an animation state us
 The Panthera uses `sys.load_resource` to load the JSON animation file. Place your animation files inside your [custom resources folder](https://defold.com/manuals/project-settings/#custom-resources) to ensure they are included in the build.
 
 ```lua
-panthera.create(animation_path_or_data, adapter, get_node)
+panthera.create(animation_or_path, adapter, get_node)
 ```
 
 - **Parameters:**
-  - `animation_path_or_data`: The path to the animation JSON file or a table with animation data. Example: `/animations/my_animation.json`.
+  - `animation_or_path`: The path to the animation JSON file or a table with animation data. Example: `/animations/my_animation.json`.
   - `adapter`: An adapter object that specifies how Panthera Runtime interacts with Engine.
   - `get_node`: A custom function to resolve nodes by their ID. This function is used by the adapter to retrieve Defold nodes for animation.
 
@@ -210,7 +210,6 @@ Customize animation behavior in Panthera Runtime using a table of options passed
 
 - **`is_loop`**: Loop the animation (`true`/`false`). Triggers the callback at each loop end if set to `true`.
 - **`is_skip_init`**: Start animation from its current state, skipping initial setup (`true`/`false`).
-- **`is_relative`**: Apply tween values relative to the object's current state (`true`/`false`).
 - **`speed`**: Playback speed multiplier (default `1`). Values >1 increase speed, <1 decrease.
 - **`callback`**: Function called when the animation finishes. Receives `animation_id`.
 - **`callback_event`**: Function triggered by animation events. Receives `event_id`, optional `node`, `string_value`, and `number_value`.
