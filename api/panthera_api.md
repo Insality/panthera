@@ -10,8 +10,6 @@
 - [create](#create)
 - [clone_state](#clone_state)
 - [play](#play)
-- [play_tweener](#play_tweener)
-- [play_detached](#play_detached)
 - [set_time](#set_time)
 - [get_time](#get_time)
 - [stop](#stop)
@@ -57,7 +55,7 @@ Load and create a game object animation state from a Lua table or JSON file.
 	- `[objects]` *(table<string|hash, string|hash>?)*: Table with game objects from collectionfactory. Pass nil if no objects are used
 
 - **Returns:**
-	- `animation` *(panthera.animation)*: Animation state or nil if animation can't be loaded
+	- `animation` *(panthera.animation)*: New animation state object
 
 ### create_gui
 
@@ -74,7 +72,7 @@ Load and create a GUI animation state from a Lua table or JSON file.
 	- `[nodes]` *(table<string|hash, node>?)*: Table with nodes from gui.clone_tree() function. Pass nil if no nodes are used
 
 - **Returns:**
-	- `animation` *(panthera.animation)*: Animation state or nil if animation can't be loaded
+	- `animation` *(panthera.animation)*: New animation state object
 
 ### create
 
@@ -91,7 +89,7 @@ Load an animation from a Lua table or JSON file and create an animation state us
 	- `get_node` *(fun(node_id: string):node)*: Function to get node by node_id. A custom function to resolve nodes by their ID
 
 - **Returns:**
-	- `animation` *(panthera.animation)*: Animation state or nil if animation can't be loaded
+	- `animation` *(panthera.animation)*: New animation state object
 
 ### clone_state
 
@@ -124,39 +122,6 @@ Play an animation with specified ID and options.
 
 - **Returns:**
 	- `` *(nil)*:
-
-### play_tweener
-
----
-```lua
-panthera.play_tweener(animation_state, animation_id, [options])
-```
-
-Play animation with easing support using tweener. Allows for non-linear animation playback with custom easing functions.
-
-- **Parameters:**
-	- `animation_state` *(panthera.animation)*: The animation state object
-	- `animation_id` *(string)*: The ID of the animation to play
-	- `[options]` *((panthera.options_tweener)?)*: Options including easing function, speed, and callbacks
-
-- **Returns:**
-	- `` *(nil)*:
-
-### play_detached
-
----
-```lua
-panthera.play_detached(animation_state, animation_id, [options])
-```
-
-Play animation as a child of the current animation state, allowing multiple animations to run independently and simultaneously.
-This creates a detached animation that runs in parallel with the main animation state without affecting it.
-The child animation will be automatically cleaned up when it completes.
-
-- **Parameters:**
-	- `animation_state` *(panthera.animation)*: The parent animation state object
-	- `animation_id` *(string)*: The ID of the animation to play as a detached child
-	- `[options]` *((panthera.options)?)*: Options for the detached animation playback
 
 ### set_time
 
