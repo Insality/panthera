@@ -1,0 +1,323 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Panthera 2.0 Editor — Defold Animation Editor</title>
+    <meta name="description" content="Panthera 2.0 Editor — a lightweight cross‑platform animation editor tightly integrated with Defold. Create GUI and Collection animations with a live timeline and one‑click Defold integration." />
+    <meta property="og:title" content="Panthera 2.0 Editor — Defold Animation Editor" />
+    <meta property="og:description" content="Lightweight, fast, and integrated. Create and play Defold animations with Panthera Editor and Runtime." />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="../media/panthera_logo_21_9.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="icon" href="../media/favicon_square.png" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container header-inner">
+        <a href="#" class="brand" aria-label="Panthera home">
+          <img src="../media/icon.png" alt="Panthera icon" />
+        </a>
+        <nav class="nav">
+          <a href="#features">Features</a>
+          <a href="#download">Download</a>
+          <a href="#getting-started">Getting started</a>
+          <a href="#faq">FAQ</a>
+          <a href="#support">Support</a>
+        </nav>
+      </div>
+    </header>
+
+    <section class="hero">
+      <div class="container hero-inner">
+        <div class="hero-copy">
+          <h1>Panthera 2.0 Editor</h1>
+          <p class="subtitle">Cross‑platform animation editor for <a href="https://defold.com/" target="_blank" rel="noopener">Defold</a>. One‑click integration, live timeline, template animations — tiny download under 10&nbsp;MB.</p>
+          <div class="cta-row">
+            <a class="btn primary" href="https://github.com/Insality/panthera/releases" target="_blank" rel="noopener">Get latest release</a>
+            <a class="btn" href="#download">All downloads</a>
+            <a class="btn ghost" href="https://github.com/Insality/panthera" target="_blank" rel="noopener">GitHub</a>
+            <a class="btn" href="https://github.com/Insality/panthera/blob/main/docs_editor/getting_started.md" target="_blank" rel="noopener">Getting started guide</a>
+          </div>
+          <p class="note">Works with Defold GUI and Collections. Ships with Panthera Runtime to play animations in‑game.</p>
+        </div>
+        <div class="hero-media">
+          <img src="../media/runtime_logo.png" alt="Panthera runtime preview" />
+        </div>
+      </div>
+    </section>
+
+    
+    <section id="features" class="section">
+      <div class="container">
+        <h2>Features</h2>
+        <div class="features-grid">
+          <div class="card">
+            <h3>🚀 One‑Click Defold Integration</h3>
+            <p>Right‑click any GUI/Collection/GO in Defold → Create or Edit Panthera Animation → start animating immediately.</p>
+          </div>
+          <div class="card">
+            <h3>⚡ Live Timeline Editor</h3>
+            <p>Create keys for position, rotation, scale, color, and more. Precise timing, easing, preview, and event keys.</p>
+          </div>
+          <div class="card">
+            <h3>🎯 Template Animations</h3>
+            <p>Reuse animations from GUI templates and collections or create new ones directly from the editor.</p>
+          </div>
+          <div class="card">
+            <h3>🎨 Intuitive Interface</h3>
+            <p>Designed to be simple and fast so you can focus on animating. Helpful gizmos and hotkeys built‑in.</p>
+          </div>
+          <div class="card">
+            <h3>📦 Lightweight &amp; Fast</h3>
+            <p>Tiny download under 10&nbsp;MB. No dependencies or installers — just download and run.</p>
+          </div>
+          <div class="card">
+            <h3>🌟 Standalone Flexibility</h3>
+            <p>Built for Defold, but can be adapted to other engines with a custom runtime implementation.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="demo" class="section alt">
+      <div class="container">
+        <h2>See it in action</h2>
+        <div class="carousel" data-carousel>
+          <button class="car-btn prev" aria-label="Previous" data-prev>‹</button>
+          <div class="car-track" data-track role="region" aria-roledescription="carousel" aria-label="Editor demo carousel">
+            <div class="car-slide">
+              <video preload="metadata" muted playsinline loop>
+                <source src="../docs_editor/media/video/create_animation.mp4" type="video/mp4" />
+              </video>
+              <p class="caption">Create animation</p>
+            </div>
+            <div class="car-slide">
+              <video preload="metadata" muted playsinline loop>
+                <source src="../docs_editor/media/video/timeline_keys_control.mp4" type="video/mp4" />
+              </video>
+              <p class="caption">Timeline keys control</p>
+            </div>
+            <div class="car-slide">
+              <video preload="metadata" muted playsinline loop>
+                <source src="../docs_editor/media/video/events.mp4" type="video/mp4" />
+              </video>
+              <p class="caption">Events in animations</p>
+            </div>
+            <div class="car-slide">
+              <video preload="metadata" muted playsinline loop>
+                <source src="../docs_editor/media/video/nested_animations.mp4" type="video/mp4" />
+              </video>
+              <p class="caption">Nested animations</p>
+            </div>
+            <div class="car-slide">
+              <video preload="metadata" muted playsinline loop>
+                <source src="../docs_editor/media/video/ui_scale.mp4" type="video/mp4" />
+              </video>
+              <p class="caption">UI scale</p>
+            </div>
+          </div>
+          <button class="car-btn next" aria-label="Next" data-next>›</button>
+          <div class="car-dots" data-dots></div>
+        </div>
+      </div>
+    </section>
+
+    
+
+    <section class="section alt" id="how-it-works">
+      <div class="container">
+        <h2>How it works</h2>
+        <ol class="steps">
+          <li>Open the editor and link your Defold `.gui` / `.collection` via the Defold Editor scripts.</li>
+          <li>Create animations on imported nodes using the live timeline and gizmos.</li>
+          <li>Save — the same Lua/JSON file is used both by the editor and by the runtime in‑game.</li>
+          <li>Play animations in Defold via Panthera Runtime: <a href="https://github.com/Insality/panthera/blob/main/API_REFERENCE.md#pantheracreate_gui" target="_blank" rel="noopener"><code>panthera.create_gui</code></a>, <a href="https://github.com/Insality/panthera/blob/main/API_REFERENCE.md#pantheracreate_go" target="_blank" rel="noopener"><code>panthera.create_go</code></a>, <a href="https://github.com/Insality/panthera/blob/main/API_REFERENCE.md#pantheraplay" target="_blank" rel="noopener"><code>panthera.play</code></a>.</li>
+        </ol>
+        <p class="note">See the <a href="https://github.com/Insality/panthera/blob/main/API_REFERENCE.md" target="_blank" rel="noopener">API Reference</a> and <a href="https://github.com/Insality/panthera/tree/main/example" target="_blank" rel="noopener">examples</a>. Runtime size: ~12.4&nbsp;KB HTML5, ~21.3&nbsp;KB Desktop/Mobile.</p>
+      </div>
+    </section>
+
+    <section id="download" class="section">
+      <div class="container">
+        <h2>Download</h2>
+        <div class="download-grid">
+          <a class="btn primary" href="https://github.com/Insality/panthera/releases" target="_blank" rel="noopener">GitHub Releases</a>
+          <a class="btn" href="https://insality.itch.io/panthera" target="_blank" rel="noopener">Alternative download (itch.io)</a>
+        </div>
+      </div>
+    </section>
+
+    <section id="getting-started" class="section alt">
+      <div class="container">
+        <h2>Getting started</h2>
+        <ol class="steps">
+          <li>Install <a href="https://github.com/Insality/defold-tweener" target="_blank" rel="noopener">Defold Tweener</a> and <a href="https://github.com/Insality/panthera" target="_blank" rel="noopener">Panthera Runtime</a> as dependencies in your Defold project.</li>
+          <li>Open your GUI/Collection in Defold, right‑click → <em>[Panthera] Create/Edit Panthera Animation</em>.</li>
+          <li>Animate in Panthera Editor using the timeline and properties panel.</li>
+          <li>Play animations in your game using the runtime.</li>
+        </ol>
+        <div class="links">
+          <a class="btn" href="https://github.com/Insality/panthera/blob/main/docs_editor/getting_started.md" target="_blank" rel="noopener">Read the Getting Started guide</a>
+          <a class="btn" href="https://github.com/Insality/panthera/blob/main/API_REFERENCE.md" target="_blank" rel="noopener">Runtime API Reference</a>
+        </div>
+      </div>
+    </section>
+
+    <section id="faq" class="section">
+      <div class="container">
+        <h2>FAQ</h2>
+        <details>
+          <summary>“The file '/tweener/tweener.lua' could not be found.”</summary>
+          <p>Add the <a href="https://github.com/Insality/defold-tweener" target="_blank" rel="noopener">Defold Tweener</a> dependency to your project. See its README for installation instructions.</p>
+        </details>
+        <details>
+          <summary>Animation name is highlighted in red</summary>
+          <p>This happens when nodes referenced by keys are missing after re‑export. Remove or map those keys to existing nodes.</p>
+        </details>
+        <details>
+          <summary>How do I delete nodes or timeline keys?</summary>
+          <p>Nodes: select and press the delete icon or Ctrl/Cmd + Backspace. Keys: select in Timeline and press Delete.</p>
+        </details>
+        <details>
+          <summary>Timeline scrub does nothing</summary>
+          <p>Save and reload the project. If it persists, please open an issue on GitHub with details.</p>
+        </details>
+        <details>
+          <summary>How do I set an initial property value for an animation?</summary>
+          <p>Create a zero‑duration key at time 0 with the desired value. You can have multiple keys at t=0.</p>
+        </details>
+        <details>
+          <summary>Copy/paste properties and keys between nodes/projects</summary>
+          <p>Properties: Right‑click a property → Copy, then right‑click same property on another node → Paste. Keys: select keys in Timeline → Ctrl/Cmd+C, then Ctrl/Cmd+V at the current time.</p>
+        </details>
+        <details>
+          <summary>Overlapping keys</summary>
+          <p>Allowed. Earlier keys apply until a later key starts. Zero‑duration keys apply instantly.</p>
+        </details>
+        <details>
+          <summary>Event keys with duration</summary>
+          <p>Events can have a start and end with easing; your runtime callback is called each frame while active.</p>
+        </details>
+        <details>
+          <summary>Hotkeys not working</summary>
+          <p>Sometimes system modifiers get stuck. Press Ctrl, Alt, Shift and Cmd to reset. See Hotkeys in docs for bindings.</p>
+        </details>
+      </div>
+    </section>
+
+    <section id="whats-new" class="section alt">
+      <div class="container">
+        <h2>What’s new</h2>
+        <h3>Latest Editor highlights</h3>
+        <ul class="changelog">
+          <li><strong>Template Animations</strong>: auto‑detect nearby <code>{GUI_NAME}_panthera.lua</code>, play or create templates from the editor.</li>
+          <li><strong>Project Info Preview</strong> on Home: animations with duration, used nodes/properties, event IDs, and used templates.</li>
+          <li><strong>Nodes filter</strong>: search by name, exclude with <code>!</code> prefix, and group terms with spaces.</li>
+          <li><strong>Timeline UX</strong>: improved copy/paste distribution, select nodes by keys, fold/unfold nodes, Show in Desktop.</li>
+          <li><strong>Inspector & Settings</strong>: Defold/Lua project inspector, per‑project <code>panthera_editor_config.json</code>, customizable defaults; Windows path fixes.</li>
+        </ul>
+        <a class="btn" href="https://github.com/Insality/panthera/releases" target="_blank" rel="noopener">View editor releases & notes</a>
+
+        <h3 style="margin-top:18px">Latest Runtime (v1120)</h3>
+        <ul class="changelog">
+          <li>Fix for atlas and luminance images issue.</li>
+          <li>Font size can be changed at runtime without reload.</li>
+        </ul>
+        <p class="muted">Dependencies: 
+          <a href="https://github.com/Insality/panthera/archive/refs/tags/runtime.5.zip" target="_blank" rel="noopener">Panthera Runtime 5</a> · 
+          <a href="https://github.com/Insality/defold-tweener/archive/refs/tags/5.zip" target="_blank" rel="noopener">Defold Tweener 5</a>
+        </p>
+      </div>
+    </section>
+
+    <section id="support" class="section support-highlight">
+      <div class="container">
+        <h2>Support &amp; donations</h2>
+        <p class="lead">Keep Panthera free and evolving — your sponsorship directly funds development, docs, and support.</p>
+        <div class="donation-buttons">
+          <a class="btn primary sponsor" href="https://github.com/sponsors/insality" target="_blank" rel="noopener">❤️ Become a Sponsor</a>
+          <a class="btn" href="https://ko-fi.com/insality" target="_blank" rel="noopener">Ko‑fi</a>
+          <a class="btn" href="https://www.buymeacoffee.com/insality" target="_blank" rel="noopener">Buy Me a Coffee</a>
+        </div>
+      </div>
+    </section>
+
+    <section id="credits" class="section alt">
+      <div class="container">
+        <h2>Credits</h2>
+        <ul class="credits-list">
+          <li><strong>Author</strong>: Insality</li>
+          <li><strong>Made with</strong>: Defold Engine, Druid UI Framework</li>
+          <li><strong>Contributors</strong>: See contributors on GitHub</li>
+          <li><strong>License</strong>: Editor (Distribution License), Runtime (MIT)</li>
+        </ul>
+        <div class="links">
+          <a class="btn" href="https://github.com/Insality/panthera/graphs/contributors" target="_blank" rel="noopener">Contributors</a>
+          <a class="btn" href="https://github.com/Insality/panthera/blob/main/LICENSE" target="_blank" rel="noopener">Runtime MIT</a>
+          <a class="btn" href="https://github.com/Insality/panthera/blob/main/docs_editor/LICENSE" target="_blank" rel="noopener">Editor License</a>
+        </div>
+      </div>
+    </section>
+
+    <footer class="site-footer">
+      <div class="container footer-inner">
+        <span>© <span id="year"></span> Insality</span>
+        <nav class="footer-nav">
+          <a href="https://github.com/Insality/panthera/issues" target="_blank" rel="noopener">Issues</a>
+          <a href="https://github.com/Insality/panthera" target="_blank" rel="noopener">Repository</a>
+          <a href="https://defold.com/" target="_blank" rel="noopener">Defold</a>
+        </nav>
+      </div>
+    </footer>
+
+    <script>
+      document.getElementById('year').textContent = new Date().getFullYear();
+      // Simple carousel
+      (function(){
+        const carousel = document.querySelector('[data-carousel]');
+        if(!carousel) return;
+        const track = carousel.querySelector('[data-track]');
+        const slides = Array.from(track.children);
+        const prevBtn = carousel.querySelector('[data-prev]');
+        const nextBtn = carousel.querySelector('[data-next]');
+        const dotsWrap = carousel.querySelector('[data-dots]');
+        let index = 0;
+
+        function update(){
+          track.style.transform = `translateX(-${index * 100}%)`;
+          slides.forEach((s,i)=>{
+            const v = s.querySelector('video');
+            if(!v) return;
+            if(i === index){ try{ v.play(); } catch(_){} }
+            else { v.pause(); v.currentTime = 0; }
+          });
+          if(dotsWrap){
+            Array.from(dotsWrap.children).forEach((d,i)=>d.classList.toggle('active', i===index));
+          }
+        }
+
+        // Dots
+        slides.forEach((_,i)=>{
+          const b = document.createElement('button');
+          b.setAttribute('aria-label', `Slide ${i+1}`);
+          b.addEventListener('click', ()=>{ index = i; update(); });
+          dotsWrap.appendChild(b);
+        });
+
+        prevBtn.addEventListener('click', ()=>{ index = (index-1+slides.length)%slides.length; update(); });
+        nextBtn.addEventListener('click', ()=>{ index = (index+1)%slides.length; update(); });
+
+        // Keyboard
+        carousel.addEventListener('keydown', (e)=>{
+          if(e.key==='ArrowLeft'){ prevBtn.click(); }
+          if(e.key==='ArrowRight'){ nextBtn.click(); }
+        });
+
+        update();
+      })();
+    </script>
+  </body>
+  </html>
+
