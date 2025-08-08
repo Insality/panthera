@@ -1,13 +1,13 @@
 [project]
 title = Panthera Runtime
-version = 2.69
+version = 5.109
 write_log = 0
+minimum_log_level = 1
 compress_archive = 1
 publisher = Insality
-developer = Maksim Tuprikov, Insality
-custom_resources = /resources
-commit_sha = 932c0427871ecc32b0a921bceac62c424351c976
-build_date = 2024-04-27T09:13:44Z
+developer = Maksim Tuprikov
+commit_sha = 4b42001d3523685d8f056f4fc03d18e7724502bd
+build_date = 2025-08-08T06:48:16Z
 title_as_file_name = PantheraRuntime
 
 [display]
@@ -27,7 +27,7 @@ display_device_info = 0
 clear_color_red = 0
 clear_color_green = 0
 clear_color_blue = 0
-clear_color_alpha = 0
+clear_color_alpha = 1
 
 [physics]
 type = 2D
@@ -60,9 +60,12 @@ default_texture_min_filter = linear
 default_texture_mag_filter = linear
 max_draw_calls = 1024
 max_characters = 8192
+max_font_batches = 128
 max_debug_vertices = 10000
 texture_profiles = /builtins/graphics/default.texture_profiles
 verify_graphics_calls = 1
+opengl_version_hint = 33
+opengl_core_profile_hint = 1
 memory_size = 512
 
 [shader]
@@ -70,12 +73,18 @@ output_spirv = 0
 
 [sound]
 gain = 1
+use_linear_gain = 1
 max_sound_data = 128
 max_sound_buffers = 32
 max_sound_sources = 16
 max_sound_instances = 256
 max_component_count = 32
+sample_frame_count = 0
 use_thread = 1
+stream_enabled = 0
+stream_chunk_size = 16384
+stream_preload_size = 16384
+stream_cache_size = 2097152
 
 [resource]
 http_cache = 0
@@ -124,13 +133,14 @@ pre_renderered_icons = 0
 bundle_identifier = example.unnamed
 bundle_name = 
 infoplist = /builtins/manifests/ios/Info.plist
+privacymanifest = /builtins/manifests/ios/PrivacyInfo.xcprivacy
 default_language = en
 localizations = en
 
 [android]
-version_code = 69
+version_code = 109
 minimum_sdk_version = 19
-target_sdk_version = 33
+target_sdk_version = 35
 package = com.example.todo
 gcm_sender_id = 
 manifest = /builtins/manifests/android/AndroidManifest.xml
@@ -140,10 +150,12 @@ immersive_mode = 0
 display_cutout = 1
 debuggable = 0
 proguard = 
+extract_native_libs = 0
 
 [osx]
 app_icon = 
 infoplist = /builtins/manifests/osx/Info.plist
+privacymanifest = /builtins/manifests/osx/PrivacyInfo.xcprivacy
 bundle_identifier = example.unnamed
 bundle_name = 
 bundle_version = 1
@@ -162,10 +174,11 @@ archive_location_prefix = archive
 archive_location_suffix = 
 engine_arguments = --verify-graphics-calls=false
 wasm_streaming = 0
-show_fullscreen_button = 1
-show_made_with_defold = 1
-show_console_banner = 1
-scale_mode = downscale_fit
+show_fullscreen_button = 0
+show_made_with_defold = 0
+show_console_banner = 0
+scale_mode = stretch
+transparent_graphics_context = 0
 
 [particle_fx]
 max_count = 64
@@ -190,11 +203,14 @@ subpixels = 1
 
 [profiler]
 track_cpu = 0
+enabled = true
 sleep_between_server_updates = 0
+performance_timeline_enabled = 0
 
 [liveupdate]
 settings = /liveupdate.settings
 enabled = 1
+mount_on_start = 1
 
 [tilemap]
 max_count = 16
@@ -203,6 +219,9 @@ max_tile_count = 2048
 [engine]
 run_while_iconified = 0
 fixed_update_frequency = 60
+max_time_step = 0.033333
+
+[font]
 
 [panthera]
 hotreload_animations = 1

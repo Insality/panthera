@@ -15,7 +15,7 @@ img{max-width:100%;height:auto;display:block}
 .hero{padding:64px 0;background:linear-gradient(180deg,rgba(79,140,255,.08),transparent)}
 .hero-inner{display:grid;grid-template-columns:1.2fr .8fr;gap:32px;align-items:center}
 .hero-media{position:relative}
-.hero-media img{max-width:520px;margin:0 auto;filter:drop-shadow(0 10px 24px rgba(255,122,0,.35))}
+.hero-media img{max-width:520px;margin:0 auto;filter:drop-shadow(0 8px 16px rgba(255,122,0,.2))}
 .hero h1{font-size:40px;line-height:1.15;margin:0 0 12px}
 .subtitle{color:var(--muted);margin:0 0 20px}
 .cta-row{display:flex;gap:12px;flex-wrap:wrap;margin:20px 0}
@@ -72,9 +72,15 @@ details{background:var(--surface);border:1px solid var(--border);border-radius:1
 
 @media (max-width: 900px){
   .hero-inner{grid-template-columns:1fr}
+  /* Only clip overflow on narrow screens to avoid right-side gap */
+  .hero-media{overflow:hidden}
   .features-grid{grid-template-columns:repeat(2,1fr)}
 }
 @media (max-width: 560px){
+  /* Prevent header navigation from causing horizontal overflow */
+  .header-inner{flex-wrap:wrap;gap:6px 12px}
+  .nav{display:flex;flex-wrap:wrap;width:100%}
+  .nav a{margin:6px 12px 0 0}
   .features-grid{grid-template-columns:1fr}
 }
 
