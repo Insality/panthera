@@ -146,15 +146,6 @@ return {
                         start_value = 1.5,
                     },
                     {
-                        data = "example/ui_rect_round_32",
-                        easing = "linear",
-                        key_type = "trigger",
-                        node_id = "go#sprite",
-                        property_id = "texture",
-                        start_data = "example/panthera",
-                        start_time = 1.61,
-                    },
-                    {
                         duration = 0.47,
                         easing = "outsine",
                         end_value = 1,
