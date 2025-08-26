@@ -29,13 +29,13 @@ Open your `game.project` file and add the following lines to the dependencies fi
 **[Defold Tweener](https://github.com/Insality/defold-tweener)**
 
 ```
-https://github.com/Insality/defold-tweener/archive/refs/tags/3.zip
+https://github.com/Insality/defold-tweener/archive/refs/tags/5.zip
 ```
 
 **[Panthera Runtime](https://github.com/Insality/panthera)**
 
 ```
-https://github.com/Insality/panthera/archive/refs/tags/runtime.4.zip
+https://github.com/Insality/panthera/archive/refs/tags/runtime.5.zip
 ```
 
 After that, select `Project ▸ Fetch Libraries` to update [library dependencies]((https://defold.com/manuals/libraries/#setting-up-library-dependencies)). This happens automatically whenever you open a project so you will only need to do this if the dependencies change without re-opening the project.
@@ -87,24 +87,31 @@ end
 Read the [API Reference](api/panthera_api.md) file to see the full API documentation for the module.
 
 ```lua
--- Create animation states
-panthera.create_gui(animation_or_path, [template], [nodes])
+local panthera = require("panthera.panthera")
+
+-- Create animation state
 panthera.create_go(animation_or_path, [collection_name], [objects])
+panthera.create_gui(animation_or_path, [template], [nodes])
 panthera.create(animation_or_path, adapter, get_node)
 panthera.clone_state(animation_state)
 
--- Animation control
 panthera.play(animation_state, animation_id, [options])
-panthera.stop(animation_state)
-panthera.set_time(animation_state, animation_id, time)
+panthera.set_time(animation_state, animation_id, time, [event_callback])
 panthera.get_time(animation_state)
+panthera.stop(animation_state)
 panthera.get_duration(animation_state, animation_id)
 panthera.is_playing(animation_state)
 panthera.get_latest_animation_id(animation_state)
+panthera.get_animations(animation_state)
 
 -- Utils
 panthera.set_logger([logger_instance])
 panthera.reload_animation([animation_path])
+
+panthera.SPEED
+panthera.OPTIONS_LOOP
+panthera.OPTIONS_SKIP_INIT
+panthera.OPTIONS_SKIP_INIT_LOOP
 ```
 
 

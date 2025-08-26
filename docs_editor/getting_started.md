@@ -1,73 +1,110 @@
 # Getting Started
 
-Quickly dive into creating animations with **Panthera Editor 2.0** using this straightforward guide.
+Welcome to Panthera 2.0 Editor — a cross‑platform animation editor tightly integrated with [Defold](https://defold.com/). This guide walks you from installation to your first animation playing in‑game, then deepens into daily‑use workflows.
 
-# Table of Contents
+## Table of Contents
 
+- [Requirements](#requirements)
+- [Install](#install)
+- [Quick start (10 minutes)](#quick-start-10-minutes)
+- [Create a project from a Defold file](#create-a-project-from-a-defold-file)
+- [Create your first animation](#create-your-first-animation)
+  - [Change animation duration](#change-animation-duration)
+  - [Create a tween key](#create-a-tween-key)
+  - [Set an initial state](#set-an-initial-state)
+  - [Preview speed and zoom](#preview-speed-and-zoom)
+- [Use the animation in Defold (Runtime)](#use-the-animation-in-defold-runtime)
+- [Working with node properties](#working-with-node-properties)
+- [Working with timeline keys](#working-with-timeline-keys)
+- [Events](#events)
+- [Nested and Template animations](#nested-and-template-animations)
+- [Interface overview](#interface-overview)
+- [Tips and troubleshooting](#tips-and-troubleshooting)
+- [Adjust gizmo settings](#adjust-gizmo-settings)
+- [Adjust font size](#adjust-font-size)
+- [Hotkeys](#using-hotkeys)
 
-- [Getting Started](#getting-started)
-- [Important Notes](#important-notes)
-- [Interface Overview](#interface-overview)
-   * [Home Screen Interface](#home-screen-interface)
-   * [Animation Editor Interface](#animation-editor-interface)
-   * [Interface adjustments](#interface-adjustments)
-- [Create an Animation Project from Defold File](#create-an-animation-project-from-defold-file)
-- [Manual Create Animation Project](#manual-create-animation-project)
-- [Create an Animation](#create-an-animation)
-   * [Change Animation Duration](#change-animation-duration)
-   * [Create a Tween Key](#create-a-tween-key)
-   * [Animation Initial State](#animation-initial-state)
-   * [Animation Preview](#animation-preview)
-- [Export Animation Data](#export-animation-data)
-   * [How to Find Animation File](#how-to-find-animation-file)
-- [Working with Node Properties](#working-with-node-properties)
-   * [Copy and Paste Properties](#copy-and-paste-properties)
-   * [Discarding Changes](#discarding-changes)
-   * [Set Empty or Default Value](#set-empty-or-default-value)
-- [Working with Timeline Keys](#working-with-timeline-keys)
-   * [Select and Modify Keys](#select-and-modify-keys)
-   * [Copy and Paste Keys](#copy-and-paste-keys)
-   * [Create Instant Timeline key](#create-instant-timeline-key)
-   * [Animation Keys](#animation-keys)
-   * [Overlapping Keys](#overlapping-keys)
-- [Working with Events](#working-with-events)
-   * [Event Keys](#event-keys)
-   * [Event Keys with Duration](#event-keys-with-duration)
-- [Working with Nested Animations](#working-with-nested-animations)
-   * [Add Nested Animation](#add-nested-animation)
-   * [Cyclic References](#cyclic-references)
-   * [Template Animations](#template-animations)
-- [Workflow Example](#workflow-example)
-- [Adjust Gizmo Settings](#adjust-gizmo-settings)
-   * [Scene Gizmo Settings](#scene-gizmo-settings)
-   * [Timeline Gizmo Settings](#timeline-gizmo-settings)
-- [Adjust Font Size](#adjust-font-size)
-- [Using Hotkeys](#using-hotkeys)
+---
 
-# Important Notes
+## Requirements
 
-Here are some fast helpful tips and reminders for using Panthera Editor:
+- Defold Editor installed
+- Panthera 2.0 Editor (Windows/macOS/Linux)
+- Optional: project uses [Defold Tweener](https://github.com/Insality/defold-tweener) and [Panthera Runtime](https://github.com/Insality/panthera) for in‑game playback
 
-- Usually you should create animation over your existing GUI or Collection layout directly from the Defold Editor.
-- To create animation right click on the `.gui` or `.collection` file in the Defold Editor and select `[Panthera] Create Panthera Animation`.
-- Switch to **Animation mode** and start creating animations.
-- Pan the editor view by holding `Ctrl` or `Alt` and dragging the view.
-- Property names in 🔸 orange indicate unapplied changes. ![changed_property](/docs_editor/media/icon_changed_property.png)
-- Click on **🔸 Orange Property Name** to apply changes.
-- Unapplied changes will not be animated in the preview until they are saved or discarded.
-- Right Click on the **Property Name** to show the context menu (contains Discard Changes).
-- Two buttons in the Properties panel: ![icon_commit](/docs_editor/media/icon_commit_all.png) **"Commit All Changes"** and ![icon_reset](/docs_editor/media/icon_reset_all.png) **"Reset All Changes"**.
-- Node names in 🔸 orange indicate nodes with unapplied changes.
-- Node names in **bold** indicate nodes with timeline keys.
-- Animation names in **bold** indicate animations with timeline keys.
-- Animations can contains timeline keys _(select the animation in the Animations panel to view them)_.
-- Select timeline keys to edit them.
-- Use the 🔸 **Gizmo** to move and stretch selected timeline keys.
-- Move keys by dragging the 🔸 square at the middle of the selection.
-- Animation timeline keys can start other animations (don't cycle them! ;) ).
-- Keep your animation files under version control to avoid losing your work.
-- Hit `Ctrl` + `S` to save the project file. Do it often and use Version Control to avoid losing your work.
-- Toggle Editor Gizmo visible state with `W` key.
+## Install
+
+1. Download Panthera 2.0 Editor from the [Releases](https://github.com/Insality/panthera/releases) page.
+2. Unzip and run the application for your OS.
+3. Open your Defold project. Keep Panthera Editor running to use the Defold context‑menu actions.
+
+> Tip: You can use Panthera standalone, but pairing it with the Defold Editor gives you one‑click open/create for animations.
+
+## Quick start (10 minutes)
+
+1. In Defold, right‑click a `.gui` or `.collection` → `[Panthera] Create Panthera Animation`.
+2. Panthera opens, imports the layout, and creates a `*_panthera.lua` animation file next to your Defold file.
+3. Switch to Animation mode → click “+” in Animations → name it `appear` → set Duration.
+4. Select a node → change a property (e.g. `position.y`) → click the orange property name to create a key.
+5. Move the time slider → change the property again → click the orange name to create the second key.
+6. Press Space to preview. Save often (Ctrl/Cmd+S).
+7. In Defold, play it using the Runtime:
+
+```lua
+-- GUI example
+local panthera = require("panthera.panthera")
+local animation = require("gui.my_gui_panthera")
+
+function init(self)
+    self.animation = panthera.create_gui(animation)
+    panthera.play(self.animation, "appear", { is_loop = false })
+end
+```
+
+```lua
+-- Collection / GO example
+local panthera = require("panthera.panthera")
+local animation = require("entities.my_entity_panthera")
+
+function init(self)
+    self.animation = panthera.create_go(animation)
+    panthera.play(self.animation, "appear", { is_loop = true })
+end
+```
+
+> See the full [API Reference](https://github.com/Insality/panthera/blob/main/API_REFERENCE.md) for `panthera.create_gui`, `panthera.create_go`, and `panthera.play` options.
+
+---
+
+## Create a project from a Defold file
+
+Right‑click a `.gui` or `.collection` in the Defold Editor → `[Panthera] Open Panthera Animation`.
+
+https://github.com/Insality/panthera/assets/3294627/ed082b26-cfaf-4567-93ac-41d2169b2444
+
+The layout is imported read‑only into the Editor View. The file state becomes “linked”. Reload from the project screen or via the “Reload Binded File” button.
+
+https://github.com/user-attachments/assets/b39445d1-ebe8-4f02-ac54-418e952d9b84
+
+To open an existing Lua/JSON Panthera animation from Defold, right‑click the animation file → `[Panthera] Edit Panthera Animation`.
+
+https://github.com/user-attachments/assets/5e649807-f030-4c81-8264-a0e54191da2a
+
+### Manual project creation
+
+1. In Panthera Editor click “+” in the Projects tab → New Animation → choose a file
+2. In Layout mode click “+” in Nodes panel → Bind Defold File → choose a `.gui`/`.collection`
+
+## Create your first animation
+
+https://github.com/Insality/panthera/assets/3294627/b31f4ba0-4989-485d-a05b-6a0888689fae
+
+1. Switch to Animation mode
+2. “+” in Animations → name it
+3. Set duration in Properties
+4. Select node → modify a property → click its orange name to create a key at the current time
+5. Move the playhead and repeat to create the next key
+6. Press Space to preview
 
 # Interface Overview
 
@@ -180,7 +217,7 @@ To create an animation, follow these steps:
 The animation will be created and displayed in the Animations panel. Press `Space` button to play the animation. But now it's empty. Let's add some keys.
 
 
-## Change Animation Duration
+### Change animation duration
 
 To change the animation duration, follow these steps:
 
@@ -190,7 +227,7 @@ To change the animation duration, follow these steps:
 If animation time is decreasing and some timeline keys should be affected, the all timeline keys will be resized to fit the new animation duration.
 
 
-## Create a Tween Key
+### Create a tween key
 
 To create a new animation key, follow these steps:
 
@@ -204,7 +241,7 @@ All created keys will be displayed and selected in the Timeline panel.
 > Node: You can commit all the changes in the Properties panel by pressing `Shift` + `Enter`.
 
 
-## Animation Initial State
+### Set an initial state
 
 https://github.com/Insality/panthera/assets/3294627/d9654d70-d82a-4b47-9e6a-b3b6c903333b
 
@@ -215,18 +252,18 @@ The animation's initial state by default is the layout state. However, you can c
 
 To reset the initial state, set the initial state animation to `Initial Layout`.
 
-## Animation Preview
+### Preview speed and zoom
 
 You can adjust the animation preview speed and zoom in the Timeline panel. These settings are only for preview and will not be exported.
 
 
-# Export Animation Data
+## Use the animation in Defold (Runtime)
 
 https://github.com/Insality/panthera/assets/3294627/867e4116-2015-4de8-ad3b-b464bbdca50a
 
-Panthera Editor used a Lua or JSON file for animation data. This file serves a dual purpose: it is used directly within the editor for creating and modifying animations, and it is also read by the runtime to display the animations. There is no separate export process; the runtime uses the same file that the editor uses.
+Panthera stores animation data as Lua or JSON. The same file is used by the editor and the runtime — there is no separate export step.
 
-## How to Find Animation File
+### Where is my animation file?
 
 1. Right click on the project in the Projects tab or in the Project List.
 2. Select "Show in Desktop".
@@ -234,7 +271,7 @@ Panthera Editor used a Lua or JSON file for animation data. This file serves a d
 The file will be opened in the file explorer window.
 
 
-You can import the Defold GUI/Collection/GO layout to the Panthera Editor. The animation file should be placed inside your Defold project folder to correct reloading in the future (it uses relative path's from `game.project` file).
+Place animation files inside your Defold project so the editor can auto‑reload them (paths are relative to `game.project`).
 
 1. Open animation project.
 2. Click on the plus icon in the Nodes panel.
@@ -242,11 +279,11 @@ You can import the Defold GUI/Collection/GO layout to the Panthera Editor. The a
 4. Choose the `.gui` file from your Defold project.
 
 
-# Working with Node Properties
+## Working with node properties
 
 https://github.com/Insality/panthera/assets/3294627/2e4483c1-004c-4736-a70a-a29e8ae5f4df
 
-## Copy and Paste Properties
+### Copy and paste properties
 
 To copy and paste node properties, follow these steps:
 
@@ -258,7 +295,7 @@ To copy and paste node properties, follow these steps:
 6. Select "Paste".
 
 
-## Discarding Changes
+### Discard changes
 
 To discard changes in the Properties panel, follow these steps:
 
@@ -268,18 +305,18 @@ To discard changes in the Properties panel, follow these steps:
 
 > Note: You can use "Reset all" button in the Properties panel to reset all the properties to the initial state. If there are no changed properties, the node will be reset to the initial state.
 
-## Set Empty or Default Value
+### Set empty/default value
 
 To set the empty or default value for the property, follow these steps:
 
 1. Right click on the property name in the Properties panel.
 2. Select "Set Default".
 
-# Working with Timeline Keys
+## Working with timeline keys
 
 https://github.com/Insality/panthera/assets/3294627/6f026870-1a44-49f5-8612-c54bb79590f2
 
-## Select and Modify Keys
+### Select and modify keys
 
 You can select and modify keys in the Timeline panel.
 
@@ -288,7 +325,7 @@ You can select and modify keys in the Timeline panel.
 3. Drag the corner of the selection to scale the keys.
 4. Press Delete button to remove the keys.
 
-## Copy and Paste Keys
+### Copy and paste keys
 
 You can copy and paste animation keys across nodes and projects.
 
@@ -299,7 +336,7 @@ You can copy and paste animation keys across nodes and projects.
 
 The timeline keys will be paste at the current time. The keys will be pasted with the same time offset as they were copied.
 
-## Create Instant Timeline key
+### Create an instant key
 
 To create an instant timeline key (with zero duration), follow these steps:
 
@@ -319,13 +356,13 @@ The animation itself can have keys. The keys will be displayed in the Timeline p
 
 The overlapping keys is valid. The previous key will be applied until the next key. The keys with zero duration will be applied instantly.
 
-# Working with Events
+## Events
 
 https://github.com/Insality/panthera/assets/3294627/2e1bbf3a-7882-400e-bf03-125845df003d
 
 Events is a type of key that can be used to trigger custom actions in the Panthera Runtime. The events can be added to the timeline keys for specific nodes or animations.
 
-## Event Keys
+### Event keys
 
 To add an event key, follow these steps:
 
@@ -333,7 +370,7 @@ To add an event key, follow these steps:
 2. Press "Add Event" button in the Properties panel.
 3. Adjust the event properties in the Timeline Properties panel.
 
-## Event Keys with Duration
+### Event keys with duration
 
 The event keys can have a duration. The event will be triggered at the start of the key and will be stopped at the end of the key. This type of event has a start and end value and easing. The event callback will be called for each frame in update loop for the key duration.
 
@@ -341,11 +378,11 @@ The event keys can have a duration. The event will be triggered at the start of 
 2. Set the duration greated than 0 in the Timeline Properties panel.
 
 
-# Working with Nested Animations
+## Nested and Template animations
 
 https://github.com/Insality/panthera/assets/3294627/7b31c66e-ed65-4df9-b4e0-3f43f55cba5f
 
-## Add Nested Animation
+### Add a nested animation
 
 You can add a nested animation to the scene. Nested animations can be created in the animation timeline.
 
@@ -353,11 +390,11 @@ You can add a nested animation to the scene. Nested animations can be created in
 2. Select the animation in dropdown menu "Play Animation"
 3. Adjust the animation key in the Timeline properties panel.
 
-## Cyclic References
+### Cyclic references
 
 In the current version, the cyclic references are not protected. The cyclic references can cause the infinite loop in the animation playback. Be careful with it.
 
-## Template Animations
+### Template animations
 
 The nested GUI template or Collections can have their own animations. If the `*_panthera.lua` file is placed in the same folder as the template or collection, it will be used as a template animation. If it's not created, you can double click on the template or collection to create it. To add animation from template, you should do next steps:
 
@@ -367,20 +404,20 @@ The nested GUI template or Collections can have their own animations. If the `*_
 
 > Note: Sometimes after creation of new template animation the template will be not visible in the scene. You can reopen the project to update the scene.
 
-# Workflow Example
+## Workflow example
 
 Here is a 4 minutes of making simple appear/disappear animations in Panthera Editor.
 
 https://github.com/user-attachments/assets/18615ed3-3b09-47c3-a677-411ffa7d6600
 
 
-# Adjust Gizmo Settings
+## Adjust gizmo settings
 
 https://github.com/Insality/panthera/assets/3294627/53b1de58-84eb-4a20-800f-c4bcf13cc78b
 
 **Gizmo** - is a manipulator that allows you to move, rotate, and scale the nodes or timeline keys in the scene. You can adjust the gizmo settings in the Editor View.
 
-## Scene Gizmo Settings
+### Scene gizmo settings
 
 To adjust the scene gizmo settings, follow these steps:
 
@@ -389,7 +426,7 @@ To adjust the scene gizmo settings, follow these steps:
 
 These gizmo steps will be stored in the project file and used for all nodes in the scene.
 
-## Timeline Gizmo Settings
+### Timeline gizmo settings
 
 To adjust the timeline gizmo settings, follow these steps:
 
@@ -399,7 +436,7 @@ To adjust the timeline gizmo settings, follow these steps:
 Time step is the minimal step point in timeline controls. The time step will be stored in the project file and used for all keys in the timeline.
 
 
-# Adjust Font Size
+## Adjust font size
 
 ![change_font_size](/docs_editor/media/change_font_size.png)
 
@@ -408,7 +445,53 @@ By default, Panthera uses a font with 40 font size. If you want to change the fo
 After changing the font size, you should restart the project to apply the changes.
 
 
-# Using Hotkeys
+## Using Hotkeys
 
-Read the [Hotkeys](hotkeys.md) guide to learn about the helpful shortcuts available in the Panthera Editor.
+Read the [Hotkeys](hotkeys.md) guide to learn the most useful shortcuts.
+
+---
+
+## Interface overview
+
+Here is a quick overview of the Panthera Editor interface:
+
+### Home Screen Interface
+
+![overview_interface_home](/docs_editor/media/overview_interface_home.png)
+
+> Welcome Page — news and quick access links
+>
+> Project list — open, delete, or create new projects (sorted by last modified)
+>
+> Project Tabs — switch between open projects
+>
+> Animation Information — animations list and affected nodes
+
+### Animation Editor Interface
+
+![overview_interface_animation_editor](/docs_editor/media/overview_interface_animation_editor.png)
+
+![overview_interface_timeline](/docs_editor/media/overview_interface_timeline.png)
+
+> Nodes Panel — all nodes from the imported layout
+>
+> Editor View — pan with Ctrl/Alt + drag; zoom with wheel; Shift+Click to multi‑select
+>
+> Properties Panel — edit selected node properties
+>
+> Animations Panel — appears in Animation mode
+>
+> Timeline & Timeline Properties — keys editing and key properties
+
+---
+
+## Tips and troubleshooting
+
+- Create animations from the Defold Editor for best workflow
+- Orange property names = changed but not applied. Click to commit
+- Use Commit/Reset all changes buttons in the Properties panel when needed
+- Keep files under version control and save often (Ctrl/Cmd+S)
+- Toggle Editor Gizmo with `W`
+- See the [FAQ](../docs/faq.md) for common issues
+
 

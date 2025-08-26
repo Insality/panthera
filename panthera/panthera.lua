@@ -451,7 +451,7 @@ end
 
 ---Retrieve the current playback time in seconds of an animation. If the animation is not playing, the function returns 0.
 ---@param animation_state panthera.animation The animation state object
----@return number Current animation time in seconds
+---@return number seconds Current animation time in seconds
 function M.get_time(animation_state)
 	return animation_state.current_time
 end
@@ -459,7 +459,7 @@ end
 
 ---Stop a currently playing animation. The animation will be stopped at current time.
 ---@param animation_state panthera.animation The animation state object to stop
----@return boolean True if animation was stopped, false if animation is not playing
+---@return boolean is_stopped True if animation was stopped, false if animation is not playing
 function M.stop(animation_state)
 	if not animation_state then
 		panthera_internal.logger:warn("Can't stop animation, animation_state is nil")
@@ -496,7 +496,7 @@ end
 ---Retrieve the total duration of a specific animation.
 ---@param animation_state panthera.animation The animation state object
 ---@param animation_id string The ID of the animation whose duration you want to retrieve
----@return number The total duration of the animation in seconds
+---@return number seconds The total duration of the animation in seconds
 function M.get_duration(animation_state, animation_id)
 	local animation_data = panthera_internal.get_animation_data(animation_state)
 	assert(animation_data, "Animation data is not loaded")
@@ -510,7 +510,7 @@ end
 
 ---Check if an animation is currently playing.
 ---@param animation_state panthera.animation The animation state object
----@return boolean True if the animation is currently playing, false otherwise
+---@return boolean is_playing True if the animation is currently playing, false otherwise
 function M.is_playing(animation_state)
 	return animation_state.timer_id ~= nil
 end
@@ -518,7 +518,7 @@ end
 
 ---Get the ID of the last animation that was started.
 ---@param animation_state panthera.animation The animation state object
----@return string? Animation ID or nil if no animation was started
+---@return string? animation_id Animation ID or nil if no animation was started
 function M.get_latest_animation_id(animation_state)
 	return animation_state.animation_id or animation_state.previous_animation_id
 end
@@ -526,7 +526,7 @@ end
 
 ---Return a list of animation IDs from the created animation state.
 ---@param animation_state panthera.animation The animation state object
----@return string[] Array of animation IDs available in the animation state
+---@return string[] animation_ids Array of animation IDs available in the animation state
 function M.get_animations(animation_state)
 	local animation_data = panthera_internal.get_animation_data(animation_state)
 	if not animation_data then
