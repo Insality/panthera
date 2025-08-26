@@ -305,6 +305,8 @@ end
 ---@param property_id string
 local function stop_tween(node, property_id)
 	local defold_property_id = PROPERTY_TO_DEFOLD_TWEEN_PROPERTY[property_id]
+
+	---@diagnostic disable-next-line: param-type-mismatch
 	gui.cancel_animation(node, defold_property_id)
 end
 
@@ -369,8 +371,10 @@ local function tween_animation_key(node, property_id, easing, duration, end_valu
 	if duration == 0 then
 		set_node_property(node, property_id, end_value)
 	else
-		property_id = PROPERTY_TO_DEFOLD_TWEEN_PROPERTY[property_id]
-		gui_animate(node, property_id, end_value, easing, duration)
+		local defold_property_id = PROPERTY_TO_DEFOLD_TWEEN_PROPERTY[property_id]
+
+		---@diagnostic disable-next-line: param-type-mismatch
+		gui_animate(node, defold_property_id, end_value, easing, duration)
 	end
 end
 

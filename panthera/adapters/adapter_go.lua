@@ -205,7 +205,7 @@ end
 
 ---@param node node
 ---@param property_id string
----@param easing userdata|number[]
+---@param easing userdata
 ---@param duration number
 ---@param end_value number
 local function tween_animation_key(node, property_id, easing, duration, end_value)
