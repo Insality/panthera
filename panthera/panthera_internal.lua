@@ -7,7 +7,6 @@ local tweener = require("tweener.tweener")
 ---@field trigger_animation_key fun(node: node, property_id: string, value: any): nil Function to trigger animation key.
 ---@field event_animation_key fun(node: node, key: panthera.animation.data.animation_key): nil Function to trigger event in animation.
 ---@field set_node_property fun(node: node, property_id: string, value: number|string): boolean Function to set node property. Return true if success
----@field get_node_property fun(node: node, property_id: string): number|string|boolean|nil Function to get node property
 ---@field stop_tween fun(node: node, property_id: string): nil Function to stop tween animation key
 ---@field is_node_valid fun(node: node): boolean Function to check if node is valid
 

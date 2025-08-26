@@ -352,42 +352,6 @@ local function set_node_property(node, property_id, value)
 end
 
 
----@param node node
----@param property_id string
----@return number|string|boolean|nil
-local function get_node_property(node, property_id)
-	-- Handle Trigger properties
-	local trigger_info = TRIGGER_DEFOLD_SET_GET[property_id]
-	if trigger_info then
-		return trigger_info[3](node)
-	end
-
-	-- Handle Tween properties
-	if IS_DEFOLD_180 then
-		-- Handle Defold 1.2.180+ properties
-		local defold_number_property_id = PROPERTY_TO_DEFOLD_TWEEN_PROPERTY[property_id]
-		return gui_get(node, defold_number_property_id)
-	else
-		-- Handle Defold 1.2.179- properties
-		local tween_info = TWEEN_DEFOLD_SET_GET[property_id]
-		if not tween_info then
-			print("Unknown property_id: " .. property_id, debug.traceback())
-			return false
-		end
-
-		local field, getter = tween_info[2], tween_info[3]
-		if field then
-			-- Get vector field
-			local vector_value = getter(node)
-			return vector_value[field]
-		else
-			-- Get single value
-			return getter(node)
-		end
-	end
-end
-
-
 ---Return defold easing id
 ---@param easing string
 ---@return userdata
@@ -415,7 +379,6 @@ local M = {
 	get_easing = get_easing,
 	stop_tween = stop_tween,
 	set_node_property = set_node_property,
-	get_node_property = get_node_property,
 	tween_animation_key = tween_animation_key,
 	trigger_animation_key = trigger_animation_key,
 	create_get_node_function = create_get_node_function,
