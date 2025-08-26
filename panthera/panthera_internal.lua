@@ -398,12 +398,10 @@ function M.stop_tweens(animation_state, animation_id)
 	local group_keys = animation_data.group_animation_keys[animation_id]
 	for node_id, node_keys in pairs(group_keys) do
 		for property_id, keys in pairs(node_keys) do
-			local key = keys[1]
-			if key and key.key_type == M.KEY_TYPE.TWEEN then
-				local key_end_time = key.start_time + key.duration
-				local is_finished = key_end_time <= animation_state.current_time
+			local first_key = keys[1]
+			if first_key and first_key.key_type == M.KEY_TYPE.TWEEN then
 				local node = M.get_node(animation_state, node_id)
-				if node and not is_finished then
+				if node then
 					adapter.stop_tween(node, property_id)
 				end
 			end
