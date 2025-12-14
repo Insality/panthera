@@ -115,7 +115,7 @@ local function create_get_node_function(collection_name, objects)
 			local object_id = string.sub(node_id, 1, split_index - 1)
 			local fragment_id = string.sub(node_id, split_index + 1)
 
-			local object_path = hash("/" .. object_id)
+			local object_path = go.get_id(object_id)
 			if objects then
 				object_path = objects[object_path] --[[@as hash]]
 			end
@@ -160,28 +160,6 @@ end
 
 ---@param node node
 ---@param property_id string
----@return number|string|boolean|nil
-local function get_trigger_property_id(node, property_id)
-	local defold_property_id = PROPERTY_TO_TRIGGER_PROPERTY[property_id]
-
-	if defold_property_id == "text" then
-		return label.get_text(node)
-	end
-	if defold_property_id == "texture" then
-		local texture_name = go.get(node, "animation")
-		local splitted = split(texture_name, "/")
-		return splitted[#splitted]
-	end
-	if defold_property_id == "enabled" then
-		return gui.is_enabled(node)
-	end
-
-	return nil
-end
-
-
----@param node node
----@param property_id string
 local function stop_tween(node, property_id)
 	local defold_property_id = PROPERTY_TO_TWEEN_PROPERTY[property_id]
 
@@ -196,7 +174,7 @@ end
 ---@param value number
 ---@return boolean @true if success
 local function set_node_property(node, property_id, value)
-	local defold_property_id = PROPERTY_TO_TRIGGER_PROPERTY[property_id]
+	local defold_property_id = PROPERTY_TO_TRIGGER_PROPERTY[property_id] --[[@as string]]
 
 	if defold_property_id then
 		value = value or ""
@@ -205,7 +183,7 @@ local function set_node_property(node, property_id, value)
 	end
 
 	stop_tween(node, property_id)
-	defold_property_id = PROPERTY_TO_TWEEN_PROPERTY[property_id]
+	defold_property_id = PROPERTY_TO_TWEEN_PROPERTY[property_id] --[[@as string]]
 	if not defold_property_id then
 		print("Unknown property_id: ", property_id, debug.traceback())
 		return false
@@ -214,25 +192,6 @@ local function set_node_property(node, property_id, value)
 	go.set(node, defold_property_id, value)
 
 	return true
-end
-
-
----@param node node
----@param property_id string
----@return number|string|boolean|nil
-local function get_node_property(node, property_id)
-	local defold_trigger_property_id = PROPERTY_TO_TRIGGER_PROPERTY[property_id]
-	if defold_trigger_property_id then
-		return get_trigger_property_id(node, defold_trigger_property_id)
-	end
-
-	local defold_number_property_id = PROPERTY_TO_TWEEN_PROPERTY[property_id]
-	if not defold_number_property_id then
-		print("Unknown property_id: ", property_id, debug.traceback())
-		return nil
-	end
-
-	return go.get(node, defold_number_property_id)
 end
 
 
@@ -246,7 +205,7 @@ end
 
 ---@param node node
 ---@param property_id string
----@param easing userdata|number[]
+---@param easing userdata
 ---@param duration number
 ---@param end_value number
 local function tween_animation_key(node, property_id, easing, duration, end_value)
@@ -262,7 +221,6 @@ end
 local M = {
 	get_easing = get_easing,
 	set_node_property = set_node_property,
-	get_node_property = get_node_property,
 	tween_animation_key = tween_animation_key,
 	stop_tween = stop_tween,
 	trigger_animation_key = trigger_animation_key,

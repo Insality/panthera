@@ -25,10 +25,6 @@ local M = {
         -- Sets a property of a node to a specified value.
         gui.set(node, property_id, value)
     end,
-    get_node_property = function(node, property_id)
-        -- Gets the current value of a property of a node.
-        return gui.get(node, property_id)
-    end,
     tween_animation_key = function(node, property_id, easing, duration, end_value)
         -- Applies a tween to a node property based on Panthera animation key data.
         gui.animate(node, property_id, end_value, easing, duration)

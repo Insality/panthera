@@ -5,37 +5,8 @@ embedded_instances {
   data: "components {\n"
   "  id: \"example_go\"\n"
   "  component: \"/example/example_go/example_go.script\"\n"
-  "  position {\n"
-  "    x: 0.0\n"
-  "    y: 0.0\n"
-  "    z: 0.0\n"
-  "  }\n"
-  "  rotation {\n"
-  "    x: 0.0\n"
-  "    y: 0.0\n"
-  "    z: 0.0\n"
-  "    w: 1.0\n"
-  "  }\n"
-  "  property_decls {\n"
-  "  }\n"
   "}\n"
   ""
-  position {
-    x: 0.0
-    y: 0.0
-    z: 0.0
-  }
-  rotation {
-    x: 0.0
-    y: 0.0
-    z: 0.0
-    w: 1.0
-  }
-  scale3 {
-    x: 1.0
-    y: 1.0
-    z: 1.0
-  }
 }
 embedded_instances {
   id: "root"
@@ -45,18 +16,6 @@ embedded_instances {
   position {
     x: 480.0
     y: 340.0
-    z: 0.0
-  }
-  rotation {
-    x: 0.0
-    y: 0.0
-    z: 0.0
-    w: 1.0
-  }
-  scale3 {
-    x: 1.0
-    y: 1.0
-    z: 1.0
   }
 }
 embedded_instances {
@@ -67,14 +26,11 @@ embedded_instances {
   "  data: \"size {\\n"
   "  x: 128.0\\n"
   "  y: 32.0\\n"
-  "  z: 0.0\\n"
-  "  w: 0.0\\n"
   "}\\n"
   "color {\\n"
   "  x: 0.2\\n"
   "  y: 0.2\\n"
   "  z: 0.2\\n"
-  "  w: 1.0\\n"
   "}\\n"
   "outline {\\n"
   "  x: 1.0\\n"
@@ -83,30 +39,15 @@ embedded_instances {
   "  w: 0.0\\n"
   "}\\n"
   "shadow {\\n"
-  "  x: 0.0\\n"
-  "  y: 0.0\\n"
-  "  z: 0.0\\n"
   "  w: 0.0\\n"
   "}\\n"
-  "leading: 1.0\\n"
-  "tracking: 0.0\\n"
-  "pivot: PIVOT_CENTER\\n"
-  "blend_mode: BLEND_MODE_ALPHA\\n"
-  "line_break: false\\n"
   "text: \\\"Hello\\\"\\n"
   "font: \\\"/example/assets/troika.font\\\"\\n"
   "material: \\\"/builtins/fonts/label-df.material\\\"\\n"
   "\"\n"
   "  position {\n"
-  "    x: 0.0\n"
   "    y: -81.0\n"
   "    z: 0.01\n"
-  "  }\n"
-  "  rotation {\n"
-  "    x: 0.0\n"
-  "    y: 0.0\n"
-  "    z: 0.0\n"
-  "    w: 1.0\n"
   "  }\n"
   "}\n"
   "embedded_components {\n"
@@ -114,40 +55,15 @@ embedded_instances {
   "  type: \"sprite\"\n"
   "  data: \"default_animation: \\\"panthera\\\"\\n"
   "material: \\\"/panthera/materials/sprite.material\\\"\\n"
-  "blend_mode: BLEND_MODE_ALPHA\\n"
   "textures {\\n"
   "  sampler: \\\"texture_sampler\\\"\\n"
   "  texture: \\\"/example/assets/example.atlas\\\"\\n"
   "}\\n"
   "\"\n"
-  "  position {\n"
-  "    x: 0.0\n"
-  "    y: 0.0\n"
-  "    z: 0.0\n"
-  "  }\n"
-  "  rotation {\n"
-  "    x: 0.0\n"
-  "    y: 0.0\n"
-  "    z: 0.0\n"
-  "    w: 1.0\n"
-  "  }\n"
   "}\n"
   ""
   position {
-    x: 0.0
-    y: 0.0
-    z: 0.0
-  }
-  rotation {
-    x: 0.0
-    y: 0.0
-    z: 0.0
-    w: 1.0
-  }
-  scale3 {
-    x: 1.0
-    y: 1.0
-    z: 1.0
+    z: 0.1
   }
 }
 embedded_instances {
@@ -157,44 +73,15 @@ embedded_instances {
   "  type: \"sprite\"\n"
   "  data: \"default_animation: \\\"ui_circle\\\"\\n"
   "material: \\\"/panthera/materials/sprite.material\\\"\\n"
-  "blend_mode: BLEND_MODE_ALPHA\\n"
   "textures {\\n"
   "  sampler: \\\"texture_sampler\\\"\\n"
   "  texture: \\\"/example/assets/example.atlas\\\"\\n"
   "}\\n"
   "\"\n"
-  "  position {\n"
-  "    x: 0.0\n"
-  "    y: 0.0\n"
-  "    z: -0.01\n"
-  "  }\n"
-  "  rotation {\n"
-  "    x: 0.0\n"
-  "    y: 0.0\n"
-  "    z: 0.0\n"
-  "    w: 1.0\n"
-  "  }\n"
   "  scale {\n"
   "    x: 3.0\n"
   "    y: 3.0\n"
-  "    z: 1.0\n"
   "  }\n"
   "}\n"
   ""
-  position {
-    x: 0.0
-    y: 0.0
-    z: 0.0
-  }
-  rotation {
-    x: 0.0
-    y: 0.0
-    z: 0.0
-    w: 1.0
-  }
-  scale3 {
-    x: 1.0
-    y: 1.0
-    z: 1.0
-  }
 }
