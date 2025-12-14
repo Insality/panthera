@@ -115,7 +115,7 @@ local function create_get_node_function(collection_name, objects)
 			local object_id = string.sub(node_id, 1, split_index - 1)
 			local fragment_id = string.sub(node_id, split_index + 1)
 
-			local object_path = hash("/" .. object_id)
+			local object_path = go.get_id(object_id)
 			if objects then
 				object_path = objects[object_path] --[[@as hash]]
 			end
