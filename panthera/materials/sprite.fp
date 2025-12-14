@@ -1,18 +1,11 @@
-#version 140
+varying mediump vec2 var_texcoord0;
+varying mediump vec4 var_color0;
 
-in mediump vec2 var_texcoord0;
-
-out vec4 out_fragColor;
-
-uniform mediump sampler2D texture_sampler;
-uniform fs_uniforms
-{
-    mediump vec4 color;
-};
+uniform lowp sampler2D texture_sampler;
 
 void main()
 {
     // Pre-multiply alpha since all runtime textures already are
-    mediump vec4 color_pm = vec4(color.xyz * color.w, color.w);
-    out_fragColor = texture(texture_sampler, var_texcoord0.xy) * color_pm;
+    lowp vec4 color_pm = vec4(var_color0.xyz * var_color0.w, var_color0.w);
+    gl_FragColor = texture2D(texture_sampler, var_texcoord0.xy) * color_pm;
 }
