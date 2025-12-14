@@ -2,13 +2,9 @@ local panthera = require("panthera.panthera")
 local animation = require("example.example_template_animations.example_template_animations_panthera")
 
 local druid = require("druid.druid")
-local memory_panel = require("druid.widget.memory_panel.memory_panel")
-local fps_panel = require("druid.widget.fps_panel.fps_panel")
 
 function init(self)
 	self.druid = druid.new(self)
-	self.druid:new_widget(memory_panel, "memory_panel")
-	self.druid:new_widget(fps_panel, "fps_panel")
 
 	self.animation = panthera.create_gui(animation)
 
