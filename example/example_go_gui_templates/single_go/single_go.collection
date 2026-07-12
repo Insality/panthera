@@ -1,0 +1,26 @@
+name: "single_go"
+instances {
+  id: "single_go"
+  prototype: "/example/example_go_gui_templates/single_go/single_go.go"
+  position {
+    x: 480.0
+    y: 320.0
+  }
+}
+instances {
+  id: "single_go_external"
+  prototype: "/example/example_go_gui_templates/single_go/single_go_external.go"
+  position {
+    x: 481.21048
+    y: 121.89414
+  }
+}
+scale_along_z: 0
+embedded_instances {
+  id: "go"
+  data: "components {\n"
+  "  id: \"single_go_external\"\n"
+  "  component: \"/example/example_go_gui_templates/single_go/single_go_external.script\"\n"
+  "}\n"
+  ""
+}
