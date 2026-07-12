@@ -61,3 +61,11 @@ Initial resease!
 - Refactor the animation playback system, should be more performant
 - Fix for `is_editor_only` key field
 - Various fixes
+
+
+## Version v6
+- Fix [#23](https://github.com/Insality/panthera/issues/23) Sprite image change animation does not work in nested collection
+- Fix [#20](https://github.com/Insality/panthera/issues/20) panthera.stop() does not work correctly with animations with multiple tween keys
+
+## Version v7
+- Migrate API to Defold 1.13.0

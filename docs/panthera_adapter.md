@@ -31,7 +31,7 @@ local M = {
     end,
     stop_tween = function(node, property_id)
         -- Stops any ongoing tween on a node property.
-        gui.cancel_animation(node, property_id)
+        gui.cancel_animations(node, property_id)
     end,
     trigger_animation_key = function(node, property_id, value)
         -- Intended for triggering non-tween animation keys, such as sound or event triggers.

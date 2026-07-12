@@ -304,10 +304,8 @@ end
 ---@param node node
 ---@param property_id string
 local function stop_tween(node, property_id)
-	local defold_property_id = PROPERTY_TO_DEFOLD_TWEEN_PROPERTY[property_id]
-
-	---@diagnostic disable-next-line: param-type-mismatch
-	gui.cancel_animation(node, defold_property_id)
+	local defold_property_id = PROPERTY_TO_DEFOLD_TWEEN_PROPERTY[property_id] --[[@as number]]
+	gui.cancel_animations(node, defold_property_id)
 end
 
 
