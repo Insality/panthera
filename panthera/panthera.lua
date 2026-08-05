@@ -154,18 +154,14 @@ function M.play(animation_state, animation_id, options)
 		panthera_internal.set_animation_state_at_time(animation_state, animation.animation_id, 0)
 	end
 
-	-- Start animation update timer
-	local last_time = socket.gettime()
-	animation_state.timer_id = timer.delay(TIMER_DELAY, true, function()
-		local current_time = socket.gettime()
-		local dt = current_time - last_time
+	animation_state.timer_id = timer.delay(TIMER_DELAY, true, function(_, _, time_elapsed)
+		local dt = time_elapsed
 
 		-- Weird thing, but when app lose focus for small time, we got a lot of callbacks
 		if dt < 0.001 then
 			return
 		end
 
-		last_time = current_time
 		local speed = (options.speed or 1) * animation_state.speed * M.SPEED
 
 		animation_state.current_time = animation_state.current_time + dt * speed
