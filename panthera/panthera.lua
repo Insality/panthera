@@ -348,6 +348,8 @@ function M.update_animation(animation, animation_state, options)
 	-- If current time >= animation duration - stop animation
 	if animation_state.current_time >= animation.duration then
 		local time_overflow = animation_state.current_time - animation.duration
+
+		panthera_internal.set_animation_state_at_time(animation_state, animation.animation_id, animation.duration)
 		M.stop(animation_state)
 
 		if options.callback then
