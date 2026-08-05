@@ -31,19 +31,6 @@ local function is_panthera_animation_file(path, file_data)
 end
 
 
-local function save_file_from_dependency(dependency_file_path, output_file_path)
-	local content = editor.get(dependency_file_path, "text")
-	local file, err = io.open(output_file_path, "w")
-	if not file then
-		print("Error:", err)
-		return false
-	end
-	file:write(content)
-	file:close()
-	return true
-end
-
-
 function M.get_commands()
 	return {
 		{

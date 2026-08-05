@@ -69,3 +69,10 @@ Initial resease!
 
 ## Version v7
 - Migrate API to Defold 1.13.0
+	- Fix `gui.cancel_animation` call for Defold 1.13.0 compatibility
+
+## Version v8
+- Use timer `dt` instead of manual `socket.gettime()` delta for animation updates
+- Apply the final animation state when an animation reaches its end before stop/callback
+- Fix [#35](https://github.com/Insality/panthera/pull/35) GO `objects` map lookup from a nested collection context
+	- When `objects` is passed to `panthera.create_go`, keys are resolved as absolute prototype paths (`hash("/" .. id)`), matching `collectionfactory.create()` / documented `{ [hash("/panthera")] = id }` maps

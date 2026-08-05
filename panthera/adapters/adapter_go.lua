@@ -100,6 +100,21 @@ local function split(inputstr, sep)
 end
 
 
+---Resolve object path for animation node id.
+---`collectionfactory.create()` / manual maps use absolute prototype keys like hash("/panthera").
+---`go.get_id(path)` is relative to the current naming context, so from a nested collection
+---it returns hash("/wrapper/panthera") and the objects lookup misses. Use hash("/"..id) as key.
+---@param object_id string
+---@param objects table<string|hash, string|hash>|nil
+---@return hash|nil
+local function get_object_path(object_id, objects)
+	if objects then
+		return objects[hash("/" .. object_id)] --[[@as hash|nil]]
+	end
+	return go.get_id(object_id)
+end
+
+
 ---@param collection_name string|nil
 ---@param objects table<string|hash, string|hash>|nil
 ---@return function(node_id: string): hash|url
@@ -115,22 +130,14 @@ local function create_get_node_function(collection_name, objects)
 			local object_id = string.sub(node_id, 1, split_index - 1)
 			local fragment_id = string.sub(node_id, split_index + 1)
 
-			local object_path = go.get_id(object_id)
-			if objects then
-				object_path = objects[object_path] --[[@as hash]]
-			end
-
+			local object_path = get_object_path(object_id, objects)
 			local object_url = msg.url(object_path)
 			object_url.fragment = hash(fragment_id)
 
 			return object_url
 		end
 
-		local object_path = go.get_id(node_id)
-		if objects then
-			object_path = objects[object_path] --[[@as hash]]
-		end
-		return object_path
+		return get_object_path(node_id, objects)
 	end
 end
 
