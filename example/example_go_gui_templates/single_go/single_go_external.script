@@ -4,5 +4,4 @@ local animation = require("example.example_go_gui_templates.single_go.single_go_
 function init(self)
 	self.animation = panthera.create_go(animation, nil, { [hash("/")]  = go.get_id("/single_go_external") })
 	panthera.play(self.animation, "default", panthera.OPTIONS_LOOP)
-	print("a")
 end
