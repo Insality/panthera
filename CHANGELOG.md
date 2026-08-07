@@ -76,3 +76,9 @@ Initial resease!
 - Apply the final animation state when an animation reaches its end before stop/callback
 - Fix [#35](https://github.com/Insality/panthera/pull/35) GO `objects` map lookup from a nested collection context
 	- When `objects` is passed to `panthera.create_go`, keys are resolved as absolute prototype paths (`hash("/" .. id)`), matching `collectionfactory.create()` / documented `{ [hash("/panthera")] = id }` maps
+
+## Version v9
+- Fix memory leak and repeated preprocessing for inline (Lua table) animations
+	- The same animation table now always resolves to the same animation path and is preprocessed only once, instead of allocating a new cache entry on every `panthera.create_go` / `create_gui` / `create` call
+	- Nested template animations passed as tables are cached the same way
+- Fix collecting of nested `template_animation_paths`, they were inserted into the table while it was iterated over

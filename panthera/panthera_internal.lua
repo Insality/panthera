@@ -107,6 +107,18 @@ M.LOADED_ANIMATIONS = {}
 ---@type table<string, boolean> Animation fake path -> true
 M.INLINE_ANIMATIONS = {}
 
+-- The cache of inline animations by the passed table identity. It allows to reuse the same fake path
+-- and already preprocessed data instead of preprocessing the shared table on every create call.
+-- Weak keys, so the animation table can be collected by GC if nobody references it anymore
+---@type table<table, string> Animation table -> animation fake path
+M.INLINE_ANIMATION_PATHS = setmetatable({}, { __mode = "k" })
+
+-- The list of animation data tables that are already preprocessed. Used as a guard to never
+-- preprocess the same data twice, since preprocessing mutates the data in place
+-- Weak keys, so the animation data can be collected by GC if nobody references it anymore
+---@type table<panthera.animation.data, boolean> Animation data -> true
+M.PREPROCESSED_ANIMATIONS = setmetatable({}, { __mode = "k" })
+
 M.PROJECT_FOLDER = nil -- Current game project folder, used for hot reload animations in debug mode
 M.IS_HOTRELOAD_ANIMATIONS = nil
 local IS_DEBUG = sys.get_engine_info().is_debug
@@ -154,13 +166,21 @@ function M.load(animation_or_path, is_cache_reset)
 	-- If we have already loaded animation table
 	local is_table = type(animation_or_path) == TYPE_TABLE
 	if is_table then
-		local animation_path = M.get_fake_animation_path()
 		local project_data = animation_or_path --[[@as panthera.animation.project_file]]
 
+		-- Inline animations are cached by the table identity. The same table always resolves to the
+		-- same fake path, so the shared data is preprocessed only once and takes only one cache slot
+		local cached_path = M.INLINE_ANIMATION_PATHS[project_data]
+		if cached_path and M.LOADED_ANIMATIONS[cached_path] then
+			return M.LOADED_ANIMATIONS[cached_path], cached_path, nil
+		end
+
+		local animation_path = cached_path or M.get_fake_animation_path()
 		local data = project_data.data
 		M.preprocess_animation_keys(data)
 		M.LOADED_ANIMATIONS[animation_path] = data
 		M.INLINE_ANIMATIONS[animation_path] = true
+		M.INLINE_ANIMATION_PATHS[project_data] = animation_path
 
 		return data, animation_path, nil
 	end
@@ -667,6 +687,12 @@ end
 ---@private
 ---@param data panthera.animation.data
 function M.preprocess_animation_keys(data)
+	-- Preprocessing mutates the data in place, so it should be done only once per animation data
+	if M.PREPROCESSED_ANIMATIONS[data] then
+		return
+	end
+	M.PREPROCESSED_ANIMATIONS[data] = true
+
 	for index = 1, #data.animations do
 		local animation = data.animations[index]
 
@@ -736,18 +762,37 @@ function M.preprocess_animation_keys(data)
 	do -- Include all children metadata template_animation_paths recursive
 		local paths = data.metadata.template_animation_paths
 		if paths then
-			-- For each path recursive go deep and record next path with path template/node
-			for node_id, animation_or_path in pairs(paths) do
-				if type(animation_or_path) == TYPE_TABLE then
-					local animation = animation_or_path --[[@as panthera.animation.project_file]]
+			-- Collect nested paths in a separate table. Inserting into the table we iterate over
+			-- is undefined behavior in Lua, so collected paths are merged after the traversal
+			local nested_paths = {}
+			M.collect_nested_template_paths("", paths, nested_paths)
 
-					local child_metapaths = animation.data.metadata.template_animation_paths
-					if child_metapaths then
-						for child_node_id, child_data in pairs(child_metapaths) do
-							paths[node_id .. "/" .. child_node_id] = child_data
-						end
-					end
+			for node_id, animation_or_path in pairs(nested_paths) do
+				paths[node_id] = animation_or_path
+			end
+		end
+	end
+end
+
+
+---Go deep in the child animations and record their template paths with the "template/node" prefix
+---@private
+---@param prefix string Node path prefix of the current animation, empty for the root one
+---@param source_paths table<string, string|panthera.animation.project_file> Paths of the current animation
+---@param nested_paths table<string, string|panthera.animation.project_file> Collected paths of the child animations
+function M.collect_nested_template_paths(prefix, source_paths, nested_paths)
+	for node_id, animation_or_path in pairs(source_paths) do
+		if type(animation_or_path) == TYPE_TABLE then
+			local animation = animation_or_path --[[@as panthera.animation.project_file]]
+
+			local child_paths = animation.data.metadata.template_animation_paths
+			if child_paths then
+				local child_prefix = prefix .. node_id .. "/"
+				for child_node_id, child_animation in pairs(child_paths) do
+					nested_paths[child_prefix .. child_node_id] = child_animation
 				end
+
+				M.collect_nested_template_paths(child_prefix, child_paths, nested_paths)
 			end
 		end
 	end
