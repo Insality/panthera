@@ -550,8 +550,14 @@ function M.reload_animation(animation_path)
 	if animation_path then
 		panthera_internal.load(animation_path, true)
 	else
+		-- Collect paths first, reloading replaces the keys in the table we would iterate over
+		local paths = {}
 		for path in pairs(panthera_internal.LOADED_ANIMATIONS) do
-			panthera_internal.load(path, true)
+			table.insert(paths, path)
+		end
+
+		for index = 1, #paths do
+			panthera_internal.load(paths[index], true)
 		end
 	end
 end
