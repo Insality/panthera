@@ -279,13 +279,13 @@ function M.update_animation(animation, animation_state, options)
 					local time_overflow = math.max(0, animation_state.current_time - key.start_time)
 					child_state.current_time = time_overflow
 
-					animation_state.childs = animation_state.childs or {}
-					table.insert(animation_state.childs, child_state)
 					local animation_duration = M.get_duration(child_state, key.property_id)
-
 					local key_duration = (key.duration - time_overflow)
-					-- TODO: Do we need set time if key_duration is <= 0?
+
 					if animation_duration > 0 and key_duration > 0 then
+						animation_state.childs = animation_state.childs or {}
+						table.insert(animation_state.childs, child_state)
+
 						local speed = (options.speed or 1) * animation_state.speed * M.SPEED
 						local play_speed = (animation_duration / key_duration) * speed
 
@@ -297,6 +297,10 @@ function M.update_animation(animation, animation_state, options)
 								panthera_internal.remove_child_animation(animation_state, child_state)
 							end
 						})
+					elseif animation_duration > 0 then
+						-- The animation key is already over: it has a zero duration or the time overflow
+						-- is greater than the key duration. Set the final state instead of skipping the key
+						panthera_internal.set_animation_state_at_time(child_state, key.property_id, animation_duration)
 					end
 				end
 
@@ -317,13 +321,14 @@ function M.update_animation(animation, animation_state, options)
 					local time_overflow = math.max(0, animation_state.current_time - key.start_time)
 					template_state.current_time = time_overflow
 
-					animation_state.childs = animation_state.childs or {}
-					table.insert(animation_state.childs, template_state)
 					local animation_duration = M.get_duration(template_state, key.property_id)
+					local key_duration = (key.duration - time_overflow)
 
-					if animation_duration > 0 and key.duration > 0 then
+					if animation_duration > 0 and key_duration > 0 then
+						animation_state.childs = animation_state.childs or {}
+						table.insert(animation_state.childs, template_state)
+
 						local speed = (options.speed or 1) * animation_state.speed * M.SPEED
-						local key_duration = (key.duration - time_overflow)
 						local play_speed = (animation_duration / key_duration) * speed
 
 						M.play(template_state, key.property_id, {
@@ -337,6 +342,10 @@ function M.update_animation(animation, animation_state, options)
 							end,
 							callback_event = options.callback_event
 						})
+					elseif animation_duration > 0 then
+						-- The animation key is already over: it has a zero duration or the time overflow
+						-- is greater than the key duration. Set the final state instead of skipping the key
+						panthera_internal.set_animation_state_at_time(template_state, key.property_id, animation_duration)
 					end
 				end
 			end
