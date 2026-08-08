@@ -432,9 +432,11 @@ end
 
 
 ---Reset all animated values in animation id to initial state
+---Nested and template animations are reset too, they are a part of the animation state as well
 ---@param animation_state panthera.animation
 ---@param animation_id string
-function M.reset_animation_state(animation_state, animation_id)
+---@param visited table<string, boolean>|nil Already reset animations, to not stuck on the recursive animations
+function M.reset_animation_state(animation_state, animation_id, visited)
 	local animation_data = M.get_animation_data(animation_state) --[[@as panthera.animation.data]]
 	if not animation_data then
 		return
@@ -445,11 +447,32 @@ function M.reset_animation_state(animation_state, animation_id)
 		return
 	end
 
+	visited = visited or {}
+	local visited_id = animation_state.animation_path .. "#" .. animation_id
+	if visited[visited_id] then
+		return
+	end
+	visited[visited_id] = true
+
 	for node_id, node_keys in pairs(group_keys) do
 		for property_id, keys in pairs(node_keys) do
 			local is_animation_keys = #keys > 0 and keys[1].key_type == M.KEY_TYPE.ANIMATION
 			if not is_animation_keys then
 				M.set_node_value_at_time(animation_state, animation_id, node_id, property_id, -1)
+			elseif node_id == "" then
+				-- Nested animation, all properties it animates should be reset too
+				M.reset_animation_state(animation_state, property_id, visited)
+			else
+				-- Template animation, it animates the nodes inside the template node
+				local template_paths = animation_data.metadata and animation_data.metadata.template_animation_paths or {}
+				local template_path = template_paths[node_id]
+				if template_path then
+					local get_node = function(animation_node_id)
+						return animation_state.get_node(node_id .. "/" .. animation_node_id)
+					end
+					local template_state = M.create_animation_state(template_path, animation_state.adapter, get_node)
+					M.reset_animation_state(template_state, property_id, visited)
+				end
 			end
 		end
 	end
