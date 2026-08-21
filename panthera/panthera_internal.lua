@@ -77,6 +77,13 @@ M.KEY_TYPE = {
 
 local TYPE_TABLE = "table"
 
+local MAX_ANIMATION_NESTING = 16
+
+-- The order of the values claimed at the same time on the root timeline: the start value of a
+-- property is applied first, any key started at this time wins over it
+local STAGE_START_VALUE = 0
+local STAGE_KEY_VALUE = 1
+
 --- Use empty function to save a bit of memory
 local EMPTY_FUNCTION = function(_, message, context) end
 
@@ -102,6 +109,10 @@ M.logger = {
 ---The list of loaded animations.
 ---@type table<string, panthera.animation.data> Animation path -> animation data
 M.LOADED_ANIMATIONS = {}
+
+-- The animations already reported as too deeply nested, to log the warning only once
+---@type table<string, boolean> Animation id -> true
+M.LOGGED_NESTING_WARNINGS = {}
 
 -- The list of animations that loaded directly from the table. We can't reload them on runtime, and we should not clear them on hot reload
 ---@type table<string, boolean> Animation fake path -> true
@@ -222,110 +233,289 @@ function M.get_animation_by_animation_id(animation_data, animation_id)
 end
 
 
+---@class panthera.animation.state_value
+---@field node node
+---@field property_id string
+---@field value any
+---@field priority number Time on the root timeline when the key which set the value is started
+---@field stage number Order of the value inside the same time on the root timeline
+---@field order number Index of the value, keeps the sort stable
+
+---Set all node values animated by the animation at the given time. The values of the animation,
+---including the nested and the template ones, are collected first and applied after that in the
+---order of the keys which set them
 ---@param animation_state panthera.animation
 ---@param animation_id string
 ---@param time number
 ---@param event_callback fun(event_id: string, node: node|nil, data: any, end_value: number)|nil
 function M.set_animation_state_at_time(animation_state, animation_id, time, event_callback)
-	local animation_data = M.LOADED_ANIMATIONS[animation_state.animation_path]
-	local animation = M.get_animation_by_animation_id(animation_data, animation_id)
-	if not animation then
-		return nil
-	end
+	---@type panthera.animation.state_value[]
+	local values = {}
+	M.collect_animation_state(animation_state, animation_id, time, event_callback, values, 0, 1, 1)
 
-	-- If we have initial animation, we should set up it here?
-	if animation.initial_state then
-		local initial_animation = M.get_animation_by_animation_id(animation_data, animation.initial_state)
-		if initial_animation then
-			M.set_animation_state_at_time(animation_state, initial_animation.animation_id, initial_animation.duration, event_callback)
-		end
+	-- Apply values in the order of the keys which set them, so the last started key always wins,
+	-- no matter if it comes from this animation, a nested one or a template animation
+	table.sort(values, M.sort_state_values_function)
+
+	local adapter = animation_state.adapter
+	for index = 1, #values do
+		local state_value = values[index]
+		adapter.set_node_property(state_value.node, state_value.property_id, state_value.value)
+	end
+end
+
+
+---Collect all node values of the animation at the given time, including the nested and the template
+---animations. Every value remembers the time of the key which set it, to resolve the case when
+---several animations are changing the same node property
+---@param animation_state panthera.animation
+---@param animation_id string
+---@param time number Time inside the animation. Pass -1 to collect the start values only
+---@param event_callback fun(event_id: string, node: node|nil, data: any, end_value: number)|nil
+---@param values panthera.animation.state_value[] Accumulator
+---@param time_offset number Time on the root timeline when this animation is started
+---@param time_scale number Root timeline seconds per one second of this animation
+---@param depth number Current nesting level, to not stuck on the recursive animations
+function M.collect_animation_state(animation_state, animation_id, time, event_callback, values, time_offset, time_scale, depth)
+	local animation_data = M.get_animation_data(animation_state)
+	local animation = animation_data and M.get_animation_by_animation_id(animation_data, animation_id)
+	if not animation then
+		return
 	end
 
 	local group_keys = animation_data.group_animation_keys[animation_id]
+	if not group_keys then
+		return
+	end
+
+	if depth > MAX_ANIMATION_NESTING then
+		-- The state can be collected every frame, warn about the animation only once
+		if not M.LOGGED_NESTING_WARNINGS[animation_id] then
+			M.LOGGED_NESTING_WARNINGS[animation_id] = true
+			M.logger:warn("Too deep animation nesting, the animation is probably recursive", {
+				animation_path = animation_state.animation_path,
+				animation_id = animation_id,
+			})
+		end
+		return
+	end
+
+	-- The initial state is applied at the moment this animation is started: after the start values
+	-- of the properties, but before the keys of the animation itself. The zero time scale keeps all
+	-- its values at the animation start time, so they never overlap with the keys of the parent
+	if animation.initial_state and time >= 0 then
+		local initial_animation = M.get_animation_by_animation_id(animation_data, animation.initial_state)
+		if initial_animation and initial_animation.animation_id ~= animation_id then
+			M.collect_animation_state(animation_state, initial_animation.animation_id, initial_animation.duration,
+				event_callback, values, time_offset, 0, depth + 1)
+		end
+	end
+
+	-- The values of the animation itself. They are collected before the nested and the template
+	-- animations, so an animation started at the same time wins over the key of its parent
 	for node_id, node_keys in pairs(group_keys) do
-		-- It's a regular node
-		if node_id ~= "" then
-			-- Node keys
-			for property_id, keys in pairs(node_keys) do
-				local is_keys = #keys > 0
-				local is_animation_keys = is_keys and keys[1].key_type == M.KEY_TYPE.ANIMATION
-				local template_animation_id = property_id
+		for property_id, keys in pairs(node_keys) do
+			local first_key = keys[1]
+			local key_type = first_key and first_key.key_type
 
-				if is_keys and not is_animation_keys then
-					M.set_node_value_at_time(animation_state, animation_id, node_id, property_id, time)
-				end
-
-				local template_paths = animation_data.metadata and animation_data.metadata.template_animation_paths or {}
-				local template_path = template_paths[node_id]
-				if template_path and is_keys and is_animation_keys then
-					-- Grap template path and set it to the nodes
-					local get_node = function(animation_node_id)
-						return animation_state.get_node(node_id .. "/" .. animation_node_id)
-					end
-					local template_state = M.create_animation_state(template_path, animation_state.adapter, get_node)
-					M.set_animation_state_at_time(template_state, template_animation_id, time, event_callback)
+			if key_type == M.KEY_TYPE.EVENT then
+				M.collect_animation_events(animation_state, keys, time, event_callback)
+			elseif first_key and key_type ~= M.KEY_TYPE.ANIMATION and node_id ~= "" then
+				local node = M.get_node(animation_state, node_id)
+				local value, key_start_time = M.get_node_value_at_time(animation_state, animation_id, node_id, property_id, time)
+				if node and value ~= nil then
+					-- If no key is started yet, the property is claimed by the animation start time,
+					-- so it will not override the animations started later
+					local priority = key_start_time and (time_offset + key_start_time * time_scale) or time_offset
+					local stage = key_start_time and STAGE_KEY_VALUE or STAGE_START_VALUE
+					M.add_state_value(values, node, property_id, value, priority, stage)
 				end
 			end
+		end
+	end
 
-			local events = node_keys["event"]
-			if events then
-				for index = 1, #events do
-					local key = events[index]
-					if key.start_time <= time then
-						animation_state.events = animation_state.events or {}
-
-						if not animation_state.events[key] then
-							M.event_animation_key(nil, key, key.duration, event_callback)
-							animation_state.events[key] = key
-						end
+	-- The nested and the template animations. The order of the animations started at the same time
+	-- is the order of the keys traversal, they are not expected to animate the same property
+	for node_id, node_keys in pairs(group_keys) do
+		for property_id, keys in pairs(node_keys) do
+			local first_key = keys[1]
+			if first_key and first_key.key_type == M.KEY_TYPE.ANIMATION then
+				if node_id == "" then
+					-- The nested animation is played in the same animation state
+					M.collect_animation_key_state(animation_state, property_id, keys, time,
+						event_callback, values, time_offset, time_scale, depth)
+				else
+					-- The template animation animates the nodes inside the template node
+					local template_path = M.get_template_animation_path(animation_data, node_id)
+					if template_path then
+						local template_state = M.get_template_animation_state(animation_state, node_id, template_path)
+						M.collect_animation_key_state(template_state, property_id, keys, time,
+							event_callback, values, time_offset, time_scale, depth)
 					end
 				end
 			end
 		end
+	end
+end
 
-		-- It's Animation keys
-		if node_id == "" then
-			-- Animation keys
-			local animation_keys_to_trigger = {}
-			for _, animation_keys in pairs(node_keys) do
-				for index = #animation_keys, 1, -1 do
-					-- Find the last triggered animation key
-					local key = animation_keys[index]
-					if key.start_time <= time and key.key_type == M.KEY_TYPE.ANIMATION then
-						table.insert(animation_keys_to_trigger, key)
-						break
-					end
 
-					-- Trigger all not triggered events
-					if key.start_time <= time and key.key_type == M.KEY_TYPE.EVENT then
-						animation_state.events = animation_state.events or {}
+---Collect the state of the animation played by the animation keys (nested or template animation)
+---@param animation_state panthera.animation State to play the animation in. Own state for the template animations
+---@param inner_animation_id string
+---@param keys panthera.animation.data.animation_key[] Animation keys, sorted by the start time
+---@param time number Time inside the animation which contains the keys
+---@param event_callback fun(event_id: string, node: node|nil, data: any, end_value: number)|nil
+---@param values panthera.animation.state_value[] Accumulator
+---@param time_offset number
+---@param time_scale number
+---@param depth number
+function M.collect_animation_key_state(animation_state, inner_animation_id, keys, time, event_callback, values, time_offset, time_scale, depth)
+	-- Find the last started key, the keys are sorted by the start time
+	local animation_key = nil
+	for index = 1, #keys do
+		local key = keys[index]
+		if key.start_time > time then
+			break
+		end
+		animation_key = key
+	end
 
-						if not animation_state.events[key] then
-							M.event_animation_key(nil, key, key.duration, event_callback)
-							animation_state.events[key] = key
-						end
-					end
-				end
-			end
+	if not animation_key then
+		-- The animation is not started yet, but it will animate the properties later. Claim them
+		-- with the start values, so they are reset instead of keeping the values of the animation
+		-- which was playing before. The zero time scale keeps all of them at the parent start time
+		M.collect_animation_state(animation_state, inner_animation_id, -1, event_callback, values,
+			time_offset, 0, depth + 1)
+		return
+	end
 
-			table.sort(animation_keys_to_trigger, M.sort_keys_function)
+	local animation_data = M.get_animation_data(animation_state)
+	local animation_to_play = animation_data and M.get_animation_by_animation_id(animation_data, inner_animation_id)
+	local animation_duration = animation_to_play and animation_to_play.duration or 0
 
-			for index = 1,	#animation_keys_to_trigger do
-				local animation_key = animation_keys_to_trigger[index]
-				local inner_animation_id = animation_key.property_id
+	-- The key length can differ from the length of the animation it plays, so the animation time
+	-- is scaled to the key time. The key easing affects the playback speed of the animation
+	local animation_time_to_set = animation_duration
+	local animation_time_scale = 0
+	if animation_key.duration > 0 and animation_duration > 0 then
+		local easing = animation_key.easing_custom or tweener[animation_key.easing] or tweener.linear
+		local key_progress_time = math.min(time - animation_key.start_time, animation_key.duration)
+		animation_time_to_set = tweener.ease(easing, 0, animation_duration, animation_key.duration, key_progress_time)
+		animation_time_scale = animation_key.duration / animation_duration
+	end
 
-				local animation_time_to_set = time - animation_key.start_time
-				local animation_to_play = M.get_animation_by_animation_id(animation_data, inner_animation_id)
-				local animation_duration = animation_to_play and animation_to_play.duration or 0
+	M.collect_animation_state(animation_state, inner_animation_id, animation_time_to_set, event_callback, values,
+		time_offset + animation_key.start_time * time_scale, time_scale * animation_time_scale, depth + 1)
+end
 
-				if animation_key.duration == 0 then
-					animation_time_to_set = animation_duration
-				else
-					animation_time_to_set = animation_time_to_set * animation_duration / animation_key.duration
-				end
 
-				M.set_animation_state_at_time(animation_state, inner_animation_id, animation_time_to_set, event_callback)
-			end
+---Trigger all not triggered yet events of the keys group
+---@param animation_state panthera.animation
+---@param keys panthera.animation.data.animation_key[] Event keys, sorted by the start time
+---@param time number
+---@param event_callback fun(event_id: string, node: node|nil, data: any, end_value: number)|nil
+function M.collect_animation_events(animation_state, keys, time, event_callback)
+	for index = 1, #keys do
+		local key = keys[index]
+		if key.start_time > time then
+			break
+		end
+
+		local events = animation_state.events
+		if not events then
+			events = {}
+			animation_state.events = events
+		end
+
+		-- The key is marked as triggered before the callback, it can start a new collect
+		if not events[key] then
+			events[key] = key
+			M.event_animation_key(nil, key, key.duration, event_callback)
+		end
+	end
+end
+
+
+---@param values panthera.animation.state_value[]
+---@param node node
+---@param property_id string
+---@param value any
+---@param priority number Time on the root timeline when the key which set the value is started
+---@param stage number Order of the value inside the same time on the root timeline
+function M.add_state_value(values, node, property_id, value, priority, stage)
+	local index = #values + 1
+	values[index] = {
+		node = node,
+		property_id = property_id,
+		value = value,
+		priority = priority,
+		stage = stage,
+		order = index,
+	}
+end
+
+
+---@param a panthera.animation.state_value
+---@param b panthera.animation.state_value
+function M.sort_state_values_function(a, b)
+	if a.priority ~= b.priority then
+		return a.priority < b.priority
+	end
+
+	if a.stage ~= b.stage then
+		return a.stage < b.stage
+	end
+
+	return a.order < b.order
+end
+
+
+---@param animation_data panthera.animation.data
+---@param node_id string Template node id
+---@return string|panthera.animation.project_file|nil
+function M.get_template_animation_path(animation_data, node_id)
+	local template_paths = animation_data.metadata and animation_data.metadata.template_animation_paths
+	return template_paths and template_paths[node_id]
+end
+
+
+---Get the animation state of the template node. The states are cached in the parent animation
+---state, so the nodes inside the template are resolved only once and the events of the template
+---animation are not triggered on every state update
+---@param animation_state panthera.animation
+---@param node_id string Template node id
+---@param template_path string|panthera.animation.project_file
+---@return panthera.animation
+function M.get_template_animation_state(animation_state, node_id, template_path)
+	local template_states = animation_state.template_states
+	if not template_states then
+		template_states = {}
+		animation_state.template_states = template_states
+	end
+
+	local template_state = template_states[node_id]
+	if not template_state then
+		local get_node = function(animation_node_id)
+			return animation_state.get_node(node_id .. "/" .. animation_node_id)
+		end
+
+		template_state = M.create_animation_state(template_path, animation_state.adapter, get_node)
+		template_states[node_id] = template_state
+	end
+
+	return template_state
+end
+
+
+---Forget the triggered events of the animation state, including the template animation states
+---@param animation_state panthera.animation
+function M.reset_animation_events(animation_state)
+	animation_state.events = nil
+
+	local template_states = animation_state.template_states
+	if template_states then
+		for _, template_state in pairs(template_states) do
+			M.reset_animation_events(template_state)
 		end
 	end
 end
@@ -337,6 +527,7 @@ end
 ---@param property_id string
 ---@param time number Pass -1 to get initial value
 ---@return any|nil
+---@return number|nil Start time of the key which set the value. Nil if no key is started at time
 function M.get_node_value_at_time(animation_state, animation_id, node_id, property_id, time)
 	local animation_data = M.get_animation_data(animation_state) --[[@as panthera.animation.data]]
 	local group_keys = animation_data.group_animation_keys[animation_id]
@@ -357,22 +548,25 @@ function M.get_node_value_at_time(animation_state, animation_id, node_id, proper
 		set_value = initial_key.start_value
 	end
 
+	local set_value_time = nil
 	for index = #keys, 1, -1 do
 		local key = keys[index]
 		if key.start_time <= time  then
 			if key.key_type == M.KEY_TYPE.TWEEN then
 				set_value = M.get_key_value_at_time(key, time)
+				set_value_time = key.start_time
 			end
 
 			if key.key_type == M.KEY_TYPE.TRIGGER then
 				set_value = key.data
+				set_value_time = key.start_time
 			end
 
 			break
 		end
 	end
 
-	return set_value
+	return set_value, set_value_time
 end
 
 
@@ -435,7 +629,7 @@ end
 ---Nested and template animations are reset too, they are a part of the animation state as well
 ---@param animation_state panthera.animation
 ---@param animation_id string
----@param visited table<string, boolean>|nil Already reset animations, to not stuck on the recursive animations
+---@param visited table<panthera.animation, table<string, boolean>>|nil Already reset animations, to not stuck on the recursive animations
 function M.reset_animation_state(animation_state, animation_id, visited)
 	local animation_data = M.get_animation_data(animation_state) --[[@as panthera.animation.data]]
 	if not animation_data then
@@ -447,12 +641,19 @@ function M.reset_animation_state(animation_state, animation_id, visited)
 		return
 	end
 
+	-- The visited animations are tracked per animation state, not per animation path: two template
+	-- nodes with the same template animation have their own states and both should be reset
 	visited = visited or {}
-	local visited_id = animation_state.animation_path .. "#" .. animation_id
-	if visited[visited_id] then
+	local visited_animations = visited[animation_state]
+	if not visited_animations then
+		visited_animations = {}
+		visited[animation_state] = visited_animations
+	end
+
+	if visited_animations[animation_id] then
 		return
 	end
-	visited[visited_id] = true
+	visited_animations[animation_id] = true
 
 	for node_id, node_keys in pairs(group_keys) do
 		for property_id, keys in pairs(node_keys) do
@@ -464,13 +665,9 @@ function M.reset_animation_state(animation_state, animation_id, visited)
 				M.reset_animation_state(animation_state, property_id, visited)
 			else
 				-- Template animation, it animates the nodes inside the template node
-				local template_paths = animation_data.metadata and animation_data.metadata.template_animation_paths or {}
-				local template_path = template_paths[node_id]
+				local template_path = M.get_template_animation_path(animation_data, node_id)
 				if template_path then
-					local get_node = function(animation_node_id)
-						return animation_state.get_node(node_id .. "/" .. animation_node_id)
-					end
-					local template_state = M.create_animation_state(template_path, animation_state.adapter, get_node)
+					local template_state = M.get_template_animation_state(animation_state, node_id, template_path)
 					M.reset_animation_state(template_state, property_id, visited)
 				end
 			end
