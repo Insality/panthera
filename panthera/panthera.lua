@@ -15,6 +15,7 @@ local panthera_internal = require("panthera.panthera_internal")
 ---@field animation_path string Animation path to JSON file
 ---@field animation_keys_index number Animation keys index
 ---@field events table? List of events triggered in this animation loop
+---@field template_states table<string, panthera.animation>? Cached animation states of the template nodes
 ---@field timer_id number? Timer ID for animation
 
 ---@class panthera.options
@@ -134,7 +135,7 @@ function M.play(animation_state, animation_id, options)
 
 	animation_state.animation_id = animation.animation_id
 	animation_state.animation_keys_index = 1
-	animation_state.events = nil
+	panthera_internal.reset_animation_events(animation_state)
 
 	if not options.is_skip_init then
 		-- Reset all previuosly animated nodes to initial state
@@ -143,14 +144,8 @@ function M.play(animation_state, animation_id, options)
 			animation_state.previous_animation_id = nil
 		end
 
-		-- If we have initial animation, we should set up it here?
-		if animation.initial_state then
-			local initial_animation = panthera_internal.get_animation_by_animation_id(animation_data, animation.initial_state)
-			if initial_animation then
-				panthera_internal.set_animation_state_at_time(animation_state, initial_animation.animation_id, initial_animation.duration)
-			end
-		end
-
+		-- The state at the time 0 already contains the initial state animation and the start values
+		-- of the properties animated by the nested and template animations started later
 		panthera_internal.set_animation_state_at_time(animation_state, animation.animation_id, 0)
 	end
 
@@ -203,7 +198,7 @@ function M.play_tweener(animation_state, animation_id, options)
 	end
 
 	local easing = options.easing or tweener.linear
-	animation_state.events = nil
+	panthera_internal.reset_animation_events(animation_state)
 
 	local total_duration = animation.duration / (options.speed or 1)
 	local from = options.from or 0
@@ -226,7 +221,7 @@ function M.play_tweener(animation_state, animation_id, options)
 
 			if animation_state.current_time > time then
 				-- We count this as a new animation loop, we want to update animation state data
-				animation_state.events = nil
+				panthera_internal.reset_animation_events(animation_state)
 			end
 
 			animation_state.current_time = time
@@ -307,11 +302,10 @@ function M.update_animation(animation, animation_state, options)
 				-- This is tempalte animations, the node_id is a template to run the new animations
 				if key.node_id ~= "" then
 					local animation_data = panthera_internal.get_animation_data(animation_state)
-					local paths = animation_data and animation_data.metadata.template_animation_paths
-					if not paths then
+					local template_animation_path = animation_data and panthera_internal.get_template_animation_path(animation_data, key.node_id)
+					if not template_animation_path then
 						break
 					end
-					local template_animation_path = paths[key.node_id]
 
 					local get_node = function(node_id)
 						return animation_state.get_node(key.node_id .. "/" .. node_id)
@@ -345,7 +339,7 @@ function M.update_animation(animation, animation_state, options)
 					elseif animation_duration > 0 then
 						-- The animation key is already over: it has a zero duration or the time overflow
 						-- is greater than the key duration. Set the final state instead of skipping the key
-						panthera_internal.set_animation_state_at_time(template_state, key.property_id, animation_duration)
+						panthera_internal.set_animation_state_at_time(template_state, key.property_id, animation_duration, options.callback_event)
 					end
 				end
 			end
@@ -443,7 +437,7 @@ function M.set_time(animation_state, animation_id, time, event_callback)
 
 	if animation_state.current_time > time then
 		-- We count this as a new animation loop, we want to update animation state data
-		animation_state.events = nil
+		panthera_internal.reset_animation_events(animation_state)
 	end
 
 	animation_state.current_time = time

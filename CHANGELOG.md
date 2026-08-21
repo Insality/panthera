@@ -82,3 +82,16 @@ Initial resease!
 	- The same animation table now always resolves to the same animation path and is preprocessed only once, instead of allocating a new cache entry on every `panthera.create_go` / `create_gui` / `create` call
 	- Nested template animations passed as tables are cached the same way
 - Fix collecting of nested `template_animation_paths`, they were inserted into the table while it was iterated over
+
+## Version v10
+- Fix the animation state when several animations are changing the same node property
+	- The state is collected first and applied in the order of the keys which set the values, so the last started key always wins, no matter if it comes from the animation itself, a nested or a template animation
+- Fix the initial state animation of a nested animation, it is applied at the moment this animation is started
+- Fix the properties animated by a nested or a template animation which is not started yet
+	- They are reset to their start values instead of keeping the values of the previously played animation. Works for `panthera.play`, `panthera.set_time` and the animations played with easing
+- Fix the template animation time, it is scaled to the length of the animation key
+- Fix the animation keys skipped by the time overflow, the final state of the animation is applied instead
+- Fix the reset of two template nodes bound to the same template animation, only one of them was reset
+- Fix the events of the template animations, they were triggered on every animation state update
+- Fix the child animation states leak for the animation keys which are already over
+- Fix the endless recursion for the animations which play themselves
