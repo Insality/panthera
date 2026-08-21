@@ -138,7 +138,7 @@ function M.play(animation_state, animation_id, options)
 	panthera_internal.reset_animation_events(animation_state)
 
 	if not options.is_skip_init then
-		-- Reset all previuosly animated nodes to initial state
+		-- Reset all previously animated nodes to initial state
 		if animation_state.previous_animation_id then
 			panthera_internal.reset_animation_state(animation_state, animation_state.previous_animation_id)
 			animation_state.previous_animation_id = nil
@@ -288,15 +288,16 @@ function M.update_animation(animation, animation_state, options)
 							speed = play_speed,
 							callback = function()
 								panthera_internal.remove_child_animation(animation_state, child_state)
-							end
+							end,
+							callback_event = options.callback_event
 						})
 					elseif animation_duration > 0 then
 						-- Key already over: set final state
-						panthera_internal.set_animation_state_at_time(child_state, key.property_id, animation_duration)
+						panthera_internal.set_animation_state_at_time(child_state, key.property_id, animation_duration, options.callback_event)
 					end
 				end
 
-				-- This is tempalte animations, the node_id is a template to run the new animations
+				-- This is template animations, the node_id is a template to run the new animations
 				local animation_data = key.node_id ~= "" and panthera_internal.get_animation_data(animation_state)
 				local template_animation_path = animation_data and panthera_internal.get_template_animation_path(animation_data, key.node_id)
 				if template_animation_path then
