@@ -144,8 +144,6 @@ function M.play(animation_state, animation_id, options)
 			animation_state.previous_animation_id = nil
 		end
 
-		-- The state at the time 0 already contains the initial state animation and the start values
-		-- of the properties animated by the nested and template animations started later
 		panthera_internal.set_animation_state_at_time(animation_state, animation.animation_id, 0)
 	end
 
@@ -293,14 +291,12 @@ function M.update_animation(animation, animation_state, options)
 							end
 						})
 					elseif animation_duration > 0 then
-						-- The animation key is already over: it has a zero duration or the time overflow
-						-- is greater than the key duration. Set the final state instead of skipping the key
+						-- Key already over: set final state
 						panthera_internal.set_animation_state_at_time(child_state, key.property_id, animation_duration)
 					end
 				end
 
 				-- This is tempalte animations, the node_id is a template to run the new animations
-				-- The key with a missing template path is skipped, the next keys are still processed
 				local animation_data = key.node_id ~= "" and panthera_internal.get_animation_data(animation_state)
 				local template_animation_path = animation_data and panthera_internal.get_template_animation_path(animation_data, key.node_id)
 				if template_animation_path then
@@ -334,8 +330,7 @@ function M.update_animation(animation, animation_state, options)
 							callback_event = options.callback_event
 						})
 					elseif animation_duration > 0 then
-						-- The animation key is already over: it has a zero duration or the time overflow
-						-- is greater than the key duration. Set the final state instead of skipping the key
+						-- Key already over: set final state
 						panthera_internal.set_animation_state_at_time(template_state, key.property_id, animation_duration, options.callback_event)
 					end
 				end
