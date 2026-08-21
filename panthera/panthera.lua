@@ -300,13 +300,10 @@ function M.update_animation(animation, animation_state, options)
 				end
 
 				-- This is tempalte animations, the node_id is a template to run the new animations
-				if key.node_id ~= "" then
-					local animation_data = panthera_internal.get_animation_data(animation_state)
-					local template_animation_path = animation_data and panthera_internal.get_template_animation_path(animation_data, key.node_id)
-					if not template_animation_path then
-						break
-					end
-
+				-- The key with a missing template path is skipped, the next keys are still processed
+				local animation_data = key.node_id ~= "" and panthera_internal.get_animation_data(animation_state)
+				local template_animation_path = animation_data and panthera_internal.get_template_animation_path(animation_data, key.node_id)
+				if template_animation_path then
 					local get_node = function(node_id)
 						return animation_state.get_node(key.node_id .. "/" .. node_id)
 					end
