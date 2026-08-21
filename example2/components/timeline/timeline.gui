@@ -12,7 +12,7 @@ textures {
 }
 nodes {
   size {
-    x: 1080.0
+    x: 1070.0
     y: 110.0
   }
   color {
@@ -21,10 +21,16 @@ nodes {
     z: 0.204
   }
   type: TYPE_BOX
-  texture: "example2/pixel"
+  texture: "example2/ui_circle_32"
   id: "root"
   adjust_mode: ADJUST_MODE_STRETCH
   inherit_alpha: true
+  slice9 {
+    x: 16.0
+    y: 16.0
+    z: 16.0
+    w: 16.0
+  }
 }
 nodes {
   position {

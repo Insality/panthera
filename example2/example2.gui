@@ -51,22 +51,26 @@ nodes {
     x: 400.0
     y: 170.0
   }
+  color {
+    x: 0.12941177
+    y: 0.14117648
+    z: 0.15686275
+  }
   type: TYPE_BOX
-  texture: "example2/empty"
+  texture: "example2/pixel"
   id: "container_header"
   pivot: PIVOT_NW
   parent: "container_left"
   inherit_alpha: true
-  visible: false
 }
 nodes {
   position {
     x: 200.0
-    y: -85.0
+    y: -82.5
   }
   size {
     x: 400.0
-    y: 170.0
+    y: 165.0
   }
   color {
     x: 0.173
