@@ -95,4 +95,5 @@ Initial resease!
 - Fix the events of the template animations, they were triggered on every animation state update
 - Fix the events of the nested animations, they were not passed to the `callback_event` while the animation is playing
 - Fix the child animation states leak for the animation keys which are already over
-- Fix the endless recursion for the animations which play themselves
+- Fix nested template animations desync on HTML5
+	- Playback ticks every frame instead of `1/60` timers, and nested/template animations start on the same frame as the parent

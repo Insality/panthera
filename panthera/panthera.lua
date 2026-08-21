@@ -43,7 +43,8 @@ local M = {
 	SPEED = 1
 }
 
-local TIMER_DELAY = 1/60
+-- 0 = every frame. 1/60 skips frames; nested template timers get a different phase and desync on HTML5
+local TIMER_DELAY = 0
 local EMPTY_OPTIONS = {}
 
 -- Set of predefined options
@@ -147,20 +148,22 @@ function M.play(animation_state, animation_id, options)
 		panthera_internal.set_animation_state_at_time(animation_state, animation.animation_id, 0)
 	end
 
-	animation_state.timer_id = timer.delay(TIMER_DELAY, true, function(_, _, time_elapsed)
-		local dt = time_elapsed
+	-- Start keys at the current time now, so nested templates don't wait for the next timer tick
+	M.update_animation(animation, animation_state, options)
+	if not animation_state.animation_id then
+		return
+	end
 
-		-- Weird thing, but when app lose focus for small time, we got a lot of callbacks
-		if dt < 0.001 then
+	animation_state.timer_id = timer.delay(TIMER_DELAY, true, function(_, _, time_elapsed)
+		if time_elapsed < 0.001 then
 			return
 		end
 
 		local speed = (options.speed or 1) * animation_state.speed * M.SPEED
 
-		animation_state.current_time = animation_state.current_time + dt * speed
+		animation_state.current_time = animation_state.current_time + time_elapsed * speed
 		M.update_animation(animation, animation_state, options)
 	end)
-	timer.trigger(animation_state.timer_id)
 end
 
 
