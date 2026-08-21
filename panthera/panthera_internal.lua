@@ -111,7 +111,7 @@ M.logger = {
 M.LOADED_ANIMATIONS = {}
 
 -- The animations already reported as too deeply nested, to log the warning only once
----@type table<string, boolean> Animation id -> true
+---@type table<string, boolean> Animation path with the animation id -> true
 M.LOGGED_NESTING_WARNINGS = {}
 
 -- The list of animations that loaded directly from the table. We can't reload them on runtime, and we should not clear them on hot reload
@@ -290,8 +290,9 @@ function M.collect_animation_state(animation_state, animation_id, time, event_ca
 
 	if depth > MAX_ANIMATION_NESTING then
 		-- The state can be collected every frame, warn about the animation only once
-		if not M.LOGGED_NESTING_WARNINGS[animation_id] then
-			M.LOGGED_NESTING_WARNINGS[animation_id] = true
+		local warning_id = animation_state.animation_path .. "#" .. animation_id
+		if not M.LOGGED_NESTING_WARNINGS[warning_id] then
+			M.LOGGED_NESTING_WARNINGS[warning_id] = true
 			M.logger:warn("Too deep animation nesting, the animation is probably recursive", {
 				animation_path = animation_state.animation_path,
 				animation_id = animation_id,
@@ -334,8 +335,8 @@ function M.collect_animation_state(animation_state, animation_id, time, event_ca
 		end
 	end
 
-	-- The nested and the template animations. The order of the animations started at the same time
-	-- is the order of the keys traversal, they are not expected to animate the same property
+	-- The nested and the template animations. Two of them started at exactly the same time and
+	-- changing the same node property are ambiguous, the order between them is not defined
 	for node_id, node_keys in pairs(group_keys) do
 		for property_id, keys in pairs(node_keys) do
 			local first_key = keys[1]
@@ -394,7 +395,9 @@ function M.collect_animation_key_state(animation_state, inner_animation_id, keys
 	local animation_duration = animation_to_play and animation_to_play.duration or 0
 
 	-- The key length can differ from the length of the animation it plays, so the animation time
-	-- is scaled to the key time. The key easing affects the playback speed of the animation
+	-- is scaled to the key time. The key easing affects the playback speed of the animation, but
+	-- the time scale stays linear: it only places the inner keys on the root timeline to compare
+	-- them with the keys of the other animations, and it keeps their order inside this animation
 	local animation_time_to_set = animation_duration
 	local animation_time_scale = 0
 	if animation_key.duration > 0 and animation_duration > 0 then
