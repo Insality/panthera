@@ -1,0 +1,14 @@
+name: "example2"
+scale_along_z: 0
+embedded_instances {
+  id: "go"
+  data: "components {\n"
+  "  id: \"example2\"\n"
+  "  component: \"/example2/example2.gui\"\n"
+  "}\n"
+  "components {\n"
+  "  id: \"druid\"\n"
+  "  component: \"/druid/druid.script\"\n"
+  "}\n"
+  ""
+}

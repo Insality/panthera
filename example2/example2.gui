@@ -1,0 +1,1114 @@
+script: "/example2/example2.gui_script"
+fonts {
+  name: "text_bold"
+  font: "/example2/assets/fonts/text_bold.font"
+}
+fonts {
+  name: "text_regular"
+  font: "/example2/assets/fonts/text_regular.font"
+}
+textures {
+  name: "example2"
+  texture: "/example2/assets/example2.atlas"
+}
+nodes {
+  position {
+    x: 960.0
+    y: 540.0
+  }
+  size {
+    x: 1920.0
+    y: 1080.0
+  }
+  type: TYPE_BOX
+  id: "root"
+  adjust_mode: ADJUST_MODE_STRETCH
+  inherit_alpha: true
+  visible: false
+}
+nodes {
+  position {
+    x: -960.0
+  }
+  size {
+    x: 400.0
+    y: 1080.0
+  }
+  type: TYPE_BOX
+  texture: "example2/empty"
+  id: "container_left"
+  pivot: PIVOT_W
+  adjust_mode: ADJUST_MODE_STRETCH
+  parent: "root"
+  inherit_alpha: true
+  visible: false
+}
+nodes {
+  position {
+    y: 540.0
+  }
+  size {
+    x: 400.0
+    y: 170.0
+  }
+  type: TYPE_BOX
+  texture: "example2/empty"
+  id: "container_header"
+  pivot: PIVOT_NW
+  parent: "container_left"
+  inherit_alpha: true
+  visible: false
+}
+nodes {
+  position {
+    x: 200.0
+    y: -85.0
+  }
+  size {
+    x: 400.0
+    y: 170.0
+  }
+  color {
+    x: 0.173
+    y: 0.184
+    z: 0.204
+  }
+  type: TYPE_BOX
+  texture: "example2/pixel"
+  id: "panel_header"
+  parent: "container_header"
+  layer: "druid"
+  inherit_alpha: true
+}
+nodes {
+  position {
+    x: -140.0
+  }
+  scale {
+    x: 0.55
+    y: 0.55
+  }
+  type: TYPE_BOX
+  texture: "example2/panthera"
+  id: "logo"
+  parent: "panel_header"
+  layer: "druid"
+  inherit_alpha: true
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  position {
+    x: -80.0
+    y: 20.0
+  }
+  scale {
+    x: 0.8
+    y: 0.8
+  }
+  size {
+    x: 300.0
+    y: 50.0
+  }
+  color {
+    x: 0.722
+    y: 0.741
+    z: 0.761
+  }
+  type: TYPE_TEXT
+  text: "Panthera"
+  font: "text_bold"
+  id: "text_title"
+  pivot: PIVOT_W
+  outline {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+  }
+  shadow {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+  }
+  parent: "panel_header"
+  layer: "text_bold"
+  inherit_alpha: true
+  outline_alpha: 0.0
+  shadow_alpha: 0.0
+}
+nodes {
+  position {
+    x: -80.0
+    y: -22.0
+  }
+  scale {
+    x: 0.45
+    y: 0.45
+  }
+  size {
+    x: 320.0
+    y: 40.0
+  }
+  color {
+    x: 0.463
+    y: 0.475
+    z: 0.49
+  }
+  type: TYPE_TEXT
+  text: "Runtime"
+  font: "text_regular"
+  id: "text_version"
+  pivot: PIVOT_W
+  outline {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+  }
+  shadow {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+  }
+  parent: "panel_header"
+  layer: "text_regular"
+  inherit_alpha: true
+  outline_alpha: 0.0
+  shadow_alpha: 0.0
+}
+nodes {
+  position {
+    y: 370.0
+  }
+  size {
+    x: 400.0
+    y: 910.0
+  }
+  type: TYPE_BOX
+  texture: "example2/empty"
+  id: "container_examples"
+  pivot: PIVOT_NW
+  adjust_mode: ADJUST_MODE_STRETCH
+  parent: "container_left"
+  inherit_alpha: true
+  visible: false
+}
+nodes {
+  position {
+    x: 200.0
+    y: -455.0
+  }
+  type: TYPE_TEMPLATE
+  id: "examples_list_view"
+  parent: "container_examples"
+  inherit_alpha: true
+  template: "/example2/components/list_view/list_view.gui"
+}
+nodes {
+  type: TYPE_BOX
+  id: "examples_list_view/root"
+  parent: "examples_list_view"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_TEXT
+  id: "examples_list_view/text_header"
+  parent: "examples_list_view/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "examples_list_view/scroll_view"
+  parent: "examples_list_view/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "examples_list_view/scroll_content"
+  parent: "examples_list_view/scroll_view"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_TEMPLATE
+  id: "examples_list_view/list_view_item"
+  parent: "examples_list_view/scroll_content"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "examples_list_view/list_view_item/root"
+  parent: "examples_list_view/list_view_item"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "examples_list_view/list_view_item/panel_highlight"
+  parent: "examples_list_view/list_view_item/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "examples_list_view/list_view_item/panel_selected"
+  parent: "examples_list_view/list_view_item/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "examples_list_view/list_view_item/icon"
+  parent: "examples_list_view/list_view_item/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_TEXT
+  id: "examples_list_view/list_view_item/text"
+  parent: "examples_list_view/list_view_item/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "examples_list_view/scroll_bar_view"
+  parent: "examples_list_view/scroll_view"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "examples_list_view/scroll_bar_pin"
+  parent: "examples_list_view/scroll_bar_view"
+  template_node_child: true
+}
+nodes {
+  position {
+    x: 960.0
+  }
+  size {
+    x: 440.0
+    y: 1080.0
+  }
+  type: TYPE_BOX
+  texture: "example2/empty"
+  id: "container_right"
+  pivot: PIVOT_E
+  adjust_mode: ADJUST_MODE_STRETCH
+  parent: "root"
+  inherit_alpha: true
+  visible: false
+}
+nodes {
+  position {
+    y: 540.0
+  }
+  size {
+    x: 440.0
+    y: 690.0
+  }
+  type: TYPE_BOX
+  texture: "example2/empty"
+  id: "container_animations"
+  pivot: PIVOT_NE
+  adjust_mode: ADJUST_MODE_STRETCH
+  parent: "container_right"
+  inherit_alpha: true
+  visible: false
+}
+nodes {
+  position {
+    x: -220.0
+    y: -365.0
+  }
+  type: TYPE_TEMPLATE
+  id: "animations_list_view"
+  parent: "container_animations"
+  inherit_alpha: true
+  template: "/example2/components/list_view/list_view_short.gui"
+}
+nodes {
+  type: TYPE_BOX
+  id: "animations_list_view/root"
+  parent: "animations_list_view"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_TEXT
+  id: "animations_list_view/text_header"
+  parent: "animations_list_view/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "animations_list_view/scroll_view"
+  parent: "animations_list_view/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "animations_list_view/scroll_content"
+  parent: "animations_list_view/scroll_view"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_TEMPLATE
+  id: "animations_list_view/list_view_item"
+  parent: "animations_list_view/scroll_content"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "animations_list_view/list_view_item/root"
+  parent: "animations_list_view/list_view_item"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "animations_list_view/list_view_item/panel_highlight"
+  parent: "animations_list_view/list_view_item/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "animations_list_view/list_view_item/panel_selected"
+  parent: "animations_list_view/list_view_item/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "animations_list_view/list_view_item/icon"
+  parent: "animations_list_view/list_view_item/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_TEXT
+  id: "animations_list_view/list_view_item/text"
+  parent: "animations_list_view/list_view_item/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "animations_list_view/scroll_bar_view"
+  parent: "animations_list_view/scroll_view"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "animations_list_view/scroll_bar_pin"
+  parent: "animations_list_view/scroll_bar_view"
+  template_node_child: true
+}
+nodes {
+  position {
+    y: -540.0
+  }
+  size {
+    x: 440.0
+    y: 350.0
+  }
+  type: TYPE_BOX
+  texture: "example2/empty"
+  id: "container_settings"
+  pivot: PIVOT_SE
+  adjust_mode: ADJUST_MODE_STRETCH
+  parent: "container_right"
+  inherit_alpha: true
+  visible: false
+}
+nodes {
+  position {
+    x: -220.0
+    y: 175.0
+  }
+  type: TYPE_TEMPLATE
+  id: "properties_panel"
+  parent: "container_settings"
+  inherit_alpha: true
+  template: "/example2/components/properties_panel/properties_panel.gui"
+}
+nodes {
+  type: TYPE_BOX
+  id: "properties_panel/root"
+  parent: "properties_panel"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_TEXT
+  id: "properties_panel/text_header"
+  parent: "properties_panel/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "properties_panel/scroll_view"
+  parent: "properties_panel/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "properties_panel/scroll_content"
+  parent: "properties_panel/scroll_view"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "properties_panel/item_size"
+  parent: "properties_panel/scroll_content"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "properties_panel/scroll_bar_view"
+  parent: "properties_panel/scroll_view"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "properties_panel/scroll_bar_pin"
+  parent: "properties_panel/scroll_bar_view"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "properties_panel/separator"
+  parent: "properties_panel/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "properties_panel/propeties"
+  parent: "properties_panel/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_TEMPLATE
+  id: "properties_panel/property_slider"
+  parent: "properties_panel/propeties"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "properties_panel/property_slider/root"
+  parent: "properties_panel/property_slider"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_TEXT
+  id: "properties_panel/property_slider/text_name"
+  parent: "properties_panel/property_slider/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "properties_panel/property_slider/E_Anchor"
+  parent: "properties_panel/property_slider/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "properties_panel/property_slider/button"
+  parent: "properties_panel/property_slider/E_Anchor"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "properties_panel/property_slider/selected"
+  parent: "properties_panel/property_slider/button"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_TEXT
+  id: "properties_panel/property_slider/text_value"
+  parent: "properties_panel/property_slider/button"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "properties_panel/property_slider/slider"
+  parent: "properties_panel/property_slider/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "properties_panel/property_slider/slider_back"
+  parent: "properties_panel/property_slider/slider"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "properties_panel/property_slider/slider_pin"
+  parent: "properties_panel/property_slider/slider"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_TEMPLATE
+  id: "properties_panel/property_checkbox"
+  parent: "properties_panel/propeties"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "properties_panel/property_checkbox/root"
+  parent: "properties_panel/property_checkbox"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_TEXT
+  id: "properties_panel/property_checkbox/text_name"
+  parent: "properties_panel/property_checkbox/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "properties_panel/property_checkbox/button"
+  parent: "properties_panel/property_checkbox/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "properties_panel/property_checkbox/icon"
+  parent: "properties_panel/property_checkbox/button"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "properties_panel/property_checkbox/selected"
+  parent: "properties_panel/property_checkbox/button"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_TEMPLATE
+  id: "properties_panel/property_button"
+  parent: "properties_panel/propeties"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "properties_panel/property_button/root"
+  parent: "properties_panel/property_button"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_TEXT
+  id: "properties_panel/property_button/text_name"
+  parent: "properties_panel/property_button/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "properties_panel/property_button/button"
+  parent: "properties_panel/property_button/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "properties_panel/property_button/selected"
+  parent: "properties_panel/property_button/button"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_TEXT
+  id: "properties_panel/property_button/text_button"
+  parent: "properties_panel/property_button/button"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_TEXT
+  id: "properties_panel/text_no_properties"
+  parent: "properties_panel/root"
+  template_node_child: true
+}
+nodes {
+  position {
+    x: -20.0
+  }
+  size {
+    x: 1080.0
+    y: 1080.0
+  }
+  color {
+    x: 0.129
+    y: 0.141
+    z: 0.157
+  }
+  type: TYPE_BOX
+  texture: "example2/pixel"
+  id: "container_center"
+  xanchor: XANCHOR_LEFT
+  adjust_mode: ADJUST_MODE_STRETCH
+  parent: "root"
+  inherit_alpha: true
+  clipping_mode: CLIPPING_MODE_STENCIL
+}
+nodes {
+  position {
+    x: 520.0
+    y: 520.0
+  }
+  scale {
+    x: 0.45
+    y: 0.45
+  }
+  size {
+    x: 1000.0
+    y: 50.0
+  }
+  color {
+    x: 0.463
+    y: 0.475
+    z: 0.49
+  }
+  type: TYPE_TEXT
+  text: "/example2/examples/basic/basic.gui"
+  font: "text_regular"
+  id: "text_gui_path"
+  xanchor: XANCHOR_RIGHT
+  pivot: PIVOT_NE
+  outline {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+  }
+  shadow {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+  }
+  parent: "container_center"
+  layer: "text_regular"
+  inherit_alpha: true
+  outline_alpha: 0.0
+  shadow_alpha: 0.0
+}
+nodes {
+  position {
+    x: -520.0
+    y: -410.0
+  }
+  scale {
+    x: 0.45
+    y: 0.45
+  }
+  size {
+    x: 1600.0
+    y: 400.0
+  }
+  color {
+    x: 0.463
+    y: 0.475
+    z: 0.49
+  }
+  type: TYPE_TEXT
+  font: "text_regular"
+  id: "text_output"
+  xanchor: XANCHOR_LEFT
+  pivot: PIVOT_SW
+  outline {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+  }
+  shadow {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+  }
+  parent: "container_center"
+  layer: "text_regular"
+  inherit_alpha: true
+  outline_alpha: 0.0
+  shadow_alpha: 0.0
+}
+nodes {
+  position {
+    y: 55.0
+  }
+  size {
+    x: 200.0
+    y: 100.0
+  }
+  type: TYPE_BOX
+  id: "examples"
+  parent: "container_center"
+  inherit_alpha: true
+  size_mode: SIZE_MODE_AUTO
+  visible: false
+}
+nodes {
+  type: TYPE_TEMPLATE
+  id: "example_basic"
+  parent: "examples"
+  inherit_alpha: true
+  template: "/example2/examples/basic/basic.gui"
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_basic/root"
+  parent: "example_basic"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_basic/circle"
+  parent: "example_basic/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_basic/square"
+  parent: "example_basic/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_TEXT
+  id: "example_basic/text"
+  parent: "example_basic/square"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_TEMPLATE
+  id: "example_easings"
+  parent: "examples"
+  inherit_alpha: true
+  template: "/example2/examples/easings/easings.gui"
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_easings/root"
+  parent: "example_easings"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_easings/line_in"
+  parent: "example_easings/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_TEXT
+  id: "example_easings/text_in"
+  parent: "example_easings/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_easings/dot_in"
+  parent: "example_easings/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_easings/line_out"
+  parent: "example_easings/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_TEXT
+  id: "example_easings/text_out"
+  parent: "example_easings/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_easings/dot_out"
+  parent: "example_easings/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_easings/line_inout"
+  parent: "example_easings/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_TEXT
+  id: "example_easings/text_inout"
+  parent: "example_easings/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_easings/dot_inout"
+  parent: "example_easings/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_easings/line_outin"
+  parent: "example_easings/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_TEXT
+  id: "example_easings/text_outin"
+  parent: "example_easings/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_easings/dot_outin"
+  parent: "example_easings/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_TEMPLATE
+  id: "example_dots"
+  parent: "examples"
+  inherit_alpha: true
+  template: "/example2/examples/dots/dots.gui"
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_dots/root"
+  parent: "example_dots"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_dots/dot"
+  parent: "example_dots/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_dots/dot1"
+  parent: "example_dots/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_dots/dot2"
+  parent: "example_dots/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_TEMPLATE
+  id: "example_nested"
+  parent: "examples"
+  inherit_alpha: true
+  template: "/example2/examples/nested/nested.gui"
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_nested/root"
+  parent: "example_nested"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_nested/square"
+  parent: "example_nested/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_TEXT
+  id: "example_nested/text"
+  parent: "example_nested/square"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_TEMPLATE
+  id: "example_nested/dots_top"
+  parent: "example_nested/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_nested/dots_top/root"
+  parent: "example_nested/dots_top"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_nested/dots_top/dot"
+  parent: "example_nested/dots_top/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_nested/dots_top/dot1"
+  parent: "example_nested/dots_top/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_nested/dots_top/dot2"
+  parent: "example_nested/dots_top/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_TEMPLATE
+  id: "example_nested/dots_bottom"
+  parent: "example_nested/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_nested/dots_bottom/root"
+  parent: "example_nested/dots_bottom"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_nested/dots_bottom/dot"
+  parent: "example_nested/dots_bottom/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_nested/dots_bottom/dot1"
+  parent: "example_nested/dots_bottom/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_nested/dots_bottom/dot2"
+  parent: "example_nested/dots_bottom/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_TEMPLATE
+  id: "example_events"
+  parent: "examples"
+  inherit_alpha: true
+  template: "/example2/examples/events/events.gui"
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_events/root"
+  parent: "example_events"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_events/panel"
+  parent: "example_events/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_TEXT
+  id: "example_events/text_title"
+  parent: "example_events/panel"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_TEXT
+  id: "example_events/text_state"
+  parent: "example_events/panel"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_events/icon_done"
+  parent: "example_events/panel"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_events/runner"
+  parent: "example_events/root"
+  template_node_child: true
+}
+nodes {
+  position {
+    y: -540.0
+  }
+  size {
+    x: 1080.0
+    y: 110.0
+  }
+  type: TYPE_BOX
+  texture: "example2/empty"
+  id: "container_timeline"
+  pivot: PIVOT_S
+  adjust_mode: ADJUST_MODE_STRETCH
+  parent: "container_center"
+  inherit_alpha: true
+  visible: false
+}
+nodes {
+  position {
+    y: 55.0
+  }
+  type: TYPE_TEMPLATE
+  id: "timeline"
+  parent: "container_timeline"
+  inherit_alpha: true
+  template: "/example2/components/timeline/timeline.gui"
+}
+nodes {
+  type: TYPE_BOX
+  id: "timeline/root"
+  parent: "timeline"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_TEXT
+  id: "timeline/text_animation_id"
+  parent: "timeline/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_TEXT
+  id: "timeline/text_time"
+  parent: "timeline/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "timeline/button_play"
+  parent: "timeline/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "timeline/icon_play"
+  parent: "timeline/button_play"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "timeline/icon_pause"
+  parent: "timeline/button_play"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "timeline/icon_pause_left"
+  parent: "timeline/icon_pause"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "timeline/icon_pause_right"
+  parent: "timeline/icon_pause"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "timeline/slider"
+  parent: "timeline/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "timeline/slider_back"
+  parent: "timeline/slider"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "timeline/slider_fill"
+  parent: "timeline/slider"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "timeline/slider_pin"
+  parent: "timeline/slider"
+  template_node_child: true
+}
+layers {
+  name: "druid"
+}
+layers {
+  name: "text_regular"
+}
+layers {
+  name: "text_bold"
+}
+material: "/builtins/materials/gui.material"
+adjust_reference: ADJUST_REFERENCE_PARENT

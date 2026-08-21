@@ -1,0 +1,133 @@
+fonts {
+  name: "text_bold"
+  font: "/example2/assets/fonts/text_bold.font"
+}
+textures {
+  name: "example2"
+  texture: "/example2/assets/example2.atlas"
+}
+nodes {
+  size {
+    x: 400.0
+    y: 50.0
+  }
+  color {
+    x: 0.173
+    y: 0.184
+    z: 0.204
+  }
+  type: TYPE_BOX
+  texture: "example2/empty"
+  id: "root"
+  pivot: PIVOT_W
+  adjust_mode: ADJUST_MODE_STRETCH
+  layer: "druid"
+  inherit_alpha: true
+  visible: false
+}
+nodes {
+  size {
+    x: 400.0
+    y: 50.0
+  }
+  color {
+    x: 0.31
+    y: 0.318
+    z: 0.322
+  }
+  type: TYPE_BOX
+  texture: "example2/pixel"
+  id: "panel_highlight"
+  pivot: PIVOT_W
+  parent: "root"
+  layer: "druid"
+  inherit_alpha: true
+  alpha: 0.0
+}
+nodes {
+  size {
+    x: 4.0
+    y: 50.0
+  }
+  color {
+    x: 0.894
+    y: 0.506
+    z: 0.333
+  }
+  type: TYPE_BOX
+  texture: "example2/pixel"
+  id: "panel_selected"
+  pivot: PIVOT_W
+  parent: "root"
+  layer: "druid"
+  inherit_alpha: true
+  enabled: false
+}
+nodes {
+  position {
+    x: 18.0
+  }
+  scale {
+    x: 0.6
+    y: 0.6
+  }
+  color {
+    x: 0.851
+    y: 0.851
+    z: 0.851
+  }
+  type: TYPE_BOX
+  texture: "example2/icon_arrow"
+  id: "icon"
+  parent: "root"
+  layer: "druid"
+  inherit_alpha: true
+  size_mode: SIZE_MODE_AUTO
+  enabled: false
+}
+nodes {
+  position {
+    x: 36.0
+  }
+  scale {
+    x: 0.62
+    y: 0.62
+  }
+  size {
+    x: 560.0
+    y: 60.0
+  }
+  color {
+    x: 0.463
+    y: 0.475
+    z: 0.49
+  }
+  type: TYPE_TEXT
+  text: "Basic"
+  font: "text_bold"
+  id: "text"
+  pivot: PIVOT_W
+  outline {
+    x: 0.941
+    y: 0.984
+    z: 1.0
+  }
+  shadow {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+  }
+  parent: "root"
+  layer: "text_bold"
+  inherit_alpha: true
+  outline_alpha: 0.0
+  shadow_alpha: 0.0
+}
+layers {
+  name: "druid"
+}
+layers {
+  name: "text_bold"
+}
+material: "/builtins/materials/gui.material"
+adjust_reference: ADJUST_REFERENCE_PARENT

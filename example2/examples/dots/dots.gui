@@ -1,0 +1,89 @@
+textures {
+  name: "example2"
+  texture: "/example2/assets/example2.atlas"
+}
+nodes {
+  size {
+    x: 300.0
+    y: 300.0
+  }
+  type: TYPE_BOX
+  texture: "example2/empty"
+  id: "root"
+  inherit_alpha: true
+  visible: false
+}
+nodes {
+  size {
+    x: 56.0
+    y: 56.0
+  }
+  color {
+    x: 0.6
+    y: 0.502
+    z: 0.902
+  }
+  type: TYPE_BOX
+  texture: "example2/ui_circle_32"
+  id: "dot"
+  parent: "root"
+  inherit_alpha: true
+  slice9 {
+    x: 16.0
+    y: 16.0
+    z: 16.0
+    w: 16.0
+  }
+}
+nodes {
+  position {
+    x: -70.0
+  }
+  size {
+    x: 56.0
+    y: 56.0
+  }
+  color {
+    x: 0.6
+    y: 0.502
+    z: 0.902
+  }
+  type: TYPE_BOX
+  texture: "example2/ui_circle_32"
+  id: "dot1"
+  parent: "root"
+  inherit_alpha: true
+  slice9 {
+    x: 16.0
+    y: 16.0
+    z: 16.0
+    w: 16.0
+  }
+}
+nodes {
+  position {
+    x: 70.0
+  }
+  size {
+    x: 56.0
+    y: 56.0
+  }
+  color {
+    x: 0.6
+    y: 0.502
+    z: 0.902
+  }
+  type: TYPE_BOX
+  texture: "example2/ui_circle_32"
+  id: "dot2"
+  parent: "root"
+  inherit_alpha: true
+  slice9 {
+    x: 16.0
+    y: 16.0
+    z: 16.0
+    w: 16.0
+  }
+}
+material: "/builtins/materials/gui.material"
+adjust_reference: ADJUST_REFERENCE_PARENT
