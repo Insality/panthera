@@ -40,8 +40,9 @@ jobs:
       - name: find build artifacts
         id: artifacts
         run: |
-          HTML_DIR=$(find dist/bundle -type d -name "*_html" 2>/dev/null | head -1)
-          HTML_ZIP=$(find dist/bundle -type f -name "*_html.zip" 2>/dev/null | head -1)
+          # The newest build, dist keeps the previous ones around
+          HTML_DIR=$(ls -dt dist/bundle/*/*_html 2>/dev/null | head -1)
+          HTML_ZIP=$(ls -t dist/bundle/*/*_html.zip 2>/dev/null | head -1)
           if [ -z "$HTML_DIR" ] || [ ! -d "$HTML_DIR" ]; then
             echo "HTML build directory not found"
             exit 1
