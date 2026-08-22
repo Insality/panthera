@@ -45,8 +45,14 @@ an animation resets the easing back to `linear`.
 | GUI | Basic Properties | Position, rotation, scale, color, alpha and size tweens |
 | GUI | Easings | The same tween played with the `in`, `out`, `inout` and `outin` variants of each easing |
 | GUI | Dots | A small animation set over a three node template |
-| GUI | Nested Templates | Animation keys that run the animations of the nested GUI templates |
+| GUI | Template Animations | Animation keys that run the animations of a nested GUI template, from its own file |
+| GUI | Nested Animations | Animation keys without a node id, running other animations of the same file |
+| GUI | Nested and Template | Both kinds of animation keys side by side in one animation |
+| GUI | Deep Templates | A template inside a template: the scene drives a panel that drives its own dots |
 | GUI | Triggers and Events | Trigger keys that set node properties and event keys reported to the game code |
+| GUI | Text Properties | Tracking, leading, outline and shadow of a text node, and text triggers |
+| GUI | Pie and Slice9 | The fill angle and the inner radius of a pie node, and the slice9 of a box |
+| GUI | Clipping | An animated stencil mask over a static content |
 | Collections | Shapes | A collection of sprites animated by their object and component properties |
 | Collections | Hierarchy | Child objects following the animated parent through its local transform |
 | Game Objects | Sprite | A single game object: transform, tint, alpha and flipbook triggers |
@@ -80,6 +86,10 @@ result, so the calls read like plain function calls.
 
 The animations list, the timeline and the playback settings are filled from the animation data,
 so nothing else has to be written for a new example.
+
+An animation key drives another animation instead of a property. Without a node id it plays
+another animation of the same file, with one it plays an animation of the template animation bound
+to that node, and both can be used together in a single animation.
 
 Author every animation so that each property starts from the state of the scene. Panthera resets
 a node to the start value of the first key of the property when another animation is played over

@@ -1,0 +1,182 @@
+fonts {
+  name: "text_bold"
+  font: "/example2/assets/fonts/text_bold.font"
+}
+textures {
+  name: "example2"
+  texture: "/example2/assets/example2.atlas"
+}
+nodes {
+  size {
+    x: 800.0
+    y: 600.0
+  }
+  type: TYPE_BOX
+  texture: "example2/empty"
+  id: "root"
+  inherit_alpha: true
+  visible: false
+}
+nodes {
+  size {
+    x: 320.0
+    y: 320.0
+  }
+  type: TYPE_BOX
+  texture: "example2/ui_circle_64"
+  id: "mask"
+  parent: "root"
+  inherit_alpha: true
+  slice9 {
+    x: 32.000
+    y: 32.000
+    z: 32.000
+    w: 32.000
+  }
+  clipping_mode: CLIPPING_MODE_STENCIL
+  clipping_visible: false
+}
+nodes {
+  size {
+    x: 900.0
+    y: 600.0
+  }
+  color {
+    x: 0.173
+    y: 0.184
+    z: 0.204
+  }
+  type: TYPE_BOX
+  texture: "example2/pixel"
+  id: "backdrop"
+  parent: "mask"
+  inherit_alpha: true
+}
+nodes {
+  position {
+    x: -220.000
+    y: 0.0
+  }
+  size {
+    x: 160.0
+    y: 560.0
+  }
+  color {
+    x: 0.600
+    y: 0.502
+    z: 0.902
+  }
+  type: TYPE_BOX
+  texture: "example2/pixel"
+  id: "stripe_1"
+  parent: "mask"
+  inherit_alpha: true
+}
+nodes {
+  position {
+    x: 0.000
+    y: 0.0
+  }
+  size {
+    x: 160.0
+    y: 560.0
+  }
+  color {
+    x: 0.800
+    y: 0.502
+    z: 0.600
+  }
+  type: TYPE_BOX
+  texture: "example2/pixel"
+  id: "stripe_2"
+  parent: "mask"
+  inherit_alpha: true
+}
+nodes {
+  position {
+    x: 220.000
+    y: 0.0
+  }
+  size {
+    x: 160.0
+    y: 560.0
+  }
+  color {
+    x: 0.420
+    y: 0.750
+    z: 0.600
+  }
+  type: TYPE_BOX
+  texture: "example2/pixel"
+  id: "stripe_3"
+  parent: "mask"
+  inherit_alpha: true
+}
+nodes {
+  size {
+    x: 760.0
+    y: 100.0
+  }
+  color {
+    x: 0.129
+    y: 0.141
+    z: 0.157
+  }
+  type: TYPE_TEXT
+  text: "CLIPPED"
+  font: "text_bold"
+  id: "text_masked"
+  outline {
+    x: 1.000
+    y: 1.000
+    z: 1.000
+  }
+  shadow {
+    x: 1.000
+    y: 1.000
+    z: 1.000
+  }
+  parent: "mask"
+  inherit_alpha: true
+  outline_alpha: 0.000
+  shadow_alpha: 0.000
+}
+nodes {
+  position {
+    x: 0.0
+    y: -250.0
+  }
+  scale {
+    x: 0.550
+    y: 0.550
+  }
+  size {
+    x: 760.0
+    y: 60.0
+  }
+  color {
+    x: 0.463
+    y: 0.475
+    z: 0.490
+  }
+  type: TYPE_TEXT
+  text: "the stencil mask is animated, not the content"
+  font: "text_bold"
+  id: "text_hint"
+  outline {
+    x: 1.000
+    y: 1.000
+    z: 1.000
+  }
+  shadow {
+    x: 1.000
+    y: 1.000
+    z: 1.000
+  }
+  parent: "root"
+  inherit_alpha: true
+  outline_alpha: 0.000
+  shadow_alpha: 0.000
+}
+material: "/builtins/materials/gui.material"
+adjust_reference: ADJUST_REFERENCE_PARENT

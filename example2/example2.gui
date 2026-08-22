@@ -1092,6 +1092,336 @@ nodes {
   template_node_child: true
 }
 nodes {
+  type: TYPE_TEMPLATE
+  id: "example_nested_animations"
+  parent: "examples"
+  inherit_alpha: true
+  template: "/example2/examples/nested_animations/nested_animations.gui"
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_nested_animations/root"
+  parent: "example_nested_animations"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_nested_animations/box_left"
+  parent: "example_nested_animations/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_nested_animations/box_center"
+  parent: "example_nested_animations/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_nested_animations/box_right"
+  parent: "example_nested_animations/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_TEXT
+  id: "example_nested_animations/text_hint"
+  parent: "example_nested_animations/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_TEMPLATE
+  id: "example_combined"
+  parent: "examples"
+  inherit_alpha: true
+  template: "/example2/examples/combined/combined.gui"
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_combined/root"
+  parent: "example_combined"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_combined/square"
+  parent: "example_combined/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_TEXT
+  id: "example_combined/text"
+  parent: "example_combined/square"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_TEMPLATE
+  id: "example_combined/dots"
+  parent: "example_combined/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_combined/dots/root"
+  parent: "example_combined/dots"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_combined/dots/dot"
+  parent: "example_combined/dots/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_combined/dots/dot1"
+  parent: "example_combined/dots/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_combined/dots/dot2"
+  parent: "example_combined/dots/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_TEMPLATE
+  id: "example_deep_templates"
+  parent: "examples"
+  inherit_alpha: true
+  template: "/example2/examples/deep_templates/deep_templates.gui"
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_deep_templates/root"
+  parent: "example_deep_templates"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_TEXT
+  id: "example_deep_templates/text_hint"
+  parent: "example_deep_templates/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_TEMPLATE
+  id: "example_deep_templates/panel_top"
+  parent: "example_deep_templates/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_deep_templates/panel_top/root"
+  parent: "example_deep_templates/panel_top"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_TEXT
+  id: "example_deep_templates/panel_top/title"
+  parent: "example_deep_templates/panel_top/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_deep_templates/panel_top/bar"
+  parent: "example_deep_templates/panel_top/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_TEMPLATE
+  id: "example_deep_templates/panel_top/dots"
+  parent: "example_deep_templates/panel_top/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_deep_templates/panel_top/dots/root"
+  parent: "example_deep_templates/panel_top/dots"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_deep_templates/panel_top/dots/dot"
+  parent: "example_deep_templates/panel_top/dots/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_deep_templates/panel_top/dots/dot1"
+  parent: "example_deep_templates/panel_top/dots/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_deep_templates/panel_top/dots/dot2"
+  parent: "example_deep_templates/panel_top/dots/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_TEMPLATE
+  id: "example_deep_templates/panel_bottom"
+  parent: "example_deep_templates/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_deep_templates/panel_bottom/root"
+  parent: "example_deep_templates/panel_bottom"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_TEXT
+  id: "example_deep_templates/panel_bottom/title"
+  parent: "example_deep_templates/panel_bottom/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_deep_templates/panel_bottom/bar"
+  parent: "example_deep_templates/panel_bottom/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_TEMPLATE
+  id: "example_deep_templates/panel_bottom/dots"
+  parent: "example_deep_templates/panel_bottom/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_deep_templates/panel_bottom/dots/root"
+  parent: "example_deep_templates/panel_bottom/dots"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_deep_templates/panel_bottom/dots/dot"
+  parent: "example_deep_templates/panel_bottom/dots/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_deep_templates/panel_bottom/dots/dot1"
+  parent: "example_deep_templates/panel_bottom/dots/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_deep_templates/panel_bottom/dots/dot2"
+  parent: "example_deep_templates/panel_bottom/dots/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_TEMPLATE
+  id: "example_text_properties"
+  parent: "examples"
+  inherit_alpha: true
+  template: "/example2/examples/text_properties/text_properties.gui"
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_text_properties/root"
+  parent: "example_text_properties"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_TEXT
+  id: "example_text_properties/text_title"
+  parent: "example_text_properties/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_TEXT
+  id: "example_text_properties/text_body"
+  parent: "example_text_properties/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_TEMPLATE
+  id: "example_pie_slice9"
+  parent: "examples"
+  inherit_alpha: true
+  template: "/example2/examples/pie_slice9/pie_slice9.gui"
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_pie_slice9/root"
+  parent: "example_pie_slice9"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_PIE
+  id: "example_pie_slice9/pie"
+  parent: "example_pie_slice9/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_pie_slice9/panel"
+  parent: "example_pie_slice9/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_TEXT
+  id: "example_pie_slice9/text_hint"
+  parent: "example_pie_slice9/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_TEMPLATE
+  id: "example_clipping"
+  parent: "examples"
+  inherit_alpha: true
+  template: "/example2/examples/clipping/clipping.gui"
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_clipping/root"
+  parent: "example_clipping"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_clipping/mask"
+  parent: "example_clipping/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_clipping/backdrop"
+  parent: "example_clipping/mask"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_clipping/stripe_1"
+  parent: "example_clipping/mask"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_clipping/stripe_2"
+  parent: "example_clipping/mask"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_clipping/stripe_3"
+  parent: "example_clipping/mask"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_TEXT
+  id: "example_clipping/text_masked"
+  parent: "example_clipping/mask"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_TEXT
+  id: "example_clipping/text_hint"
+  parent: "example_clipping/root"
+  template_node_child: true
+}
+nodes {
   position {
     y: -540.0
   }
@@ -1110,7 +1440,7 @@ nodes {
 }
 nodes {
   position {
-    y: 60.0
+    y: 55.0
   }
   type: TYPE_TEMPLATE
   id: "timeline"
@@ -1209,7 +1539,7 @@ nodes {
 }
 nodes {
   position {
-    y: 65.0
+    y: 60.0
   }
   type: TYPE_TEMPLATE
   id: "timeline_second"

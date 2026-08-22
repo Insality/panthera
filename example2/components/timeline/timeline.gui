@@ -21,17 +21,11 @@ nodes {
     z: 0.204
   }
   type: TYPE_BOX
-  texture: "example2/ui_circle_32"
+  texture: "example2/pixel"
   id: "root"
   xanchor: XANCHOR_LEFT
   adjust_mode: ADJUST_MODE_STRETCH
   inherit_alpha: true
-  slice9 {
-    x: 16.0
-    y: 16.0
-    z: 16.0
-    w: 16.0
-  }
 }
 nodes {
   position {
