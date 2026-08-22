@@ -268,76 +268,7 @@ function M.update_animation(animation, animation_state, options)
 				local speed = (options.speed or 1) * animation_state.speed * M.SPEED
 				panthera_internal.run_timeline_key(animation_state, key, options, speed)
 			else
-				-- check if "" while only animation keys are working now
-				if key.node_id == "" then
-					local child_state = M.clone_state(animation_state)
-					-- Time Overflow
-					local time_overflow = math.max(0, animation_state.current_time - key.start_time)
-					child_state.current_time = time_overflow
-
-					local animation_duration = M.get_duration(child_state, key.property_id)
-					local key_duration = (key.duration - time_overflow)
-
-					if animation_duration > 0 and key_duration > 0 then
-						animation_state.childs = animation_state.childs or {}
-						table.insert(animation_state.childs, child_state)
-
-						local speed = (options.speed or 1) * animation_state.speed * M.SPEED
-						local play_speed = (animation_duration / key_duration) * speed
-
-						M.play(child_state, key.property_id, {
-							easing = key.easing,
-							is_skip_init = false, -- Editor works in "false" mode always, so until editor support this, we should use false
-							speed = play_speed,
-							callback = function()
-								panthera_internal.remove_child_animation(animation_state, child_state)
-							end,
-							callback_event = options.callback_event
-						})
-					elseif animation_duration > 0 then
-						-- Key already over: set final state
-						panthera_internal.set_animation_state_at_time(child_state, key.property_id, animation_duration, options.callback_event)
-					end
-				end
-
-				-- This is template animations, the node_id is a template to run the new animations
-				local animation_data = key.node_id ~= "" and panthera_internal.get_animation_data(animation_state)
-				local template_animation_path = animation_data and panthera_internal.get_template_animation_path(animation_data, key.node_id)
-				if template_animation_path then
-					local get_node = function(node_id)
-						return animation_state.get_node(key.node_id .. "/" .. node_id)
-					end
-					local template_state = panthera_internal.create_animation_state(template_animation_path, animation_state.adapter, get_node)
-
-					local time_overflow = math.max(0, animation_state.current_time - key.start_time)
-					template_state.current_time = time_overflow
-
-					local animation_duration = M.get_duration(template_state, key.property_id)
-					local key_duration = (key.duration - time_overflow)
-
-					if animation_duration > 0 and key_duration > 0 then
-						animation_state.childs = animation_state.childs or {}
-						table.insert(animation_state.childs, template_state)
-
-						local speed = (options.speed or 1) * animation_state.speed * M.SPEED
-						local play_speed = (animation_duration / key_duration) * speed
-
-						M.play(template_state, key.property_id, {
-							-- TODO: is any cases when we want to use false here? Editor works like it false now
-							-- Real case: looped animation should be reset to correct visuals
-							is_skip_init = false, -- Editor works in "false" mode always, so until editor support this, we should use false
-							easing = key.easing,
-							speed = play_speed,
-							callback = function()
-								panthera_internal.remove_child_animation(animation_state, template_state)
-							end,
-							callback_event = options.callback_event
-						})
-					elseif animation_duration > 0 then
-						-- Key already over: set final state
-						panthera_internal.set_animation_state_at_time(template_state, key.property_id, animation_duration, options.callback_event)
-					end
-				end
+				M.start_animation_key(animation_state, key, options)
 			end
 		else
 			break
@@ -360,6 +291,60 @@ function M.update_animation(animation, animation_state, options)
 			animation_state.current_time = time_overflow
 			M.play(animation_state, animation.animation_id, options)
 		end
+	end
+end
+
+
+---Start a nested (`node_id == ""`) or template animation key
+---@private
+---@param animation_state panthera.animation
+---@param key panthera.animation.data.animation_key
+---@param options panthera.options
+function M.start_animation_key(animation_state, key, options)
+	local child_state
+	if key.node_id == "" then
+		child_state = M.clone_state(animation_state)
+	else
+		-- Skip a key with a missing template path, keep processing the next keys
+		local animation_data = panthera_internal.get_animation_data(animation_state)
+		local template_animation_path = animation_data and panthera_internal.get_template_animation_path(animation_data, key.node_id)
+		if not template_animation_path then
+			return
+		end
+
+		local get_node = function(node_id)
+			return animation_state.get_node(key.node_id .. "/" .. node_id)
+		end
+		child_state = panthera_internal.create_animation_state(template_animation_path, animation_state.adapter, get_node)
+	end
+
+	local time_overflow = math.max(0, animation_state.current_time - key.start_time)
+	child_state.current_time = time_overflow
+
+	local animation_duration = M.get_duration(child_state, key.property_id)
+	local key_duration = key.duration - time_overflow
+
+	if animation_duration > 0 and key_duration > 0 then
+		animation_state.childs = animation_state.childs or {}
+		table.insert(animation_state.childs, child_state)
+
+		local speed = (options.speed or 1) * animation_state.speed * M.SPEED
+		local play_speed = (animation_duration / key_duration) * speed
+
+		M.play(child_state, key.property_id, {
+			-- Editor works in "false" mode always, so until editor support this, we should use false
+			-- Real case: looped animation should be reset to correct visuals
+			is_skip_init = false,
+			easing = key.easing,
+			speed = play_speed,
+			callback = function()
+				panthera_internal.remove_child_animation(animation_state, child_state)
+			end,
+			callback_event = options.callback_event
+		})
+	elseif animation_duration > 0 then
+		-- Key already over: set final state
+		panthera_internal.set_animation_state_at_time(child_state, key.property_id, animation_duration, options.callback_event)
 	end
 end
 

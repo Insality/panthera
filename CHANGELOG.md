@@ -84,16 +84,13 @@ Initial resease!
 - Fix collecting of nested `template_animation_paths`, they were inserted into the table while it was iterated over
 
 ## Version v10
-- Fix the animation state when several animations are changing the same node property
-	- The state is collected first and applied in the order of the keys which set the values, so the last started key always wins, no matter if it comes from the animation itself, a nested or a template animation
-- Fix the initial state animation of a nested animation, it is applied at the moment this animation is started
-- Fix the properties animated by a nested or a template animation which is not started yet
-	- They are reset to their start values instead of keeping the values of the previously played animation. Works for `panthera.play`, `panthera.set_time` and the animations played with easing
-- Fix the template animation time, it is scaled to the length of the animation key
-- Fix the animation keys skipped by the time overflow, the final state of the animation is applied instead
-- Fix the reset of two template nodes bound to the same template animation, only one of them was reset
-- Fix the events of the template animations, they were triggered on every animation state update
-- Fix the events of the nested animations, they were not passed to the `callback_event` while the animation is playing
-- Fix the child animation states leak for the animation keys which are already over
-- Fix nested template animations desync on HTML5
-	- Playback ticks every frame instead of `1/60` timers, and nested/template animations start on the same frame as the parent
+- Collect animation state first, then apply it. The last started key wins (root timeline), including nested and template animations
+	- `initial_state` of a nested/template animation is applied when that animation starts, not with the parent
+	- Properties of a nested/template animation that has not started yet reset to start values (`play`, `set_time`, easing)
+	- Template time is scaled to the animation key length
+- Fix keys skipped by time overflow: apply the final state and do not leak child animation states
+- Fix reset of two template nodes bound to the same template animation
+- Fix template events retriggered on every state update
+- Fix nested animation events not passed to `callback_event` during play
+- Skip an animation key with a missing template path instead of stopping the timeline
+- Fix nested template desync on HTML5: tick every frame, start nested and template animations on the same frame as the parent
