@@ -1,0 +1,204 @@
+fonts {
+  name: "text_bold"
+  font: "/example2/assets/fonts/text_bold.font"
+}
+textures {
+  name: "character"
+  texture: "/example2/examples/character/character.atlas"
+}
+textures {
+  name: "example2"
+  texture: "/example2/assets/example2.atlas"
+}
+nodes {
+  size {
+    x: 900.0
+    y: 900.0
+  }
+  color {
+    x: 0.173
+    y: 0.184
+    z: 0.204
+  }
+  type: TYPE_BOX
+  texture: "example2/ui_circle_64"
+  id: "root"
+  inherit_alpha: true
+  slice9 {
+    x: 32.0
+    y: 32.0
+    z: 32.0
+    w: 32.0
+  }
+}
+
+nodes {
+  size {
+    x: 100.0
+    y: 100.0
+  }
+  type: TYPE_BOX
+  id: "character"
+  parent: "root"
+  inherit_alpha: true
+  visible: false
+}
+
+nodes {
+  type: TYPE_BOX
+  texture: "character/pink_body_squircle"
+  id: "body"
+  parent: "character"
+  inherit_alpha: true
+  size_mode: SIZE_MODE_AUTO
+}
+
+nodes {
+  position {
+    y: 2.0
+  }
+  size {
+    x: 100.0
+    y: 40.0
+  }
+  type: TYPE_BOX
+  id: "eyes"
+  parent: "body"
+  inherit_alpha: true
+  visible: false
+}
+
+nodes {
+  position {
+    x: -32.0
+  }
+  type: TYPE_BOX
+  texture: "character/facial_part_eye_open"
+  id: "eye_left"
+  parent: "eyes"
+  inherit_alpha: true
+  size_mode: SIZE_MODE_AUTO
+}
+
+nodes {
+  position {
+    y: 34.0
+  }
+  rotation {
+    z: 5.0
+  }
+  type: TYPE_BOX
+  texture: "character/facial_part_eyebrow_b"
+  id: "brow_left"
+  parent: "eye_left"
+  inherit_alpha: true
+  size_mode: SIZE_MODE_AUTO
+}
+
+nodes {
+  position {
+    x: 32.0
+  }
+  type: TYPE_BOX
+  texture: "character/facial_part_eye_open"
+  id: "eye_right"
+  parent: "eyes"
+  inherit_alpha: true
+  size_mode: SIZE_MODE_AUTO
+}
+
+nodes {
+  position {
+    y: 34.0
+  }
+  rotation {
+    z: -5.0
+  }
+  scale {
+    x: -1.0
+  }
+  type: TYPE_BOX
+  texture: "character/facial_part_eyebrow_b"
+  id: "brow_right"
+  parent: "eye_right"
+  inherit_alpha: true
+  size_mode: SIZE_MODE_AUTO
+}
+
+nodes {
+  position {
+    y: -35.0
+  }
+  type: TYPE_BOX
+  texture: "character/facial_part_mouth_happy"
+  id: "mouth"
+  parent: "body"
+  inherit_alpha: true
+  size_mode: SIZE_MODE_AUTO
+}
+
+nodes {
+  position {
+    x: 130.0
+  }
+  rotation {
+    z: -10.0
+  }
+  type: TYPE_BOX
+  texture: "character/pink_hand_open"
+  id: "hand_left"
+  parent: "body"
+  inherit_alpha: true
+  size_mode: SIZE_MODE_AUTO
+}
+
+nodes {
+  position {
+    x: -130.0
+  }
+  rotation {
+    z: 10.0
+  }
+  scale {
+    x: -1.0
+  }
+  type: TYPE_BOX
+  texture: "character/pink_hand_open"
+  id: "hand_right"
+  parent: "body"
+  inherit_alpha: true
+  size_mode: SIZE_MODE_AUTO
+}
+
+nodes {
+  position {
+    y: -380.0
+  }
+  size {
+    x: 600.0
+    y: 100.0
+  }
+  color {
+    x: 0.31
+    y: 0.318
+    z: 0.322
+  }
+  type: TYPE_TEXT
+  text: "Hover mouse over this area"
+  font: "text_bold"
+  id: "text_hint"
+  outline {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+  }
+  shadow {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+  }
+  parent: "root"
+  inherit_alpha: true
+  outline_alpha: 0.0
+  shadow_alpha: 0.0
+}

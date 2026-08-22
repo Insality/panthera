@@ -6,8 +6,9 @@ It is the bootstrap collection of this project, so just run the project to open 
 ## Layout
 
 - **Left** — the examples, grouped into the `GUI`, `Collections` and `Game Objects` sections.
-- **Center** — the animated scene and the timeline. Drag the timeline slider to scrub the animation
-  back and forth, the play button pauses and resumes the playback.
+- **Center** — the animated scene and the timeline. The corners show the source of the scene and
+  the Lua memory in use. Drag the timeline slider to scrub the animation back and forth, the play
+  button pauses and resumes the playback.
 - **Right** — the animations of the selected example and the playback settings.
 
 ## Controls
@@ -53,6 +54,8 @@ an animation resets the easing back to `linear`.
 | GUI | Text Properties | Tracking, leading, outline and shadow of a text node, and text triggers |
 | GUI | Pie and Slice9 | The fill angle and the inner radius of a pie node, and the slice9 of a box |
 | GUI | Clipping | An animated stencil mask over a static content |
+| GUI | Screen Transitions | Two fullscreen wipes, each split into an `appear` and a `disappear` half that `together` chains |
+| GUI | Character Blend | Three animation states over the same nodes, two of them blended from the mouse position. Character assets by [Kenney](https://kenney.nl/) |
 | Collections | Shapes | A collection of sprites animated by their object and component properties |
 | Collections | Hierarchy | Child objects following the animated parent through its local transform |
 | Game Objects | Sprite | A single game object: transform, tint, alpha and flipbook triggers |
@@ -72,6 +75,14 @@ Panthera animates game objects with the `go.*` functions, which are not availabl
 [scene/scene.script](scene/scene.script) owns the spawned objects and every Panthera call over them;
 the GUI script drives it through Defold Event, which switches the script context and returns the
 result, so the calls read like plain function calls.
+
+## Scenes with their own logic
+
+An example can point at a Druid widget module with the `widget` field. The browser creates it over
+the template of the example, so the scene can handle input, create animation states of its own and
+append properties to the panel through an optional `properties_control(properties_panel)` method.
+[examples/character/character.lua](examples/character/character.lua) is the one example that uses
+it: it scrubs two animation states with `panthera.set_time` from the mouse position.
 
 ## Adding an example
 

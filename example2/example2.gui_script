@@ -83,6 +83,9 @@ local function setup_layout(self)
 	self.container_center = self.container_root:add_container("container_center")
 	self.container_timeline = self.container_center:add_container("container_timeline", "stretch_x")
 	self.container_timeline_second = self.container_center:add_container("container_timeline_second", "stretch_x")
+
+	self.container_center:add_container("text_source_path")
+	self.container_center:add_container("text_memory_usage")
 end
 
 
@@ -119,6 +122,11 @@ local function clear_output(self)
 	self.output = {}
 	gui.set_text(self.node_text_output, "")
 end
+
+
+---Rebuilds the properties panel, declared here because it is used before it is defined
+---@type fun(self: example2.gui_script)
+local setup_settings
 
 
 ---@param track example2.track
@@ -318,6 +326,13 @@ end
 local function create_animation(self, example)
 	if example.template then
 		gui.set_enabled(gui.get_node(example.template .. "/root"), true)
+
+		-- An example scene can bring its own logic as a Druid widget over its template. It can
+		-- handle input, create animation states of its own and add properties to the panel
+		if example.widget then
+			self.example_widget = self.druid:new_widget(example.widget, example.template)
+		end
+
 		return panthera.create_gui(example.animation, example.template)
 	end
 
@@ -333,6 +348,11 @@ local function on_example_selected(self, example)
 		reset_track(self, track)
 		track.animation = nil
 		track.animation_id = nil
+	end
+
+	if self.example_widget then
+		self.druid:remove(self.example_widget)
+		self.example_widget = nil
 	end
 
 	if self.example then
@@ -359,6 +379,7 @@ local function on_example_selected(self, example)
 	end
 
 	self.animations_list_view:select(1)
+	setup_settings(self)
 end
 
 
@@ -374,16 +395,19 @@ local function set_playback_option(self, key, value)
 end
 
 
+---The panel is rebuilt for every example, so the widget of the example can append its own
+---properties after the playback settings. The current values are kept in the playback options
 ---@param self example2.gui_script
-local function setup_settings(self)
+function setup_settings(self)
 	self.properties_panel:clear()
 
-	self.loop_checkbox = self.properties_panel:add_checkbox("Loop", IS_LOOP_BY_DEFAULT, function(value)
+	local options = self.tracks[1].options
+
+	self.loop_checkbox = self.properties_panel:add_checkbox("Loop", options.is_loop, function(value)
 		set_playback_option(self, "is_loop", value)
 	end)
 
-	self.easing_index = 1
-	self.easing_button = self.properties_panel:add_button("Easing", EASINGS[1], function()
+	self.easing_button = self.properties_panel:add_button("Easing", EASINGS[self.easing_index], function()
 		self.easing_index = self.easing_index % #EASINGS + 1
 		set_playback_option(self, "easing", EASINGS[self.easing_index])
 		self.easing_button.text_button:set_text(EASINGS[self.easing_index])
@@ -394,12 +418,17 @@ local function setup_settings(self)
 		end
 	end)
 
-	local speed_slider = self.properties_panel:add_slider("Speed", 1 / MAX_SPEED, function(value)
+	local speed_slider = self.properties_panel:add_slider("Speed", self.speed_value, function(value)
+		self.speed_value = value
 		set_playback_option(self, "speed", math.max(value * MAX_SPEED, 0.1))
 	end)
 	speed_slider:set_text_function(function(value)
 		return string.format("x%.2f", math.max(value * MAX_SPEED, 0.1))
 	end)
+
+	if self.example_widget and self.example_widget.properties_control then
+		self.example_widget:properties_control(self.properties_panel)
+	end
 end
 
 
@@ -618,8 +647,11 @@ function init(self)
 	panthera.set_logger(log.get_logger("panthera"))
 
 	self.output = {}
+	self.easing_index = 1
+	self.speed_value = 1 / MAX_SPEED
 
 	self.node_source_path = gui.get_node("text_source_path")
+	self.node_memory_usage = gui.get_node("text_memory_usage")
 	self.node_text_output = gui.get_node("text_output")
 	self.node_examples = gui.get_node("examples")
 	gui.set_text(gui.get_node("text_version"), "Runtime for Defold " .. sys.get_engine_info().version)
@@ -659,6 +691,12 @@ function update(self, dt)
 	local primary = self.tracks[1]
 	if self.play_all and primary.animation and primary.animation_id and not panthera.is_playing(primary.animation) then
 		play_all_advance(self)
+	end
+
+	self.memory_timer = (self.memory_timer or 0) + dt
+	if self.memory_timer > 0.5 then
+		self.memory_timer = 0
+		gui.set_text(self.node_memory_usage, string.format("Lua memory: %.0f KB", collectgarbage("count")))
 	end
 
 	for index = 1, #self.tracks do

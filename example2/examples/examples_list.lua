@@ -11,6 +11,8 @@
 ---@field collectionfactory string? Collection examples: the url of the collectionfactory component
 ---@field factory string? Game object examples: the url of the factory component
 ---@field object_id string? Game object examples: the object id used by the animation nodes
+---@field widget table? A Druid widget module created over the template, for the examples whose
+---scene needs its own logic. See `/example2/examples/character/character.lua`
 
 ---@class example2.examples_section
 ---@field name string
@@ -80,6 +82,19 @@ return {
 				template = "example_pie_slice9",
 				animation = require("example2.examples.pie_slice9.pie_slice9_panthera"),
 				source = "/example2/examples/pie_slice9/pie_slice9.gui",
+			},
+			{
+				name = "Screen Transitions",
+				template = "example_transitions",
+				animation = require("example2.examples.transitions.transitions_panthera"),
+				source = "/example2/examples/transitions/transitions.gui",
+			},
+			{
+				name = "Character Blend",
+				template = "example_character",
+				widget = require("example2.examples.character.character"),
+				animation = require("example2.examples.character.character_panthera"),
+				source = "/example2/examples/character/character.gui",
 			},
 			{
 				name = "Clipping",
