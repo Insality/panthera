@@ -1920,6 +1920,256 @@ nodes {
   template_node_child: true
 }
 nodes {
+  type: TYPE_TEMPLATE
+  id: "example_card_flip"
+  parent: "examples"
+  inherit_alpha: true
+  template: "/example/examples/card_flip/card_flip.gui"
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_card_flip/root"
+  parent: "example_card_flip"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_card_flip/shadow"
+  parent: "example_card_flip/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_card_flip/card"
+  parent: "example_card_flip/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_card_flip/icon"
+  parent: "example_card_flip/card"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_TEXT
+  id: "example_card_flip/text_face"
+  parent: "example_card_flip/card"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_TEXT
+  id: "example_card_flip/text_hint"
+  parent: "example_card_flip/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_TEMPLATE
+  id: "example_confetti"
+  parent: "examples"
+  inherit_alpha: true
+  template: "/example/examples/confetti/confetti.gui"
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_confetti/root"
+  parent: "example_confetti"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_confetti/piece_0"
+  parent: "example_confetti/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_confetti/piece_1"
+  parent: "example_confetti/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_confetti/piece_2"
+  parent: "example_confetti/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_confetti/piece_3"
+  parent: "example_confetti/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_confetti/piece_4"
+  parent: "example_confetti/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_confetti/piece_5"
+  parent: "example_confetti/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_confetti/piece_6"
+  parent: "example_confetti/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_confetti/piece_7"
+  parent: "example_confetti/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_confetti/piece_8"
+  parent: "example_confetti/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_confetti/piece_9"
+  parent: "example_confetti/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_confetti/piece_10"
+  parent: "example_confetti/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_confetti/piece_11"
+  parent: "example_confetti/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_confetti/piece_12"
+  parent: "example_confetti/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_confetti/piece_13"
+  parent: "example_confetti/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_TEXT
+  id: "example_confetti/text_hint"
+  parent: "example_confetti/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_TEMPLATE
+  id: "example_typewriter"
+  parent: "examples"
+  inherit_alpha: true
+  template: "/example/examples/typewriter/typewriter.gui"
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_typewriter/root"
+  parent: "example_typewriter"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_typewriter/panel"
+  parent: "example_typewriter/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_typewriter/avatar"
+  parent: "example_typewriter/panel"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_TEXT
+  id: "example_typewriter/text_name"
+  parent: "example_typewriter/panel"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_TEXT
+  id: "example_typewriter/text_line"
+  parent: "example_typewriter/panel"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_typewriter/cursor"
+  parent: "example_typewriter/panel"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_TEMPLATE
+  id: "example_parallax"
+  parent: "examples"
+  inherit_alpha: true
+  template: "/example/examples/parallax/parallax.gui"
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_parallax/root"
+  parent: "example_parallax"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_parallax/back_0"
+  parent: "example_parallax/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_parallax/back_1"
+  parent: "example_parallax/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_parallax/mid_0"
+  parent: "example_parallax/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_parallax/mid_1"
+  parent: "example_parallax/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_parallax/front_0"
+  parent: "example_parallax/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_parallax/front_1"
+  parent: "example_parallax/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_parallax/sun"
+  parent: "example_parallax/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_TEXT
+  id: "example_parallax/text_hint"
+  parent: "example_parallax/root"
+  template_node_child: true
+}
+nodes {
   position {
     y: -540.0
   }
@@ -2127,4 +2377,5 @@ layers {
   name: "text_bold"
 }
 material: "/builtins/materials/gui.material"
+max_nodes: 4096
 adjust_reference: ADJUST_REFERENCE_PARENT

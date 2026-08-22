@@ -58,6 +58,10 @@ based one. Selecting an animation resets the ease type back to `linear`.
 | GUI | Text Properties | Tracking, leading, outline and shadow of a text node, and text triggers |
 | GUI | Pie and Slice9 | The fill angle and the inner radius of a pie node, and the slice9 of a box |
 | GUI | Clipping | An animated stencil mask over a static content |
+| GUI | Card Flip | A card squashed to nothing, its face swapped by a trigger at the thin moment |
+| GUI | Confetti | Fourteen pieces flying out, up and around, each key authored by hand |
+| GUI | Typewriter | A dialogue line built character by character out of text triggers |
+| GUI | Parallax | Layers scrolling exactly one tile each, so the looped animation is seamless |
 | GUI | Screen Transitions | Two fullscreen wipes, each split into an `appear` and a `disappear` half that `together` chains |
 | GUI | Character Blend | Three animation states over the same nodes, two of them blended from the mouse position. Character assets by [Kenney](https://kenney.nl/) |
 | Collections | Shapes | A collection of sprites animated by their object and component properties |

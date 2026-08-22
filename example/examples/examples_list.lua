@@ -87,6 +87,30 @@ return {
 				source = "/example/examples/pie_slice9/pie_slice9.gui",
 			},
 			{
+				name = "Card Flip",
+				template = "example_card_flip",
+				animation = require("example.examples.card_flip.card_flip_panthera"),
+				source = "/example/examples/card_flip/card_flip.gui",
+			},
+			{
+				name = "Confetti",
+				template = "example_confetti",
+				animation = require("example.examples.confetti.confetti_panthera"),
+				source = "/example/examples/confetti/confetti.gui",
+			},
+			{
+				name = "Typewriter",
+				template = "example_typewriter",
+				animation = require("example.examples.typewriter.typewriter_panthera"),
+				source = "/example/examples/typewriter/typewriter.gui",
+			},
+			{
+				name = "Parallax",
+				template = "example_parallax",
+				animation = require("example.examples.parallax.parallax_panthera"),
+				source = "/example/examples/parallax/parallax.gui",
+			},
+			{
 				name = "Screen Transitions",
 				template = "example_transitions",
 				animation = require("example.examples.transitions.transitions_panthera"),

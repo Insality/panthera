@@ -1,0 +1,164 @@
+fonts {
+  name: "text_bold"
+  font: "/example/assets/fonts/text_bold.font"
+}
+textures {
+  name: "example"
+  texture: "/example/assets/example.atlas"
+}
+nodes {
+  size {
+    x: 800.0
+    y: 600.0
+  }
+  type: TYPE_BOX
+  texture: "example/empty"
+  id: "root"
+  inherit_alpha: true
+  visible: false
+}
+nodes {
+  position {
+    x: 0.0
+    y: -250.0
+  }
+  size {
+    x: 320.0
+    y: 60.0
+  }
+  color {
+    x: 0.129
+    y: 0.141
+    z: 0.157
+  }
+  type: TYPE_BOX
+  texture: "example/ui_circle_32"
+  id: "shadow"
+  parent: "root"
+  inherit_alpha: true
+  slice9 {
+    x: 16.000
+    y: 16.000
+    z: 16.000
+    w: 16.000
+  }
+}
+nodes {
+  size {
+    x: 320.0
+    y: 440.0
+  }
+  color {
+    x: 0.894
+    y: 0.506
+    z: 0.333
+  }
+  type: TYPE_BOX
+  texture: "example/ui_circle_32"
+  id: "card"
+  parent: "root"
+  inherit_alpha: true
+  slice9 {
+    x: 16.000
+    y: 16.000
+    z: 16.000
+    w: 16.000
+  }
+}
+nodes {
+  position {
+    x: 0.0
+    y: 70.0
+  }
+  scale {
+    x: 0.900
+    y: 0.900
+  }
+  color {
+    x: 0.129
+    y: 0.141
+    z: 0.157
+  }
+  type: TYPE_BOX
+  texture: "example/panthera"
+  id: "icon"
+  parent: "card"
+  inherit_alpha: true
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  position {
+    x: 0.0
+    y: -110.0
+  }
+  scale {
+    x: 0.800
+    y: 0.800
+  }
+  size {
+    x: 300.0
+    y: 70.0
+  }
+  color {
+    x: 0.129
+    y: 0.141
+    z: 0.157
+  }
+  type: TYPE_TEXT
+  text: "PANTHERA"
+  font: "text_bold"
+  id: "text_face"
+  outline {
+    x: 1.000
+    y: 1.000
+    z: 1.000
+  }
+  shadow {
+    x: 1.000
+    y: 1.000
+    z: 1.000
+  }
+  parent: "card"
+  inherit_alpha: true
+  outline_alpha: 0.000
+  shadow_alpha: 0.000
+}
+nodes {
+  position {
+    x: 0.0
+    y: -330.0
+  }
+  scale {
+    x: 0.550
+    y: 0.550
+  }
+  size {
+    x: 760.0
+    y: 50.0
+  }
+  color {
+    x: 0.463
+    y: 0.475
+    z: 0.490
+  }
+  type: TYPE_TEXT
+  text: "the face is swapped by a trigger at the thin moment of the flip"
+  font: "text_bold"
+  id: "text_hint"
+  outline {
+    x: 1.000
+    y: 1.000
+    z: 1.000
+  }
+  shadow {
+    x: 1.000
+    y: 1.000
+    z: 1.000
+  }
+  parent: "root"
+  inherit_alpha: true
+  outline_alpha: 0.000
+  shadow_alpha: 0.000
+}
+material: "/builtins/materials/gui.material"
+adjust_reference: ADJUST_REFERENCE_PARENT
