@@ -2135,6 +2135,24 @@ nodes {
 }
 nodes {
   type: TYPE_BOX
+  id: "example_parallax/back_2"
+  parent: "example_parallax/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_parallax/back_3"
+  parent: "example_parallax/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_parallax/back_4"
+  parent: "example_parallax/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
   id: "example_parallax/mid_0"
   parent: "example_parallax/root"
   template_node_child: true
@@ -2142,6 +2160,36 @@ nodes {
 nodes {
   type: TYPE_BOX
   id: "example_parallax/mid_1"
+  parent: "example_parallax/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_parallax/mid_2"
+  parent: "example_parallax/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_parallax/mid_3"
+  parent: "example_parallax/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_parallax/mid_4"
+  parent: "example_parallax/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_parallax/mid_5"
+  parent: "example_parallax/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_parallax/mid_6"
   parent: "example_parallax/root"
   template_node_child: true
 }
@@ -2159,6 +2207,36 @@ nodes {
 }
 nodes {
   type: TYPE_BOX
+  id: "example_parallax/front_2"
+  parent: "example_parallax/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_parallax/front_3"
+  parent: "example_parallax/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_parallax/front_4"
+  parent: "example_parallax/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_parallax/front_5"
+  parent: "example_parallax/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_parallax/front_6"
+  parent: "example_parallax/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
   id: "example_parallax/sun"
   parent: "example_parallax/root"
   template_node_child: true
@@ -2167,6 +2245,652 @@ nodes {
   type: TYPE_TEXT
   id: "example_parallax/text_hint"
   parent: "example_parallax/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_TEMPLATE
+  id: "example_slot_machine"
+  parent: "examples"
+  inherit_alpha: true
+  template: "/example/examples/slot_machine/slot_machine.gui"
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_slot_machine/root"
+  parent: "example_slot_machine"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_slot_machine/frame"
+  parent: "example_slot_machine/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_slot_machine/reel_l"
+  parent: "example_slot_machine/frame"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_slot_machine/reel_l_strip"
+  parent: "example_slot_machine/reel_l"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_slot_machine/reel_l_symbol_0"
+  parent: "example_slot_machine/reel_l_strip"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_slot_machine/reel_l_symbol_1"
+  parent: "example_slot_machine/reel_l_strip"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_slot_machine/reel_l_symbol_2"
+  parent: "example_slot_machine/reel_l_strip"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_slot_machine/reel_l_symbol_3"
+  parent: "example_slot_machine/reel_l_strip"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_slot_machine/reel_l_symbol_4"
+  parent: "example_slot_machine/reel_l_strip"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_slot_machine/reel_l_symbol_5"
+  parent: "example_slot_machine/reel_l_strip"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_slot_machine/reel_l_symbol_6"
+  parent: "example_slot_machine/reel_l_strip"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_slot_machine/reel_l_symbol_7"
+  parent: "example_slot_machine/reel_l_strip"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_slot_machine/reel_l_symbol_8"
+  parent: "example_slot_machine/reel_l_strip"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_slot_machine/reel_l_symbol_9"
+  parent: "example_slot_machine/reel_l_strip"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_slot_machine/reel_l_symbol_10"
+  parent: "example_slot_machine/reel_l_strip"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_slot_machine/reel_l_symbol_11"
+  parent: "example_slot_machine/reel_l_strip"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_slot_machine/reel_l_symbol_12"
+  parent: "example_slot_machine/reel_l_strip"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_slot_machine/reel_l_symbol_13"
+  parent: "example_slot_machine/reel_l_strip"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_slot_machine/reel_l_symbol_14"
+  parent: "example_slot_machine/reel_l_strip"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_slot_machine/reel_l_symbol_15"
+  parent: "example_slot_machine/reel_l_strip"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_slot_machine/reel_l_symbol_16"
+  parent: "example_slot_machine/reel_l_strip"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_slot_machine/reel_l_symbol_17"
+  parent: "example_slot_machine/reel_l_strip"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_slot_machine/reel_c"
+  parent: "example_slot_machine/frame"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_slot_machine/reel_c_strip"
+  parent: "example_slot_machine/reel_c"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_slot_machine/reel_c_symbol_0"
+  parent: "example_slot_machine/reel_c_strip"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_slot_machine/reel_c_symbol_1"
+  parent: "example_slot_machine/reel_c_strip"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_slot_machine/reel_c_symbol_2"
+  parent: "example_slot_machine/reel_c_strip"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_slot_machine/reel_c_symbol_3"
+  parent: "example_slot_machine/reel_c_strip"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_slot_machine/reel_c_symbol_4"
+  parent: "example_slot_machine/reel_c_strip"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_slot_machine/reel_c_symbol_5"
+  parent: "example_slot_machine/reel_c_strip"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_slot_machine/reel_c_symbol_6"
+  parent: "example_slot_machine/reel_c_strip"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_slot_machine/reel_c_symbol_7"
+  parent: "example_slot_machine/reel_c_strip"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_slot_machine/reel_c_symbol_8"
+  parent: "example_slot_machine/reel_c_strip"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_slot_machine/reel_c_symbol_9"
+  parent: "example_slot_machine/reel_c_strip"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_slot_machine/reel_c_symbol_10"
+  parent: "example_slot_machine/reel_c_strip"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_slot_machine/reel_c_symbol_11"
+  parent: "example_slot_machine/reel_c_strip"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_slot_machine/reel_c_symbol_12"
+  parent: "example_slot_machine/reel_c_strip"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_slot_machine/reel_c_symbol_13"
+  parent: "example_slot_machine/reel_c_strip"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_slot_machine/reel_c_symbol_14"
+  parent: "example_slot_machine/reel_c_strip"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_slot_machine/reel_c_symbol_15"
+  parent: "example_slot_machine/reel_c_strip"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_slot_machine/reel_c_symbol_16"
+  parent: "example_slot_machine/reel_c_strip"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_slot_machine/reel_c_symbol_17"
+  parent: "example_slot_machine/reel_c_strip"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_slot_machine/reel_r"
+  parent: "example_slot_machine/frame"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_slot_machine/reel_r_strip"
+  parent: "example_slot_machine/reel_r"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_slot_machine/reel_r_symbol_0"
+  parent: "example_slot_machine/reel_r_strip"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_slot_machine/reel_r_symbol_1"
+  parent: "example_slot_machine/reel_r_strip"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_slot_machine/reel_r_symbol_2"
+  parent: "example_slot_machine/reel_r_strip"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_slot_machine/reel_r_symbol_3"
+  parent: "example_slot_machine/reel_r_strip"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_slot_machine/reel_r_symbol_4"
+  parent: "example_slot_machine/reel_r_strip"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_slot_machine/reel_r_symbol_5"
+  parent: "example_slot_machine/reel_r_strip"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_slot_machine/reel_r_symbol_6"
+  parent: "example_slot_machine/reel_r_strip"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_slot_machine/reel_r_symbol_7"
+  parent: "example_slot_machine/reel_r_strip"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_slot_machine/reel_r_symbol_8"
+  parent: "example_slot_machine/reel_r_strip"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_slot_machine/reel_r_symbol_9"
+  parent: "example_slot_machine/reel_r_strip"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_slot_machine/reel_r_symbol_10"
+  parent: "example_slot_machine/reel_r_strip"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_slot_machine/reel_r_symbol_11"
+  parent: "example_slot_machine/reel_r_strip"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_slot_machine/reel_r_symbol_12"
+  parent: "example_slot_machine/reel_r_strip"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_slot_machine/reel_r_symbol_13"
+  parent: "example_slot_machine/reel_r_strip"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_slot_machine/reel_r_symbol_14"
+  parent: "example_slot_machine/reel_r_strip"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_slot_machine/reel_r_symbol_15"
+  parent: "example_slot_machine/reel_r_strip"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_slot_machine/reel_r_symbol_16"
+  parent: "example_slot_machine/reel_r_strip"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_slot_machine/reel_r_symbol_17"
+  parent: "example_slot_machine/reel_r_strip"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_slot_machine/payline"
+  parent: "example_slot_machine/frame"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_TEXT
+  id: "example_slot_machine/text_hint"
+  parent: "example_slot_machine/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_TEMPLATE
+  id: "example_combo_pop"
+  parent: "examples"
+  inherit_alpha: true
+  template: "/example/examples/combo_pop/combo_pop.gui"
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_combo_pop/root"
+  parent: "example_combo_pop"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_combo_pop/ring_0"
+  parent: "example_combo_pop/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_combo_pop/ring_1"
+  parent: "example_combo_pop/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_combo_pop/ring_2"
+  parent: "example_combo_pop/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_combo_pop/spark_0"
+  parent: "example_combo_pop/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_combo_pop/spark_1"
+  parent: "example_combo_pop/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_combo_pop/spark_2"
+  parent: "example_combo_pop/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_combo_pop/spark_3"
+  parent: "example_combo_pop/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_combo_pop/spark_4"
+  parent: "example_combo_pop/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_combo_pop/spark_5"
+  parent: "example_combo_pop/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_combo_pop/spark_6"
+  parent: "example_combo_pop/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_combo_pop/spark_7"
+  parent: "example_combo_pop/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_TEXT
+  id: "example_combo_pop/text_combo"
+  parent: "example_combo_pop/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_TEXT
+  id: "example_combo_pop/text_label"
+  parent: "example_combo_pop/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_TEMPLATE
+  id: "example_elastic_menu"
+  parent: "examples"
+  inherit_alpha: true
+  template: "/example/examples/elastic_menu/elastic_menu.gui"
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_elastic_menu/root"
+  parent: "example_elastic_menu"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_elastic_menu/highlight"
+  parent: "example_elastic_menu/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_elastic_menu/item_0"
+  parent: "example_elastic_menu/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_TEXT
+  id: "example_elastic_menu/label_0"
+  parent: "example_elastic_menu/item_0"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_elastic_menu/item_1"
+  parent: "example_elastic_menu/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_TEXT
+  id: "example_elastic_menu/label_1"
+  parent: "example_elastic_menu/item_1"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_elastic_menu/item_2"
+  parent: "example_elastic_menu/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_TEXT
+  id: "example_elastic_menu/label_2"
+  parent: "example_elastic_menu/item_2"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_elastic_menu/item_3"
+  parent: "example_elastic_menu/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_TEXT
+  id: "example_elastic_menu/label_3"
+  parent: "example_elastic_menu/item_3"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_TEXT
+  id: "example_elastic_menu/text_hint"
+  parent: "example_elastic_menu/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_TEMPLATE
+  id: "example_liquid_bar"
+  parent: "examples"
+  inherit_alpha: true
+  template: "/example/examples/liquid_bar/liquid_bar.gui"
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_liquid_bar/root"
+  parent: "example_liquid_bar"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_liquid_bar/bar_back"
+  parent: "example_liquid_bar/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_liquid_bar/mask"
+  parent: "example_liquid_bar/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_liquid_bar/slice_0"
+  parent: "example_liquid_bar/mask"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_liquid_bar/slice_1"
+  parent: "example_liquid_bar/mask"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_liquid_bar/slice_2"
+  parent: "example_liquid_bar/mask"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_liquid_bar/slice_3"
+  parent: "example_liquid_bar/mask"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_liquid_bar/slice_4"
+  parent: "example_liquid_bar/mask"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_liquid_bar/slice_5"
+  parent: "example_liquid_bar/mask"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_liquid_bar/slice_6"
+  parent: "example_liquid_bar/mask"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_liquid_bar/slice_7"
+  parent: "example_liquid_bar/mask"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_liquid_bar/slice_8"
+  parent: "example_liquid_bar/mask"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_TEXT
+  id: "example_liquid_bar/text_percent"
+  parent: "example_liquid_bar/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_TEXT
+  id: "example_liquid_bar/text_hint"
+  parent: "example_liquid_bar/root"
   template_node_child: true
 }
 nodes {
@@ -2377,5 +3101,5 @@ layers {
   name: "text_bold"
 }
 material: "/builtins/materials/gui.material"
-max_nodes: 4096
 adjust_reference: ADJUST_REFERENCE_PARENT
+max_nodes: 4096

@@ -1,0 +1,384 @@
+fonts {
+  name: "text_bold"
+  font: "/example/assets/fonts/text_bold.font"
+}
+textures {
+  name: "example"
+  texture: "/example/assets/example.atlas"
+}
+nodes {
+  size {
+    x: 800.0
+    y: 600.0
+  }
+  type: TYPE_BOX
+  texture: "example/empty"
+  id: "root"
+  inherit_alpha: true
+  visible: false
+}
+nodes {
+  size {
+    x: 120.0
+    y: 120.0
+  }
+  color {
+    x: 0.894
+    y: 0.506
+    z: 0.333
+  }
+  type: TYPE_BOX
+  texture: "example/ui_circle_64"
+  id: "ring_0"
+  parent: "root"
+  inherit_alpha: true
+  slice9 {
+    x: 32.000
+    y: 32.000
+    z: 32.000
+    w: 32.000
+  }
+  alpha: 0.000
+}
+nodes {
+  size {
+    x: 120.0
+    y: 120.0
+  }
+  color {
+    x: 0.894
+    y: 0.506
+    z: 0.333
+  }
+  type: TYPE_BOX
+  texture: "example/ui_circle_64"
+  id: "ring_1"
+  parent: "root"
+  inherit_alpha: true
+  slice9 {
+    x: 32.000
+    y: 32.000
+    z: 32.000
+    w: 32.000
+  }
+  alpha: 0.000
+}
+nodes {
+  size {
+    x: 120.0
+    y: 120.0
+  }
+  color {
+    x: 0.894
+    y: 0.506
+    z: 0.333
+  }
+  type: TYPE_BOX
+  texture: "example/ui_circle_64"
+  id: "ring_2"
+  parent: "root"
+  inherit_alpha: true
+  slice9 {
+    x: 32.000
+    y: 32.000
+    z: 32.000
+    w: 32.000
+  }
+  alpha: 0.000
+}
+nodes {
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: 0.000
+  }
+  size {
+    x: 16.0
+    y: 54.0
+  }
+  color {
+    x: 0.722
+    y: 0.741
+    z: 0.761
+  }
+  type: TYPE_BOX
+  texture: "example/ui_circle_8"
+  id: "spark_0"
+  parent: "root"
+  inherit_alpha: true
+  slice9 {
+    x: 4.000
+    y: 4.000
+    z: 4.000
+    w: 4.000
+  }
+  alpha: 0.000
+}
+nodes {
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: -45.000
+  }
+  size {
+    x: 16.0
+    y: 54.0
+  }
+  color {
+    x: 0.722
+    y: 0.741
+    z: 0.761
+  }
+  type: TYPE_BOX
+  texture: "example/ui_circle_8"
+  id: "spark_1"
+  parent: "root"
+  inherit_alpha: true
+  slice9 {
+    x: 4.000
+    y: 4.000
+    z: 4.000
+    w: 4.000
+  }
+  alpha: 0.000
+}
+nodes {
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: -90.000
+  }
+  size {
+    x: 16.0
+    y: 54.0
+  }
+  color {
+    x: 0.722
+    y: 0.741
+    z: 0.761
+  }
+  type: TYPE_BOX
+  texture: "example/ui_circle_8"
+  id: "spark_2"
+  parent: "root"
+  inherit_alpha: true
+  slice9 {
+    x: 4.000
+    y: 4.000
+    z: 4.000
+    w: 4.000
+  }
+  alpha: 0.000
+}
+nodes {
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: -135.000
+  }
+  size {
+    x: 16.0
+    y: 54.0
+  }
+  color {
+    x: 0.722
+    y: 0.741
+    z: 0.761
+  }
+  type: TYPE_BOX
+  texture: "example/ui_circle_8"
+  id: "spark_3"
+  parent: "root"
+  inherit_alpha: true
+  slice9 {
+    x: 4.000
+    y: 4.000
+    z: 4.000
+    w: 4.000
+  }
+  alpha: 0.000
+}
+nodes {
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: -180.000
+  }
+  size {
+    x: 16.0
+    y: 54.0
+  }
+  color {
+    x: 0.722
+    y: 0.741
+    z: 0.761
+  }
+  type: TYPE_BOX
+  texture: "example/ui_circle_8"
+  id: "spark_4"
+  parent: "root"
+  inherit_alpha: true
+  slice9 {
+    x: 4.000
+    y: 4.000
+    z: 4.000
+    w: 4.000
+  }
+  alpha: 0.000
+}
+nodes {
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: -225.000
+  }
+  size {
+    x: 16.0
+    y: 54.0
+  }
+  color {
+    x: 0.722
+    y: 0.741
+    z: 0.761
+  }
+  type: TYPE_BOX
+  texture: "example/ui_circle_8"
+  id: "spark_5"
+  parent: "root"
+  inherit_alpha: true
+  slice9 {
+    x: 4.000
+    y: 4.000
+    z: 4.000
+    w: 4.000
+  }
+  alpha: 0.000
+}
+nodes {
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: -270.000
+  }
+  size {
+    x: 16.0
+    y: 54.0
+  }
+  color {
+    x: 0.722
+    y: 0.741
+    z: 0.761
+  }
+  type: TYPE_BOX
+  texture: "example/ui_circle_8"
+  id: "spark_6"
+  parent: "root"
+  inherit_alpha: true
+  slice9 {
+    x: 4.000
+    y: 4.000
+    z: 4.000
+    w: 4.000
+  }
+  alpha: 0.000
+}
+nodes {
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: -315.000
+  }
+  size {
+    x: 16.0
+    y: 54.0
+  }
+  color {
+    x: 0.722
+    y: 0.741
+    z: 0.761
+  }
+  type: TYPE_BOX
+  texture: "example/ui_circle_8"
+  id: "spark_7"
+  parent: "root"
+  inherit_alpha: true
+  slice9 {
+    x: 4.000
+    y: 4.000
+    z: 4.000
+    w: 4.000
+  }
+  alpha: 0.000
+}
+nodes {
+  scale {
+    x: 1.600
+    y: 1.600
+  }
+  size {
+    x: 500.0
+    y: 160.0
+  }
+  color {
+    x: 0.894
+    y: 0.506
+    z: 0.333
+  }
+  type: TYPE_TEXT
+  text: "x2"
+  font: "text_bold"
+  id: "text_combo"
+  outline {
+    x: 1.000
+    y: 1.000
+    z: 1.000
+  }
+  shadow {
+    x: 1.000
+    y: 1.000
+    z: 1.000
+  }
+  parent: "root"
+  inherit_alpha: true
+  outline_alpha: 0.000
+  shadow_alpha: 0.000
+}
+nodes {
+  position {
+    x: 0.0
+    y: -140.0
+  }
+  scale {
+    x: 0.600
+    y: 0.600
+  }
+  size {
+    x: 500.0
+    y: 60.0
+  }
+  color {
+    x: 0.463
+    y: 0.475
+    z: 0.490
+  }
+  type: TYPE_TEXT
+  text: "COMBO"
+  font: "text_bold"
+  id: "text_label"
+  outline {
+    x: 1.000
+    y: 1.000
+    z: 1.000
+  }
+  shadow {
+    x: 1.000
+    y: 1.000
+    z: 1.000
+  }
+  parent: "root"
+  inherit_alpha: true
+  outline_alpha: 0.000
+  shadow_alpha: 0.000
+}
+material: "/builtins/materials/gui.material"
+adjust_reference: ADJUST_REFERENCE_PARENT

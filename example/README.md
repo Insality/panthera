@@ -62,10 +62,16 @@ based one. Selecting an animation resets the ease type back to `linear`.
 | GUI | Confetti | Fourteen pieces flying out, up and around, each key authored by hand |
 | GUI | Typewriter | A dialogue line built character by character out of text triggers |
 | GUI | Parallax | Layers scrolling exactly one tile each, so the looped animation is seamless |
+| GUI | Slot Machine | Three clipped reels, a whole number of loops looks like the start so the last step picks the symbol. `review` plays a whole round |
+| GUI | Combo Pop | A number pop with expanding shockwave rings and sparks flying out |
+| GUI | Elastic Menu | Menu items cascading in and a highlight travelling between them, `review` plays the three in order |
+| GUI | Liquid Bar | Nine slices under one mask, their heights phase shifted into a liquid surface |
 | GUI | Screen Transitions | Two fullscreen wipes, each split into an `appear` and a `disappear` half that `together` chains |
 | GUI | Character Blend | Three animation states over the same nodes, two of them blended from the mouse position. Character assets by [Kenney](https://kenney.nl/) |
 | Collections | Shapes | A collection of sprites animated by their object and component properties |
 | Collections | Hierarchy | Child objects following the animated parent through its local transform |
+| Collections | Domino Chain | Pieces toppling one after another on a floor, each rotating around its own base |
+| Collections | Comet Trail | A head and six tail segments walking the very same closed path, one sample apart |
 | Collections | Scene Objects | Objects that are already in the bootstrap collection, with no factory at all |
 | Collections | Scene Collection | A collection instance of the bootstrap collection, addressed by its name |
 | Collections | Nested Collection | A spawned collection that holds a nested one, addressed by the name of the inner |
@@ -119,11 +125,17 @@ it: it scrubs two animation states with `panthera.set_time` from the mouse posit
 The animations list, the timeline and the playback settings are filled from the animation data,
 so nothing else has to be written for a new example.
 
+An animation made only of animation keys can be played but not scrubbed: `panthera.set_time`
+skips animation keys, so the timeline slider does nothing for it. Write the keys out one after
+another instead when the timeline matters, as `Screen Transitions` does.
+
 An animation key drives another animation instead of a property. Without a node id it plays
 another animation of the same file, with one it plays an animation of the template animation bound
 to that node, and both can be used together in a single animation.
 
-Author every animation so that each property starts from the state of the scene. Panthera resets
-a node to the start value of the first key of the property when another animation is played over
-it, so an animation that starts from an offset leaves the node parked at that offset once you
-switch away from it.
+Author every animation so that each property starts from the state of the scene. Panthera resets a
+node to the start value of the first key of the property when another animation is played over it,
+so an animation that starts from an offset leaves the node parked at that offset once you switch
+away from it. An entrance animation may of course start from outside the scene, as long as every
+other animation of the file writes that property too and puts it back.
+

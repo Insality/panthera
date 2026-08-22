@@ -1,0 +1,6 @@
+default_animation: "ui_circle_32"
+material: "/panthera/materials/sprite.material"
+textures {
+  sampler: "texture_sampler"
+  texture: "/example/assets/example.atlas"
+}

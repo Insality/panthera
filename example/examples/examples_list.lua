@@ -111,6 +111,30 @@ return {
 				source = "/example/examples/parallax/parallax.gui",
 			},
 			{
+				name = "Slot Machine",
+				template = "example_slot_machine",
+				animation = require("example.examples.slot_machine.slot_machine_panthera"),
+				source = "/example/examples/slot_machine/slot_machine.gui",
+			},
+			{
+				name = "Combo Pop",
+				template = "example_combo_pop",
+				animation = require("example.examples.combo_pop.combo_pop_panthera"),
+				source = "/example/examples/combo_pop/combo_pop.gui",
+			},
+			{
+				name = "Elastic Menu",
+				template = "example_elastic_menu",
+				animation = require("example.examples.elastic_menu.elastic_menu_panthera"),
+				source = "/example/examples/elastic_menu/elastic_menu.gui",
+			},
+			{
+				name = "Liquid Bar",
+				template = "example_liquid_bar",
+				animation = require("example.examples.liquid_bar.liquid_bar_panthera"),
+				source = "/example/examples/liquid_bar/liquid_bar.gui",
+			},
+			{
 				name = "Screen Transitions",
 				template = "example_transitions",
 				animation = require("example.examples.transitions.transitions_panthera"),
@@ -145,6 +169,18 @@ return {
 				collectionfactory = "/scene#hierarchy",
 				animation = require("example.examples.hierarchy.hierarchy_panthera"),
 				source = "/example/examples/hierarchy/hierarchy.collection",
+			},
+			{
+				name = "Domino Chain",
+				collectionfactory = "/scene#domino",
+				animation = require("example.examples.domino.domino_panthera"),
+				source = "/example/examples/domino/domino.collection",
+			},
+			{
+				name = "Comet Trail",
+				collectionfactory = "/scene#comet",
+				animation = require("example.examples.comet.comet_panthera"),
+				source = "/example/examples/comet/comet.collection",
 			},
 			{
 				-- The objects are already in the bootstrap collection: `create_go(animation)`

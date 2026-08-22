@@ -1,0 +1,162 @@
+name: "domino"
+scale_along_z: 0
+instances {
+  id: "floor"
+  prototype: "/example/examples/domino/floor.go"
+  position {
+    x: 0.00
+    y: -96.00
+  }
+  rotation {
+    w: 1.0
+  }
+  scale3 {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+  }
+}
+instances {
+  id: "piece_0"
+  prototype: "/example/examples/domino/piece.go"
+  position {
+    x: -384.00
+    y: -88.00
+  }
+  rotation {
+    w: 1.0
+  }
+  scale3 {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+  }
+}
+instances {
+  id: "piece_1"
+  prototype: "/example/examples/domino/piece.go"
+  position {
+    x: -288.00
+    y: -88.00
+  }
+  rotation {
+    w: 1.0
+  }
+  scale3 {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+  }
+}
+instances {
+  id: "piece_2"
+  prototype: "/example/examples/domino/piece.go"
+  position {
+    x: -192.00
+    y: -88.00
+  }
+  rotation {
+    w: 1.0
+  }
+  scale3 {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+  }
+}
+instances {
+  id: "piece_3"
+  prototype: "/example/examples/domino/piece.go"
+  position {
+    x: -96.00
+    y: -88.00
+  }
+  rotation {
+    w: 1.0
+  }
+  scale3 {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+  }
+}
+instances {
+  id: "piece_4"
+  prototype: "/example/examples/domino/piece.go"
+  position {
+    x: 0.00
+    y: -88.00
+  }
+  rotation {
+    w: 1.0
+  }
+  scale3 {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+  }
+}
+instances {
+  id: "piece_5"
+  prototype: "/example/examples/domino/piece.go"
+  position {
+    x: 96.00
+    y: -88.00
+  }
+  rotation {
+    w: 1.0
+  }
+  scale3 {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+  }
+}
+instances {
+  id: "piece_6"
+  prototype: "/example/examples/domino/piece.go"
+  position {
+    x: 192.00
+    y: -88.00
+  }
+  rotation {
+    w: 1.0
+  }
+  scale3 {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+  }
+}
+instances {
+  id: "piece_7"
+  prototype: "/example/examples/domino/piece.go"
+  position {
+    x: 288.00
+    y: -88.00
+  }
+  rotation {
+    w: 1.0
+  }
+  scale3 {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+  }
+}
+instances {
+  id: "piece_8"
+  prototype: "/example/examples/domino/piece.go"
+  position {
+    x: 384.00
+    y: -88.00
+  }
+  rotation {
+    w: 1.0
+  }
+  scale3 {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+  }
+}
