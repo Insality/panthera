@@ -1,0 +1,305 @@
+fonts {
+  name: "text_bold"
+  font: "/example2/assets/fonts/text_bold.font"
+}
+fonts {
+  name: "text_regular"
+  font: "/example2/assets/fonts/text_regular.font"
+}
+textures {
+  name: "example2"
+  texture: "/example2/assets/example2.atlas"
+}
+nodes {
+  size {
+    x: 1070.0
+    y: 110.0
+  }
+  color {
+    x: 0.173
+    y: 0.184
+    z: 0.204
+  }
+  type: TYPE_BOX
+  texture: "example2/pixel"
+  id: "root"
+  xanchor: XANCHOR_LEFT
+  adjust_mode: ADJUST_MODE_STRETCH
+  inherit_alpha: true
+}
+nodes {
+  position {
+    y: 25.0
+  }
+  scale {
+    x: 0.7
+    y: 0.7
+  }
+  size {
+    x: 600.0
+    y: 40.0
+  }
+  color {
+    x: 0.894
+    y: 0.506
+    z: 0.333
+  }
+  type: TYPE_TEXT
+  text: "animation_id"
+  font: "text_bold"
+  id: "text_animation_id"
+  xanchor: XANCHOR_LEFT
+  outline {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+  }
+  shadow {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+  }
+  parent: "root"
+  inherit_alpha: true
+  outline_alpha: 0.0
+  shadow_alpha: 0.0
+}
+nodes {
+  position {
+    x: 482.0
+    y: 25.0
+  }
+  scale {
+    x: 0.7
+    y: 0.7
+  }
+  size {
+    x: 400.0
+    y: 40.0
+  }
+  color {
+    x: 0.722
+    y: 0.741
+    z: 0.761
+  }
+  type: TYPE_TEXT
+  text: "0.00 / 0.00"
+  font: "text_regular"
+  id: "text_time"
+  xanchor: XANCHOR_RIGHT
+  pivot: PIVOT_E
+  outline {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+  }
+  shadow {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+  }
+  parent: "root"
+  inherit_alpha: true
+  outline_alpha: 0.0
+  shadow_alpha: 0.0
+}
+nodes {
+  position {
+    x: -470.0
+  }
+  size {
+    x: 78.0
+    y: 78.0
+  }
+  color {
+    x: 0.894
+    y: 0.506
+    z: 0.333
+  }
+  type: TYPE_BOX
+  texture: "example2/ui_circle_32"
+  id: "button_play"
+  parent: "root"
+  inherit_alpha: true
+  slice9 {
+    x: 16.0
+    y: 16.0
+    z: 16.0
+    w: 16.0
+  }
+}
+nodes {
+  position {
+    x: -2.0
+  }
+  scale {
+    x: 1.2
+  }
+  color {
+    x: 0.129
+    y: 0.141
+    z: 0.157
+  }
+  type: TYPE_BOX
+  texture: "example2/icon_arrow"
+  id: "icon_play"
+  parent: "button_play"
+  inherit_alpha: true
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  scale {
+    x: 1.2
+    y: 1.2
+  }
+  size {
+    x: 24.0
+    y: 26.0
+  }
+  type: TYPE_BOX
+  texture: "example2/empty"
+  id: "icon_pause"
+  parent: "button_play"
+  inherit_alpha: true
+  visible: false
+}
+nodes {
+  position {
+    x: -7.0
+  }
+  size {
+    x: 8.0
+    y: 26.0
+  }
+  color {
+    x: 0.129
+    y: 0.141
+    z: 0.157
+  }
+  type: TYPE_BOX
+  texture: "example2/ui_circle_8"
+  id: "icon_pause_left"
+  parent: "icon_pause"
+  inherit_alpha: true
+  slice9 {
+    x: 4.0
+    y: 4.0
+    z: 4.0
+    w: 4.0
+  }
+}
+nodes {
+  position {
+    x: 7.0
+  }
+  size {
+    x: 8.0
+    y: 26.0
+  }
+  color {
+    x: 0.129
+    y: 0.141
+    z: 0.157
+  }
+  type: TYPE_BOX
+  texture: "example2/ui_circle_8"
+  id: "icon_pause_right"
+  parent: "icon_pause"
+  inherit_alpha: true
+  slice9 {
+    x: 4.0
+    y: 4.0
+    z: 4.0
+    w: 4.0
+  }
+}
+nodes {
+  position {
+    x: 42.0
+    y: -16.0
+  }
+  size {
+    x: 900.0
+    y: 56.0
+  }
+  type: TYPE_BOX
+  texture: "example2/empty"
+  id: "slider"
+  parent: "root"
+  inherit_alpha: true
+}
+nodes {
+  size {
+    x: 880.0
+    y: 10.0
+  }
+  color {
+    x: 0.129
+    y: 0.141
+    z: 0.157
+  }
+  type: TYPE_BOX
+  texture: "example2/ui_circle_8"
+  id: "slider_back"
+  parent: "slider"
+  inherit_alpha: true
+  slice9 {
+    x: 4.0
+    y: 4.0
+    z: 4.0
+    w: 4.0
+  }
+}
+nodes {
+  position {
+    x: -440.0
+  }
+  size {
+    x: 10.0
+    y: 10.0
+  }
+  color {
+    x: 0.894
+    y: 0.506
+    z: 0.333
+  }
+  type: TYPE_BOX
+  texture: "example2/ui_circle_8"
+  id: "slider_fill"
+  pivot: PIVOT_W
+  parent: "slider"
+  inherit_alpha: true
+  slice9 {
+    x: 4.0
+    y: 4.0
+    z: 4.0
+    w: 4.0
+  }
+}
+nodes {
+  position {
+    x: -440.0
+  }
+  size {
+    x: 28.0
+    y: 28.0
+  }
+  color {
+    x: 0.722
+    y: 0.741
+    z: 0.761
+  }
+  type: TYPE_BOX
+  texture: "example2/ui_circle_16"
+  id: "slider_pin"
+  parent: "slider"
+  inherit_alpha: true
+  slice9 {
+    x: 8.0
+    y: 8.0
+    z: 8.0
+    w: 8.0
+  }
+}
+material: "/builtins/materials/gui.material"
+adjust_reference: ADJUST_REFERENCE_PARENT

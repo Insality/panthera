@@ -1,0 +1,50 @@
+name: "satellite"
+scale_along_z: 0
+instances {
+  id: "core"
+  prototype: "/example2/examples/nested_collection/core.go"
+  position {
+    x: 0.0
+    y: 0.0
+  }
+  rotation {
+    w: 1.0
+  }
+  scale3 {
+    x: 2.0
+    y: 2.0
+    z: 1.0
+  }
+}
+instances {
+  id: "ring_1"
+  prototype: "/example2/examples/nested_collection/ring.go"
+  position {
+    x: -220.0
+    y: 0.0
+  }
+  rotation {
+    w: 1.0
+  }
+  scale3 {
+    x: 3.0
+    y: 3.0
+    z: 1.0
+  }
+}
+instances {
+  id: "ring_2"
+  prototype: "/example2/examples/nested_collection/ring.go"
+  position {
+    x: 220.0
+    y: 0.0
+  }
+  rotation {
+    w: 1.0
+  }
+  scale3 {
+    x: 3.0
+    y: 3.0
+    z: 1.0
+  }
+}

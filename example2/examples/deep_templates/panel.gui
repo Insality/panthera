@@ -1,0 +1,129 @@
+fonts {
+  name: "text_bold"
+  font: "/example2/assets/fonts/text_bold.font"
+}
+textures {
+  name: "example2"
+  texture: "/example2/assets/example2.atlas"
+}
+nodes {
+  size {
+    x: 420.0
+    y: 300.0
+  }
+  color {
+    x: 0.173
+    y: 0.184
+    z: 0.204
+  }
+  type: TYPE_BOX
+  texture: "example2/ui_circle_32"
+  id: "root"
+  inherit_alpha: true
+  slice9 {
+    x: 16.000
+    y: 16.000
+    z: 16.000
+    w: 16.000
+  }
+}
+nodes {
+  position {
+    x: 0.0
+    y: 110.0
+  }
+  scale {
+    x: 0.550
+    y: 0.550
+  }
+  size {
+    x: 400.0
+    y: 50.0
+  }
+  color {
+    x: 0.463
+    y: 0.475
+    z: 0.490
+  }
+  type: TYPE_TEXT
+  text: "panel.gui"
+  font: "text_bold"
+  id: "title"
+  outline {
+    x: 1.000
+    y: 1.000
+    z: 1.000
+  }
+  shadow {
+    x: 1.000
+    y: 1.000
+    z: 1.000
+  }
+  parent: "root"
+  inherit_alpha: true
+  outline_alpha: 0.000
+  shadow_alpha: 0.000
+}
+nodes {
+  position {
+    x: 0.0
+    y: -100.0
+  }
+  size {
+    x: 340.0
+    y: 18.0
+  }
+  color {
+    x: 0.894
+    y: 0.506
+    z: 0.333
+  }
+  type: TYPE_BOX
+  texture: "example2/ui_circle_8"
+  id: "bar"
+  parent: "root"
+  inherit_alpha: true
+  slice9 {
+    x: 4.000
+    y: 4.000
+    z: 4.000
+    w: 4.000
+  }
+}
+nodes {
+  position {
+    x: 0.0
+    y: 20.0
+  }
+  type: TYPE_TEMPLATE
+  id: "dots"
+  parent: "root"
+  inherit_alpha: true
+  template: "/example2/examples/dots/dots.gui"
+}
+nodes {
+  type: TYPE_BOX
+  id: "dots/root"
+  parent: "dots"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "dots/dot"
+  parent: "dots/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "dots/dot1"
+  parent: "dots/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "dots/dot2"
+  parent: "dots/root"
+  template_node_child: true
+}
+material: "/builtins/materials/gui.material"
+adjust_reference: ADJUST_REFERENCE_PARENT
