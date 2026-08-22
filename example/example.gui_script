@@ -32,12 +32,23 @@ local DEFAULT_EASING_TYPE = 1 -- linear
 
 ---An animation track. Both tracks animate the same example over their own animation state, so
 ---they run independently and can be at different times.
+---@class example.track.options: panthera.options
+---@field from number|nil Start time for a tweener play, used when resuming a track
+
 ---@class example.track
 ---@field timeline example.timeline
----@field options panthera.options The playback options of this track
+---@field options example.track.options The playback options of this track
 ---@field animation panthera.animation|nil
 ---@field animation_id string|nil
 ---@field display_time number
+
+---@class example.output_line
+---@field id string
+---@field text string
+---@field count number
+
+---@class example.example_widget: druid.widget
+---@field properties_control fun(self: example.example_widget, properties_panel: example.properties_panel)?
 
 ---@class example.gui_script
 ---@field druid druid.instance
@@ -46,7 +57,20 @@ local DEFAULT_EASING_TYPE = 1 -- linear
 ---@field properties_panel example.properties_panel
 ---@field tracks example.track[] The primary track is always the first one
 ---@field example example.example|nil The currently selected example
+---@field example_widget example.example_widget|nil
 ---@field play_all example.play_all|nil The state of the Play All run, nil when it is not running
+---@field output example.output_line[]
+---@field easing_mode_index number
+---@field easing_type_index number
+---@field speed_value number
+---@field node_source_path node
+---@field node_memory_usage node
+---@field node_text_output node
+---@field memory_timer number
+---@field is_window_ready boolean
+---@field loop_checkbox example.property_checkbox
+---@field easing_mode_button example.property_button
+---@field easing_type_button example.property_button
 ---@field container_root druid.container
 ---@field container_left druid.container
 ---@field container_header druid.container
@@ -319,7 +343,7 @@ local function create_animation(self, example)
 		-- An example scene can bring its own logic as a Druid widget over its template. It can
 		-- handle input, create animation states of its own and add properties to the panel
 		if example.widget then
-			self.example_widget = self.druid:new_widget(example.widget, example.template)
+			self.example_widget = self.druid:new_widget(example.widget, example.template) --[[@as example.example_widget]]
 		end
 
 		return panthera.create_gui(example.animation, example.template)
@@ -481,14 +505,17 @@ end
 local function create_track(self, index)
 	local is_primary = index == 1
 
+	---@type example.track.options
+	local options = {
+		is_loop = IS_LOOP_BY_DEFAULT,
+		easing = EASING_TYPES[DEFAULT_EASING_TYPE],
+		speed = 1,
+	}
+
 	---@type example.track
 	local track = {
 		timeline = self.druid:new_widget(timeline, is_primary and "timeline" or "timeline_second") --[[@as example.timeline]],
-		options = {
-			is_loop = IS_LOOP_BY_DEFAULT,
-			easing = EASING_TYPES[DEFAULT_EASING_TYPE],
-			speed = 1,
-		},
+		options = options,
 		animation = nil,
 		animation_id = nil,
 		display_time = 0,
@@ -505,7 +532,7 @@ local function create_track(self, index)
 		if not track.options.is_loop then
 			track.display_time = get_duration(track)
 		end
-	end)
+	end) --[[@as fun(animation_id: string)]]
 	track.options.callback_event = event.create(function(event_id, node, string_value, number_value)
 		local text = "event: " .. event_id
 		if string_value then
@@ -515,7 +542,7 @@ local function create_track(self, index)
 			text = text .. " = " .. string.format("%.0f", number_value)
 		end
 		add_output(self, event_id, text)
-	end)
+	end) --[[@as fun(event_id: string, node: node?, string_value: string, number_value: number)]]
 
 	track.timeline.on_scrub:subscribe(function(progress)
 		if not track.animation or not track.animation_id then
@@ -549,6 +576,10 @@ end
 ---@param self example.gui_script
 local function play_all_advance(self)
 	local state = self.play_all
+	if not state then
+		return
+	end
+
 	state.is_advancing = true
 
 	state.animation_index = state.animation_index + 1
