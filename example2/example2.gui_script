@@ -1,5 +1,7 @@
 local log = require("log.log")
 local druid = require("druid.druid")
+local event = require("event.event")
+local events = require("event.events")
 local panthera = require("panthera.panthera")
 
 local list_view = require("example2.components.list_view.list_view")
@@ -8,7 +10,11 @@ local properties_panel = require("example2.components.properties_panel.propertie
 local examples_list = require("example2.examples.examples_list")
 
 local OUTPUT_LINES = 8
-local MAX_SPEED = 3
+local MAX_SPEED = 5
+local IS_LOOP_BY_DEFAULT = true
+
+local ACCENT_PRIMARY = vmath.vector4(0.894, 0.506, 0.333, 1)
+local ACCENT_SECONDARY = vmath.vector4(0.6, 0.502, 0.902, 1)
 
 ---The easing is applied over the whole animation timeline. Panthera plays the animation
 ---with a tweener instead of the timer when the easing is not "linear".
@@ -23,16 +29,41 @@ local EASINGS = {
 	"inbounce", "outbounce",
 }
 
+---An animation track. Both tracks animate the same example over their own animation state, so
+---they run independently and can be at different times.
+---@class example2.track
+---@field timeline example2.timeline
+---@field options panthera.options The playback options of this track
+---@field animation panthera.animation|nil
+---@field animation_id string|nil
+---@field display_time number
+
 ---@class example2.gui_script
 ---@field druid druid.instance
 ---@field examples_list_view example2.list_view
 ---@field animations_list_view example2.list_view
 ---@field properties_panel example2.properties_panel
----@field timeline example2.timeline
+---@field tracks example2.track[] The primary track is always the first one
 ---@field example example2.example|nil The currently selected example
----@field animation panthera.animation|nil The animation state of the selected example
----@field animation_id string|nil The currently selected animation id
----@field play_options panthera.options The playback options, reused between the plays
+---@field play_all example2.play_all|nil The state of the Play All run, nil when it is not running
+---@field container_root druid.container
+---@field container_left druid.container
+---@field container_header druid.container
+---@field container_examples druid.container
+---@field container_right druid.container
+---@field container_animations druid.container
+---@field container_center druid.container
+---@field container_timeline druid.container
+---@field container_timeline_second druid.container
+---@field container_settings druid.container
+
+---Plays every animation of every example one after another. It walks the examples list and the
+---animations list, waiting for the primary track to finish before moving to the next animation.
+---@class example2.play_all
+---@field example_index number
+---@field animation_index number
+---@field is_advancing boolean True while the run selects an item itself, so the selection
+---events can tell an automatic step from a click of the user
 
 
 ---Containers describe the layout of the GUI scene. The components are placed inside them,
@@ -51,6 +82,7 @@ local function setup_layout(self)
 
 	self.container_center = self.container_root:add_container("container_center")
 	self.container_timeline = self.container_center:add_container("container_timeline", "stretch_x")
+	self.container_timeline_second = self.container_center:add_container("container_timeline_second", "stretch_x")
 end
 
 
@@ -89,23 +121,76 @@ local function clear_output(self)
 end
 
 
----@param self example2.gui_script
----@return number duration The duration of the selected animation in seconds
-local function get_duration(self)
-	if not self.animation or not self.animation_id then
+---@param track example2.track
+---@return number duration The duration of the animation of the track in seconds
+local function get_duration(track)
+	if not track.animation or not track.animation_id then
 		return 0
 	end
 
-	return panthera.get_duration(self.animation, self.animation_id)
+	return panthera.get_duration(track.animation, track.animation_id)
 end
 
 
----Play the selected animation from the given time. Panthera continues the playback from the
+---The GUI examples are animated right here, while the collection and the game object examples
+---are animated by `/example2/scene/scene.script`: Panthera uses the `go.*` functions for them
+---and those are not available in the GUI script context. Reading the animation state is fine
+---from anywhere, only the calls that touch the objects have to be forwarded.
+---@param self example2.gui_script
+---@return boolean is_world True if the current example is spawned into the world
+local function is_world_example(self)
+	return self.example ~= nil and self.example.template == nil
+end
+
+
+---@param self example2.gui_script
+---@param track example2.track
+local function panthera_play(self, track)
+	if is_world_example(self) then
+		events.trigger("example2.scene.play", track.animation, track.animation_id, track.options)
+	else
+		panthera.play(track.animation, track.animation_id, track.options)
+	end
+end
+
+
+---@param self example2.gui_script
+---@param track example2.track
+local function panthera_stop(self, track)
+	-- `panthera.stop` remembers the animation it stopped, so the next `panthera.play` can reset
+	-- its nodes back to the initial state. Stopping an already stopped animation forgets it and
+	-- the nodes stay frozen in their last animated state
+	if not track.animation or not panthera.is_playing(track.animation) then
+		return
+	end
+
+	if is_world_example(self) then
+		events.trigger("example2.scene.stop", track.animation)
+	else
+		panthera.stop(track.animation)
+	end
+end
+
+
+---@param self example2.gui_script
+---@param track example2.track
+---@param time number
+local function panthera_set_time(self, track, time)
+	if is_world_example(self) then
+		events.trigger("example2.scene.set_time", track.animation, track.animation_id, time)
+	else
+		panthera.set_time(track.animation, track.animation_id, time)
+	end
+end
+
+
+---Play the animation of the track from the given time. Panthera continues the playback from the
 ---animation time, so the paused animation is resumed from the exact place it was stopped at.
 ---@param self example2.gui_script
+---@param track example2.track
 ---@param from_time number? The time in seconds to start the playback from, default is 0
-local function play_animation(self, from_time)
-	if not self.animation or not self.animation_id then
+local function play_track(self, track, from_time)
+	if not track.animation or not track.animation_id then
 		return
 	end
 
@@ -113,81 +198,162 @@ local function play_animation(self, from_time)
 	local is_resume = from_time > 0
 
 	-- Stop first, `panthera.play` resets the animation time of the playing animation
-	panthera.stop(self.animation)
-	self.animation.current_time = from_time
+	panthera_stop(self, track)
+	track.animation.current_time = from_time
 
-	self.play_options.from = is_resume and from_time or nil
-	self.play_options.is_skip_init = is_resume or nil
-	panthera.play(self.animation, self.animation_id, self.play_options)
+	track.options.from = is_resume and from_time or nil
+	track.options.is_skip_init = is_resume or nil
+	panthera_play(self, track)
 
 	-- These options belong to the current play call only, the loop starts from the beginning
-	self.play_options.from = nil
-	self.play_options.is_skip_init = nil
+	track.options.from = nil
+	track.options.is_skip_init = nil
 
-	self.display_time = from_time
+	track.display_time = from_time
 end
 
 
 ---@param self example2.gui_script
-local function pause_animation(self)
-	if not self.animation or not panthera.is_playing(self.animation) then
+---@param track example2.track
+local function pause_track(self, track)
+	if not track.animation or not panthera.is_playing(track.animation) then
 		return
 	end
 
-	self.display_time = panthera.get_time(self.animation)
-	panthera.stop(self.animation)
+	track.display_time = panthera.get_time(track.animation)
+	panthera_stop(self, track)
 end
 
 
 ---@param self example2.gui_script
-local function toggle_playback(self)
-	if not self.animation or not self.animation_id then
+---@param track example2.track
+local function toggle_track(self, track)
+	if not track.animation or not track.animation_id then
 		return
 	end
 
-	if panthera.is_playing(self.animation) then
-		pause_animation(self)
+	if panthera.is_playing(track.animation) then
+		pause_track(self, track)
 		return
 	end
 
 	-- The finished animation is played from the beginning instead of being resumed
-	local time = self.display_time < get_duration(self) and self.display_time or 0
-	play_animation(self, time)
+	local time = track.display_time < get_duration(track) and track.display_time or 0
+	play_track(self, track, time)
 end
 
 
----Selecting the animation always restarts it, so the same animation can be replayed
----by clicking on it once again even when the loop is disabled.
+---Pause or resume every track at once
 ---@param self example2.gui_script
----@param animation_id string
-local function on_animation_selected(self, animation_id)
-	self.animation_id = animation_id
-	play_animation(self)
+local function toggle_playback(self)
+	local is_any_playing = false
+	for index = 1, #self.tracks do
+		local animation = self.tracks[index].animation
+		is_any_playing = is_any_playing or (animation ~= nil and panthera.is_playing(animation))
+	end
+
+	for index = 1, #self.tracks do
+		local track = self.tracks[index]
+		if is_any_playing then
+			pause_track(self, track)
+		else
+			toggle_track(self, track)
+		end
+	end
+end
+
+
+---Stop the track and put the nodes it animated back to their initial state
+---@param self example2.gui_script
+---@param track example2.track
+local function reset_track(self, track)
+	if not track.animation or not track.animation_id then
+		return
+	end
+
+	-- `panthera.set_time` stops the playback and resets the nodes of the animation it stopped,
+	-- so the example does not stay frozen in the middle of the dropped animation
+	panthera_set_time(self, track, 0)
+end
+
+
+---@param self example2.gui_script
+---@param track example2.track
+---@param animation_id string|nil Pass nil to turn the track off
+local function set_track_animation(self, track, animation_id)
+	-- Switching to another animation resets the previous one on `play`, only turning the track
+	-- off has to reset it here
+	if not animation_id then
+		reset_track(self, track)
+	end
+
+	track.animation_id = animation_id
+	track.display_time = 0
+
+	gui.set_enabled(track.timeline.root.node, animation_id ~= nil)
+
+	if animation_id then
+		play_track(self, track)
+	end
+end
+
+
+---@param self example2.gui_script
+---@return vector3 position The world position of the center of the scene area. The GUI is drawn
+---on top of the world, so this is where the spawned examples have to be placed
+local function get_scene_position(self)
+	local root = self.container_root:get_position()
+	local center = self.container_center:get_position()
+	local examples = gui.get_position(self.node_examples)
+
+	return vmath.vector3(root.x + center.x + examples.x, root.y + center.y + examples.y, 0)
+end
+
+
+---Create the animation state of the example. The GUI examples are the templates of this scene,
+---the collection and the game object examples are spawned into the world by the scene script.
+---@param self example2.gui_script
+---@param example example2.example
+---@return panthera.animation
+local function create_animation(self, example)
+	if example.template then
+		gui.set_enabled(gui.get_node(example.template .. "/root"), true)
+		return panthera.create_gui(example.animation, example.template)
+	end
+
+	return events.trigger("example2.scene.spawn", example, get_scene_position(self))
 end
 
 
 ---@param self example2.gui_script
 ---@param example example2.example
 local function on_example_selected(self, example)
-	if self.animation then
-		panthera.stop(self.animation)
-		self.animation = nil
-		self.animation_id = nil
+	for index = 1, #self.tracks do
+		local track = self.tracks[index]
+		reset_track(self, track)
+		track.animation = nil
+		track.animation_id = nil
 	end
 
 	if self.example then
-		gui.set_enabled(gui.get_node(self.example.template .. "/root"), false)
+		if self.example.template then
+			gui.set_enabled(gui.get_node(self.example.template .. "/root"), false)
+		else
+			events.trigger("example2.scene.despawn")
+		end
 	end
 
 	self.example = example
-	gui.set_enabled(gui.get_node(example.template .. "/root"), true)
-	gui.set_text(self.node_text_gui_path, example.gui_path)
+	gui.set_text(self.node_source_path, example.source)
 	clear_output(self)
 
-	self.animation = panthera.create_gui(example.animation, example.template)
+	-- Both tracks animate the same example, the cloned state keeps its own playback time
+	local animation = create_animation(self, example)
+	self.tracks[1].animation = animation
+	self.tracks[2].animation = panthera.clone_state(animation)
 
 	self.animations_list_view:clear()
-	local animation_ids = panthera.get_animations(self.animation)
+	local animation_ids = panthera.get_animations(animation)
 	for index = 1, #animation_ids do
 		self.animations_list_view:add_item(animation_ids[index], animation_ids[index])
 	end
@@ -197,32 +363,182 @@ end
 
 
 ---The playback options are mutated in place, so the loop and the speed are applied
----to the next animation cycle without restarting the animation.
+---to the next animation cycle of both tracks without restarting them.
+---@param self example2.gui_script
+---@param key string
+---@param value any
+local function set_playback_option(self, key, value)
+	for index = 1, #self.tracks do
+		self.tracks[index].options[key] = value
+	end
+end
+
+
 ---@param self example2.gui_script
 local function setup_settings(self)
 	self.properties_panel:clear()
 
-	self.properties_panel:add_checkbox("Loop", self.play_options.is_loop, function(value)
-		self.play_options.is_loop = value
+	self.loop_checkbox = self.properties_panel:add_checkbox("Loop", IS_LOOP_BY_DEFAULT, function(value)
+		set_playback_option(self, "is_loop", value)
 	end)
 
-	local easing_index = 1
-	local easing_button
-	easing_button = self.properties_panel:add_button("Easing", self.play_options.easing, function()
-		easing_index = easing_index % #EASINGS + 1
-		self.play_options.easing = EASINGS[easing_index]
-		easing_button.text_button:set_text(self.play_options.easing)
+	self.easing_index = 1
+	self.easing_button = self.properties_panel:add_button("Easing", EASINGS[1], function()
+		self.easing_index = self.easing_index % #EASINGS + 1
+		set_playback_option(self, "easing", EASINGS[self.easing_index])
+		self.easing_button.text_button:set_text(EASINGS[self.easing_index])
 
-		-- The easing switches the playback between the timer and the tweener, replay it to see the change
-		play_animation(self)
+		-- The easing switches the playback between the timer and the tweener, replay to see it
+		for index = 1, #self.tracks do
+			play_track(self, self.tracks[index])
+		end
 	end)
 
 	local speed_slider = self.properties_panel:add_slider("Speed", 1 / MAX_SPEED, function(value)
-		self.play_options.speed = math.max(value * MAX_SPEED, 0.1)
+		set_playback_option(self, "speed", math.max(value * MAX_SPEED, 0.1))
 	end)
 	speed_slider:set_text_function(function(value)
 		return string.format("x%.2f", math.max(value * MAX_SPEED, 0.1))
 	end)
+end
+
+
+---Cycling through the whole easings list to get back to "linear" takes too many clicks,
+---so selecting an animation resets the easing to the default one.
+---@param self example2.gui_script
+local function reset_easing(self)
+	if self.easing_index == 1 then
+		return
+	end
+
+	self.easing_index = 1
+	set_playback_option(self, "easing", EASINGS[1])
+	self.easing_button.text_button:set_text(EASINGS[1])
+end
+
+
+---@param self example2.gui_script
+---@param index number
+---@return example2.track
+local function create_track(self, index)
+	local is_primary = index == 1
+
+	---@type example2.track
+	local track = {
+		timeline = self.druid:new_widget(timeline, is_primary and "timeline" or "timeline_second") --[[@as example2.timeline]],
+		options = {
+			is_loop = IS_LOOP_BY_DEFAULT,
+			easing = EASINGS[1],
+			speed = 1,
+		},
+		animation = nil,
+		animation_id = nil,
+		display_time = 0,
+	}
+
+	track.timeline:set_accent(is_primary and ACCENT_PRIMARY or ACCENT_SECONDARY)
+
+	local container = is_primary and self.container_timeline or self.container_timeline_second
+	container:add_container(track.timeline.root)
+
+	-- Events restore the script context of their subscriber, so these callbacks always run
+	-- in the GUI context even when Panthera calls them from the scene script
+	track.options.callback = event.create(function()
+		if not track.options.is_loop then
+			track.display_time = get_duration(track)
+		end
+	end)
+	track.options.callback_event = event.create(function(event_id, node, string_value, number_value)
+		local text = "event: " .. event_id
+		if string_value then
+			text = text .. " \"" .. string_value .. "\""
+		end
+		if number_value and number_value ~= 0 then
+			text = text .. " = " .. string.format("%.0f", number_value)
+		end
+		add_output(self, event_id, text)
+	end)
+
+	track.timeline.on_scrub:subscribe(function(progress)
+		if not track.animation or not track.animation_id then
+			return
+		end
+
+		local time = progress * get_duration(track)
+		panthera_set_time(self, track, time)
+		track.display_time = time
+	end)
+
+	track.timeline.on_play_click:subscribe(function()
+		toggle_track(self, track)
+	end)
+
+	return track
+end
+
+
+---@param self example2.gui_script
+local function stop_play_all(self)
+	if not self.play_all then
+		return
+	end
+
+	self.play_all = nil
+	self.examples_list_view:set_header_button_text("Play All")
+end
+
+
+---@param self example2.gui_script
+local function play_all_advance(self)
+	local state = self.play_all
+	state.is_advancing = true
+
+	state.animation_index = state.animation_index + 1
+	if state.animation_index <= #self.animations_list_view.items then
+		self.animations_list_view:select(state.animation_index)
+		state.is_advancing = false
+		return
+	end
+
+	state.example_index = state.example_index + 1
+	if state.example_index > #self.examples_list_view.items then
+		state.is_advancing = false
+		stop_play_all(self)
+		return
+	end
+
+	-- Selecting the example fills the animations list and plays its first animation
+	state.animation_index = 1
+	self.examples_list_view:select(state.example_index)
+	state.is_advancing = false
+end
+
+
+---The run starts from the selected animation of the selected example and goes to the end of
+---the list. The playback speed is the one set in the panel, only the loop has to be dropped:
+---a looped animation never ends, so the run would never leave it.
+---@param self example2.gui_script
+local function start_play_all(self)
+	self.loop_checkbox:set_value(false)
+	set_playback_option(self, "is_loop", false)
+
+	self.play_all = {
+		example_index = self.examples_list_view.selected_index or 1,
+		animation_index = self.animations_list_view.selected_index or 1,
+		is_advancing = true,
+	}
+	self.examples_list_view:set_header_button_text("Stop")
+	self.animations_list_view:select(self.play_all.animation_index)
+	self.play_all.is_advancing = false
+end
+
+
+---A click of the user takes the control back from the Play All run
+---@param self example2.gui_script
+local function stop_play_all_on_user_input(self)
+	if self.play_all and not self.play_all.is_advancing then
+		stop_play_all(self)
+	end
 end
 
 
@@ -232,36 +548,39 @@ local function setup_components(self)
 	self.examples_list_view:set_header("Examples")
 	self.container_examples:add_container(self.examples_list_view.root)
 	self.examples_list_view.on_select:subscribe(function(example)
+		stop_play_all_on_user_input(self)
 		on_example_selected(self, example)
+	end)
+	self.examples_list_view:set_header_button("Play All", function()
+		if self.play_all then
+			stop_play_all(self)
+		else
+			start_play_all(self)
+		end
 	end)
 
 	self.animations_list_view = self.druid:new_widget(list_view, "animations_list_view", nil, 0.55) --[[@as example2.list_view]]
 	self.animations_list_view:set_header("Animations")
+	self.animations_list_view:set_secondary_enabled(true)
 	self.container_animations:add_container(self.animations_list_view.root)
+
 	self.animations_list_view.on_select:subscribe(function(animation_id)
-		on_animation_selected(self, animation_id)
+		stop_play_all_on_user_input(self)
+		reset_easing(self)
+		set_track_animation(self, self.tracks[1], animation_id)
+		set_track_animation(self, self.tracks[2], nil)
+	end)
+	self.animations_list_view.on_select_secondary:subscribe(function(animation_id)
+		stop_play_all_on_user_input(self)
+		set_track_animation(self, self.tracks[2], animation_id)
 	end)
 
 	self.properties_panel = self.druid:new_widget(properties_panel, "properties_panel") --[[@as example2.properties_panel]]
 	self.properties_panel:set_header("Playback")
 	self.container_settings:add_container(self.properties_panel.root)
 
-	self.timeline = self.druid:new_widget(timeline, "timeline") --[[@as example2.timeline]]
-	self.container_timeline:add_container(self.timeline.root)
-
-	self.timeline.on_scrub:subscribe(function(progress)
-		if not self.animation or not self.animation_id then
-			return
-		end
-
-		local time = progress * get_duration(self)
-		panthera.set_time(self.animation, self.animation_id, time)
-		self.display_time = time
-	end)
-
-	self.timeline.on_play_click:subscribe(function()
-		toggle_playback(self)
-	end)
+	self.tracks = { create_track(self, 1), create_track(self, 2) }
+	gui.set_enabled(self.tracks[2].timeline.root.node, false)
 
 	self.druid:new_hotkey("key_space", function()
 		toggle_playback(self)
@@ -277,10 +596,17 @@ end
 
 ---@param self example2.gui_script
 local function setup_examples(self)
-	for index = 1, #examples_list do
-		local example = examples_list[index]
-		gui.set_enabled(gui.get_node(example.template .. "/root"), false)
-		self.examples_list_view:add_item(example.name, example)
+	for section_index = 1, #examples_list do
+		local section = examples_list[section_index]
+		self.examples_list_view:add_section(section.name)
+
+		for index = 1, #section.examples do
+			local example = section.examples[index]
+			if example.template then
+				gui.set_enabled(gui.get_node(example.template .. "/root"), false)
+			end
+			self.examples_list_view:add_item(example.name, example)
+		end
 	end
 
 	self.examples_list_view:select(1)
@@ -292,31 +618,10 @@ function init(self)
 	panthera.set_logger(log.get_logger("panthera"))
 
 	self.output = {}
-	self.display_time = 0
 
-	self.play_options = {
-		is_loop = false,
-		easing = EASINGS[1],
-		speed = 1,
-		callback = function(animation_id)
-			if not self.play_options.is_loop then
-				self.display_time = panthera.get_duration(self.animation, animation_id)
-			end
-		end,
-		callback_event = function(event_id, node, string_value, number_value)
-			local text = "event: " .. event_id
-			if string_value then
-				text = text .. " \"" .. string_value .. "\""
-			end
-			if number_value and number_value ~= 0 then
-				text = text .. " = " .. string.format("%.0f", number_value)
-			end
-			add_output(self, event_id, text)
-		end,
-	}
-
-	self.node_text_gui_path = gui.get_node("text_gui_path")
+	self.node_source_path = gui.get_node("text_source_path")
 	self.node_text_output = gui.get_node("text_output")
+	self.node_examples = gui.get_node("examples")
 	gui.set_text(gui.get_node("text_version"), "Runtime for Defold " .. sys.get_engine_info().version)
 
 	self.druid = druid.new(self)
@@ -324,8 +629,8 @@ function init(self)
 	setup_components(self)
 	setup_settings(self)
 
-	window.set_listener(function(_, event)
-		druid.on_window_callback(event)
+	window.set_listener(function(_, window_event)
+		druid.on_window_callback(window_event)
 	end)
 end
 
@@ -350,15 +655,24 @@ function update(self, dt)
 		setup_examples(self)
 	end
 
-	if self.animation and self.animation_id then
-		local is_playing = panthera.is_playing(self.animation)
-		if is_playing then
-			self.display_time = panthera.get_time(self.animation)
-		end
+	-- The Play All run steps to the next animation as soon as the primary track is over
+	local primary = self.tracks[1]
+	if self.play_all and primary.animation and primary.animation_id and not panthera.is_playing(primary.animation) then
+		play_all_advance(self)
+	end
 
-		self.timeline:set_state(self.animation_id, self.display_time, get_duration(self), is_playing)
-	else
-		self.timeline:set_state(nil, 0, 0, false)
+	for index = 1, #self.tracks do
+		local track = self.tracks[index]
+		if track.animation and track.animation_id then
+			local is_playing = panthera.is_playing(track.animation)
+			if is_playing then
+				track.display_time = panthera.get_time(track.animation)
+			end
+
+			track.timeline:set_state(track.animation_id, track.display_time, get_duration(track), is_playing)
+		else
+			track.timeline:set_state(nil, 0, 0, false)
+		end
 	end
 end
 

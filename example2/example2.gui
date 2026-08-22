@@ -34,14 +34,18 @@ nodes {
     x: 400.0
     y: 1080.0
   }
+  color {
+    x: 0.129
+    y: 0.141
+    z: 0.157
+  }
   type: TYPE_BOX
-  texture: "example2/empty"
+  texture: "example2/pixel"
   id: "container_left"
   pivot: PIVOT_W
   adjust_mode: ADJUST_MODE_STRETCH
   parent: "root"
   inherit_alpha: true
-  visible: false
 }
 nodes {
   position {
@@ -51,17 +55,13 @@ nodes {
     x: 400.0
     y: 170.0
   }
-  color {
-    x: 0.12941177
-    y: 0.14117648
-    z: 0.15686275
-  }
   type: TYPE_BOX
-  texture: "example2/pixel"
+  texture: "example2/empty"
   id: "container_header"
   pivot: PIVOT_NW
   parent: "container_left"
   inherit_alpha: true
+  visible: false
 }
 nodes {
   position {
@@ -189,6 +189,7 @@ nodes {
   type: TYPE_BOX
   texture: "example2/empty"
   id: "container_examples"
+  yanchor: YANCHOR_TOP
   pivot: PIVOT_NW
   adjust_mode: ADJUST_MODE_STRETCH
   parent: "container_left"
@@ -210,12 +211,6 @@ nodes {
   type: TYPE_BOX
   id: "examples_list_view/root"
   parent: "examples_list_view"
-  template_node_child: true
-}
-nodes {
-  type: TYPE_TEXT
-  id: "examples_list_view/text_header"
-  parent: "examples_list_view/root"
   template_node_child: true
 }
 nodes {
@@ -279,6 +274,30 @@ nodes {
   template_node_child: true
 }
 nodes {
+  type: TYPE_BOX
+  id: "examples_list_view/header_group"
+  parent: "examples_list_view/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_TEXT
+  id: "examples_list_view/text_header"
+  parent: "examples_list_view/header_group"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "examples_list_view/button_header"
+  parent: "examples_list_view/header_group"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_TEXT
+  id: "examples_list_view/text_button_header"
+  parent: "examples_list_view/button_header"
+  template_node_child: true
+}
+nodes {
   position {
     x: 960.0
   }
@@ -286,14 +305,18 @@ nodes {
     x: 440.0
     y: 1080.0
   }
+  color {
+    x: 0.129
+    y: 0.141
+    z: 0.157
+  }
   type: TYPE_BOX
-  texture: "example2/empty"
+  texture: "example2/pixel"
   id: "container_right"
   pivot: PIVOT_E
   adjust_mode: ADJUST_MODE_STRETCH
   parent: "root"
   inherit_alpha: true
-  visible: false
 }
 nodes {
   position {
@@ -301,11 +324,12 @@ nodes {
   }
   size {
     x: 440.0
-    y: 690.0
+    y: 730.0
   }
   type: TYPE_BOX
   texture: "example2/empty"
   id: "container_animations"
+  yanchor: YANCHOR_TOP
   pivot: PIVOT_NE
   adjust_mode: ADJUST_MODE_STRETCH
   parent: "container_right"
@@ -315,36 +339,51 @@ nodes {
 nodes {
   position {
     x: -220.0
-    y: -365.0
   }
   type: TYPE_TEMPLATE
   id: "animations_list_view"
   parent: "container_animations"
   inherit_alpha: true
-  template: "/example2/components/list_view/list_view_short.gui"
+  template: "/example2/components/list_view/list_view.gui"
 }
 nodes {
+  size {
+    x: 440.0
+    y: 730.0
+  }
   type: TYPE_BOX
   id: "animations_list_view/root"
+  pivot: PIVOT_N
   parent: "animations_list_view"
+  overridden_fields: 4
+  overridden_fields: 14
   template_node_child: true
 }
 nodes {
-  type: TYPE_TEXT
-  id: "animations_list_view/text_header"
-  parent: "animations_list_view/root"
-  template_node_child: true
-}
-nodes {
+  position {
+    x: -220.0
+    y: -60.0
+  }
+  size {
+    x: 440.0
+    y: 665.0
+  }
   type: TYPE_BOX
   id: "animations_list_view/scroll_view"
   parent: "animations_list_view/root"
+  overridden_fields: 1
+  overridden_fields: 4
   template_node_child: true
 }
 nodes {
+  size {
+    x: 440.0
+    y: 665.0
+  }
   type: TYPE_BOX
   id: "animations_list_view/scroll_content"
   parent: "animations_list_view/scroll_view"
+  overridden_fields: 4
   template_node_child: true
 }
 nodes {
@@ -378,21 +417,66 @@ nodes {
   template_node_child: true
 }
 nodes {
+  size {
+    x: 500.0
+    y: 60.0
+  }
   type: TYPE_TEXT
   id: "animations_list_view/list_view_item/text"
   parent: "animations_list_view/list_view_item/root"
+  overridden_fields: 3
+  overridden_fields: 4
   template_node_child: true
 }
 nodes {
+  position {
+    x: 440.0
+  }
+  size {
+    x: 16.0
+    y: 650.0
+  }
   type: TYPE_BOX
   id: "animations_list_view/scroll_bar_view"
   parent: "animations_list_view/scroll_view"
+  overridden_fields: 1
+  overridden_fields: 4
   template_node_child: true
 }
 nodes {
   type: TYPE_BOX
   id: "animations_list_view/scroll_bar_pin"
   parent: "animations_list_view/scroll_bar_view"
+  template_node_child: true
+}
+nodes {
+  size {
+    x: 440.0
+    y: 50.0
+  }
+  type: TYPE_BOX
+  id: "animations_list_view/header_group"
+  parent: "animations_list_view/root"
+  overridden_fields: 1
+  overridden_fields: 4
+  template_node_child: true
+}
+nodes {
+  type: TYPE_TEXT
+  id: "animations_list_view/text_header"
+  parent: "animations_list_view/header_group"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "animations_list_view/button_header"
+  parent: "animations_list_view/header_group"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_TEXT
+  id: "animations_list_view/text_button_header"
+  parent: "animations_list_view/button_header"
   template_node_child: true
 }
 nodes {
@@ -636,6 +720,7 @@ nodes {
   parent: "root"
   inherit_alpha: true
   clipping_mode: CLIPPING_MODE_STENCIL
+  clipping_visible: false
 }
 nodes {
   position {
@@ -658,7 +743,7 @@ nodes {
   type: TYPE_TEXT
   text: "/example2/examples/basic/basic.gui"
   font: "text_regular"
-  id: "text_gui_path"
+  id: "text_source_path"
   xanchor: XANCHOR_RIGHT
   pivot: PIVOT_NE
   outline {
@@ -680,7 +765,7 @@ nodes {
 nodes {
   position {
     x: -520.0
-    y: -410.0
+    y: -300.0
   }
   scale {
     x: 0.45
@@ -1025,7 +1110,7 @@ nodes {
 }
 nodes {
   position {
-    y: 55.0
+    y: 60.0
   }
   type: TYPE_TEMPLATE
   id: "timeline"
@@ -1103,6 +1188,105 @@ nodes {
   type: TYPE_BOX
   id: "timeline/slider_pin"
   parent: "timeline/slider"
+  template_node_child: true
+}
+nodes {
+  position {
+    y: -430.0
+  }
+  size {
+    x: 1080.0
+    y: 110.0
+  }
+  type: TYPE_BOX
+  texture: "example2/empty"
+  id: "container_timeline_second"
+  pivot: PIVOT_S
+  adjust_mode: ADJUST_MODE_STRETCH
+  parent: "container_center"
+  inherit_alpha: true
+  visible: false
+}
+nodes {
+  position {
+    y: 65.0
+  }
+  type: TYPE_TEMPLATE
+  id: "timeline_second"
+  parent: "container_timeline_second"
+  inherit_alpha: true
+  template: "/example2/components/timeline/timeline.gui"
+}
+nodes {
+  type: TYPE_BOX
+  id: "timeline_second/root"
+  parent: "timeline_second"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_TEXT
+  id: "timeline_second/text_animation_id"
+  parent: "timeline_second/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_TEXT
+  id: "timeline_second/text_time"
+  parent: "timeline_second/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "timeline_second/button_play"
+  parent: "timeline_second/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "timeline_second/icon_play"
+  parent: "timeline_second/button_play"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "timeline_second/icon_pause"
+  parent: "timeline_second/button_play"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "timeline_second/icon_pause_left"
+  parent: "timeline_second/icon_pause"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "timeline_second/icon_pause_right"
+  parent: "timeline_second/icon_pause"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "timeline_second/slider"
+  parent: "timeline_second/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "timeline_second/slider_back"
+  parent: "timeline_second/slider"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "timeline_second/slider_fill"
+  parent: "timeline_second/slider"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "timeline_second/slider_pin"
+  parent: "timeline_second/slider"
   template_node_child: true
 }
 layers {

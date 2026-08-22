@@ -1,0 +1,110 @@
+local events = require("event.events")
+local panthera = require("panthera.panthera")
+
+---The game object all the spawned examples are parented to. It is moved to the center of the
+---scene area of the GUI, so the examples are animated in their own local space
+local SCENE_ROOT = "/scene_root"
+
+---Panthera animates game objects with the `go.*` functions and those are only available in a
+---game object script, so the collection and the game object examples can not be driven from the
+---GUI script. This script owns the spawned objects and every Panthera call over them.
+---
+---The events below are triggered by `/example2/example2.gui_script`. Defold Event switches the
+---script context before calling the subscriber, so they run right here and return the result
+---to the caller as a plain function call would.
+---@class example2.scene
+---@field objects table<hash, hash>|nil The objects of the currently spawned example
+
+---@param self example2.scene
+local function despawn(self)
+	if not self.objects then
+		return
+	end
+
+	for _, object_id in pairs(self.objects) do
+		if go.exists(object_id) then
+			go.delete(object_id, true)
+		end
+	end
+	self.objects = nil
+end
+
+
+---Spawn the example with its factory and create the animation state over the spawned objects.
+---
+---The animations set the local position of the objects, so the example has to be spawned at the
+---origin and parented to `scene_root` instead of being spawned at the center of the scene: the
+---animation would move the objects to the world origin otherwise.
+---@param self example2.scene
+---@param example example2.example
+---@return panthera.animation animation
+local function spawn(self, example)
+	despawn(self)
+
+	if example.collectionfactory then
+		self.objects = collectionfactory.create(example.collectionfactory, vmath.vector3(0))
+	else
+		self.objects = { [hash("/" .. example.object_id)] = factory.create(example.factory, vmath.vector3(0)) }
+	end
+
+	for _, object_id in pairs(self.objects) do
+		-- The children of the spawned collection keep their own parent
+		if not go.get_parent(object_id) then
+			msg.post(object_id, "set_parent", { parent_id = go.get_id(SCENE_ROOT), keep_world_transform = 0 })
+		end
+	end
+
+	return panthera.create_go(example.animation, nil, self.objects)
+end
+
+
+---@param self example2.scene
+---@param animation panthera.animation
+---@param animation_id string
+---@param options panthera.options
+local function play(self, animation, animation_id, options)
+	panthera.play(animation, animation_id, options)
+end
+
+
+---@param self example2.scene
+---@param animation panthera.animation
+local function stop(self, animation)
+	panthera.stop(animation)
+end
+
+
+---@param self example2.scene
+---@param animation panthera.animation
+---@param animation_id string
+---@param time number
+local function set_time(self, animation, animation_id, time)
+	panthera.set_time(animation, animation_id, time)
+end
+
+
+local SUBSCRIPTIONS = {
+	["example2.scene.spawn"] = spawn,
+	["example2.scene.despawn"] = despawn,
+	["example2.scene.play"] = play,
+	["example2.scene.stop"] = stop,
+	["example2.scene.set_time"] = set_time,
+}
+
+
+---@param self example2.scene
+function init(self)
+	for event_id, callback in pairs(SUBSCRIPTIONS) do
+		events.subscribe(event_id, callback, self)
+	end
+end
+
+
+---@param self example2.scene
+function final(self)
+	despawn(self)
+
+	for event_id, callback in pairs(SUBSCRIPTIONS) do
+		events.unsubscribe(event_id, callback, self)
+	end
+end

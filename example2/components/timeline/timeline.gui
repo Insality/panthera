@@ -23,6 +23,7 @@ nodes {
   type: TYPE_BOX
   texture: "example2/ui_circle_32"
   id: "root"
+  xanchor: XANCHOR_LEFT
   adjust_mode: ADJUST_MODE_STRETCH
   inherit_alpha: true
   slice9 {
@@ -34,8 +35,7 @@ nodes {
 }
 nodes {
   position {
-    x: -501.0
-    y: 35.0
+    y: 25.0
   }
   scale {
     x: 0.7
@@ -55,7 +55,6 @@ nodes {
   font: "text_bold"
   id: "text_animation_id"
   xanchor: XANCHOR_LEFT
-  pivot: PIVOT_W
   outline {
     x: 1.0
     y: 1.0
@@ -74,7 +73,7 @@ nodes {
 nodes {
   position {
     x: 482.0
-    y: 35.0
+    y: 25.0
   }
   scale {
     x: 0.7
@@ -113,11 +112,10 @@ nodes {
 nodes {
   position {
     x: -470.0
-    y: -16.0
   }
   size {
-    x: 56.0
-    y: 56.0
+    x: 78.0
+    y: 78.0
   }
   color {
     x: 0.894
@@ -138,11 +136,10 @@ nodes {
 }
 nodes {
   position {
-    x: 2.0
+    x: -2.0
   }
   scale {
-    x: 0.8
-    y: 0.8
+    x: 1.2
   }
   color {
     x: 0.129
@@ -157,6 +154,10 @@ nodes {
   size_mode: SIZE_MODE_AUTO
 }
 nodes {
+  scale {
+    x: 1.2
+    y: 1.2
+  }
   size {
     x: 24.0
     y: 26.0

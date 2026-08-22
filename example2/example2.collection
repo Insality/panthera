@@ -1,7 +1,7 @@
 name: "example2"
 scale_along_z: 0
 embedded_instances {
-  id: "go"
+  id: "gui"
   data: "components {\n"
   "  id: \"example2\"\n"
   "  component: \"/example2/example2.gui\"\n"
@@ -11,4 +11,58 @@ embedded_instances {
   "  component: \"/druid/druid.script\"\n"
   "}\n"
   ""
+}
+embedded_instances {
+  id: "scene_root"
+  data: ""
+}
+embedded_instances {
+  id: "scene"
+  data: "components {\n"
+  "  id: \"scene\"\n"
+  "  component: \"/example2/scene/scene.script\"\n"
+  "}\n"
+  "embedded_components {\n"
+  "  id: \"shapes\"\n"
+  "  type: \"collectionfactory\"\n"
+  "  data: \"prototype: \\\"/example2/examples/shapes/shapes.collection\\\"\\n"
+  "\"\n"
+  "}\n"
+  "embedded_components {\n"
+  "  id: \"hierarchy\"\n"
+  "  type: \"collectionfactory\"\n"
+  "  data: \"prototype: \\\"/example2/examples/hierarchy/hierarchy.collection\\\"\\n"
+  "\"\n"
+  "}\n"
+  "embedded_components {\n"
+  "  id: \"go_sprite\"\n"
+  "  type: \"factory\"\n"
+  "  data: \"prototype: \\\"/example2/examples/go_sprite/hero.go\\\"\\n"
+  "\"\n"
+  "}\n"
+  "embedded_components {\n"
+  "  id: \"go_label\"\n"
+  "  type: \"factory\"\n"
+  "  data: \"prototype: \\\"/example2/examples/go_label/caption.go\\\"\\n"
+  "\"\n"
+  "}\n"
+  ""
+}
+embedded_instances {
+  id: "go"
+  data: "embedded_components {\n"
+  "  id: \"camera\"\n"
+  "  type: \"camera\"\n"
+  "  data: \"aspect_ratio: 1.0\\n"
+  "fov: 0.7854\\n"
+  "near_z: -5000.0\\n"
+  "far_z: 5000.0\\n"
+  "orthographic_projection: 1\\n"
+  "orthographic_zoom: 0.5\\n"
+  "\"\n"
+  "}\n"
+  ""
+  position {
+    z: 2000.0
+  }
 }

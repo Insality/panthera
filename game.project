@@ -10,6 +10,12 @@ width = 1920
 height = 1080
 high_dpi = 1
 
+[render]
+clear_color_red = 0.129
+clear_color_green = 0.141
+clear_color_blue = 0.157
+clear_color_alpha = 1.0
+
 [input]
 game_binding = /builtins/input/all.input_bindingc
 

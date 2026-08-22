@@ -28,11 +28,21 @@ function M:init()
 	self.slider:set_input_node("slider")
 
 	self.button_play = self.druid:new_button("button_play", self._on_play_click) --[[@as druid.button]]
+	self.node_button_play = self:get_node("button_play")
 
 	self.on_scrub = event.create()
 	self.on_play_click = event.create()
 
 	self:set_state(nil, 0, 0, false)
+end
+
+
+---Recolor the accented parts of the timeline. Used to tell the animation tracks apart.
+---@param color vector4
+function M:set_accent(color)
+	gui.set_color(self.text_animation_id.node, color)
+	gui.set_color(self.node_button_play, color)
+	gui.set_color(self.slider_fill, color)
 end
 
 
