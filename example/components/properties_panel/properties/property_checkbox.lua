@@ -1,0 +1,51 @@
+---@class example.property_checkbox: druid.widget
+---@field root druid.container
+---@field text_name druid.text
+---@field button druid.button
+local M = {}
+
+
+function M:init()
+	self.root = self.druid:new_container("root") --[[@as druid.container]]
+
+	self.icon = self:get_node("icon")
+	gui.set_enabled(self.icon, false)
+
+	self.selected = self:get_node("selected")
+	gui.set_alpha(self.selected, 0)
+
+	self._value = false
+	self.text_name = self.druid:new_text("text_name") --[[@as druid.text]]
+	self.button = self.druid:new_button("button", self.on_click) --[[@as druid.button]]
+end
+
+
+---@param value boolean
+---@param is_instant boolean?
+function M:set_value(value, is_instant)
+	if self._value == value then
+		return
+	end
+
+	self._value = value
+	gui.set_enabled(self.icon, value)
+
+	if not is_instant then
+		gui.set_alpha(self.selected, 1)
+		gui.animate(self.selected, "color.w", 0, gui.EASING_INSINE, 0.16)
+	end
+end
+
+
+---@return boolean
+function M:get_value()
+	return self._value
+end
+
+
+function M:on_click()
+	self:set_value(not self:get_value())
+end
+
+
+return M

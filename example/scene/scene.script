@@ -1,0 +1,166 @@
+local events = require("event.events")
+local panthera = require("panthera.panthera")
+
+local examples_list = require("example.examples.examples_list")
+
+---The game object all the spawned examples are parented to. It sits at the world origin the
+---camera looks at, so the examples are animated in their own local space around the center
+local SCENE_ROOT = "/scene_root"
+
+---Panthera animates game objects with the `go.*` functions and those are only available in a
+---game object script, so the collection and the game object examples can not be driven from the
+---GUI script. This script owns the spawned objects and every Panthera call over them.
+---
+---The events below are triggered by `/example/example.gui_script`. Defold Event switches the
+---script context before calling the subscriber, so they run right here and return the result
+---to the caller as a plain function call would.
+---@class example.scene
+---@field objects table<hash, hash>|nil The objects of the currently spawned example
+
+---@param self example.scene
+local function despawn(self)
+	-- The objects of the scene are a part of the bootstrap collection, they are never deleted
+	if self.scene_objects then
+		for index = 1, #self.scene_objects do
+			msg.post(self.scene_objects[index], "disable")
+		end
+		self.scene_objects = nil
+	end
+
+	if not self.objects then
+		return
+	end
+
+	for _, object_id in pairs(self.objects) do
+		if go.exists(object_id) then
+			go.delete(object_id, true)
+		end
+	end
+	self.objects = nil
+end
+
+
+---Put the object under the scene root so it follows the layout of the GUI
+---@param object_id hash
+local function attach(object_id)
+	-- The children of a spawned collection keep their own parent
+	if not go.get_parent(object_id) then
+		msg.post(object_id, "set_parent", { parent_id = go.get_id(SCENE_ROOT), keep_world_transform = 0 })
+	end
+end
+
+
+---Bring up the example and create the animation state over its objects. This covers every way
+---`panthera.create_go` can be called:
+---
+---- `scene_objects`, no factory: the objects are already in the bootstrap collection
+---- `scene_objects` with a `collection_name`: they are a collection instance of it
+---- `collectionfactory`: the objects come from a spawned collection
+---- `collectionfactory` with a `collection_name`: the spawned collection holds a nested one
+---- `factory` or `factories`: the objects are spawned one by one
+---
+---The animations set the local position of the objects, so everything is spawned at the origin
+---and parented to `scene_root`, which stays at the world origin the camera looks at.
+---@param self example.scene
+---@param example example.example
+---@return panthera.animation animation
+local function spawn(self, example)
+	despawn(self)
+
+	if example.scene_objects then
+		self.scene_objects = example.scene_objects
+		for index = 1, #example.scene_objects do
+			local object_id = hash(example.scene_objects[index])
+			msg.post(object_id, "enable")
+			attach(object_id)
+		end
+
+		return panthera.create_go(example.animation, example.collection_name)
+	end
+
+	local objects = {}
+	if example.collectionfactory then
+		objects = collectionfactory.create(example.collectionfactory, vmath.vector3(0))
+	elseif example.factories then
+		for index = 1, #example.factories do
+			local item = example.factories[index]
+			objects[hash("/" .. item.object_id)] = factory.create(item.factory, vmath.vector3(0))
+		end
+	else
+		objects[hash("/" .. example.object_id)] = factory.create(example.factory, vmath.vector3(0))
+	end
+
+	self.objects = objects
+	for _, object_id in pairs(objects) do
+		attach(object_id)
+	end
+
+	return panthera.create_go(example.animation, example.collection_name, objects)
+end
+
+
+---@param self example.scene
+---@param animation panthera.animation
+---@param animation_id string
+---@param options panthera.options
+local function play(self, animation, animation_id, options)
+	panthera.play(animation, animation_id, options)
+end
+
+
+---@param self example.scene
+---@param animation panthera.animation
+local function stop(self, animation)
+	panthera.stop(animation)
+end
+
+
+---@param self example.scene
+---@param animation panthera.animation
+---@param animation_id string
+---@param time number
+local function set_time(self, animation, animation_id, time)
+	panthera.set_time(animation, animation_id, time)
+end
+
+
+local SUBSCRIPTIONS = {
+	["example.scene.spawn"] = spawn,
+	["example.scene.despawn"] = despawn,
+	["example.scene.play"] = play,
+	["example.scene.stop"] = stop,
+	["example.scene.set_time"] = set_time,
+}
+
+
+---The objects of the scene examples are a part of the bootstrap collection, so they are visible
+---from the start. Hide them until their example is selected
+local function hide_scene_objects()
+	for _, section in ipairs(examples_list) do
+		for _, example in ipairs(section.examples) do
+			for _, object_id in ipairs(example.scene_objects or {}) do
+				msg.post(object_id, "disable")
+			end
+		end
+	end
+end
+
+
+---@param self example.scene
+function init(self)
+	hide_scene_objects()
+
+	for event_id, callback in pairs(SUBSCRIPTIONS) do
+		events.subscribe(event_id, callback, self)
+	end
+end
+
+
+---@param self example.scene
+function final(self)
+	despawn(self)
+
+	for event_id, callback in pairs(SUBSCRIPTIONS) do
+		events.unsubscribe(event_id, callback, self)
+	end
+end

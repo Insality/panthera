@@ -1,0 +1,18 @@
+size {
+  x: 700.0
+  y: 100.0
+}
+color {
+  x: 0.894
+  y: 0.506
+  z: 0.333
+}
+outline {
+  w: 0.0
+}
+shadow {
+  w: 0.0
+}
+text: "Components"
+font: "/example/assets/fonts/text_bold.font"
+material: "/builtins/fonts/label-df.material"

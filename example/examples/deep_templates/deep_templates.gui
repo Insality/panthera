@@ -1,0 +1,173 @@
+fonts {
+  name: "text_bold"
+  font: "/example/assets/fonts/text_bold.font"
+}
+textures {
+  name: "example"
+  texture: "/example/assets/example.atlas"
+}
+nodes {
+  size {
+    x: 800.0
+    y: 600.0
+  }
+  type: TYPE_BOX
+  texture: "example/empty"
+  id: "root"
+  inherit_alpha: true
+  visible: false
+}
+nodes {
+  position {
+    y: 250.0
+  }
+  scale {
+    x: 0.55
+    y: 0.55
+  }
+  size {
+    x: 760.0
+    y: 50.0
+  }
+  color {
+    x: 0.463
+    y: 0.475
+    z: 0.49
+  }
+  type: TYPE_TEXT
+  text: "scene -> panel.gui -> dots.gui"
+  font: "text_bold"
+  id: "text_hint"
+  outline {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+  }
+  shadow {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+  }
+  parent: "root"
+  inherit_alpha: true
+  outline_alpha: 0.0
+  shadow_alpha: 0.0
+}
+nodes {
+  position {
+    y: 135.0
+  }
+  type: TYPE_TEMPLATE
+  id: "panel_top"
+  parent: "root"
+  inherit_alpha: true
+  template: "/example/examples/deep_templates/panel.gui"
+}
+nodes {
+  type: TYPE_BOX
+  id: "panel_top/root"
+  parent: "panel_top"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_TEXT
+  id: "panel_top/title"
+  parent: "panel_top/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "panel_top/bar"
+  parent: "panel_top/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_TEMPLATE
+  id: "panel_top/dots"
+  parent: "panel_top/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "panel_top/dots/root"
+  parent: "panel_top/dots"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "panel_top/dots/dot"
+  parent: "panel_top/dots/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "panel_top/dots/dot1"
+  parent: "panel_top/dots/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "panel_top/dots/dot2"
+  parent: "panel_top/dots/root"
+  template_node_child: true
+}
+nodes {
+  position {
+    y: -175.0
+  }
+  type: TYPE_TEMPLATE
+  id: "panel_bottom"
+  parent: "root"
+  inherit_alpha: true
+  template: "/example/examples/deep_templates/panel.gui"
+}
+nodes {
+  type: TYPE_BOX
+  id: "panel_bottom/root"
+  parent: "panel_bottom"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_TEXT
+  id: "panel_bottom/title"
+  parent: "panel_bottom/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "panel_bottom/bar"
+  parent: "panel_bottom/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_TEMPLATE
+  id: "panel_bottom/dots"
+  parent: "panel_bottom/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "panel_bottom/dots/root"
+  parent: "panel_bottom/dots"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "panel_bottom/dots/dot"
+  parent: "panel_bottom/dots/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "panel_bottom/dots/dot1"
+  parent: "panel_bottom/dots/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "panel_bottom/dots/dot2"
+  parent: "panel_bottom/dots/root"
+  template_node_child: true
+}
+material: "/builtins/materials/gui.material"
+adjust_reference: ADJUST_REFERENCE_PARENT

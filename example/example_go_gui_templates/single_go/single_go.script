@@ -1,7 +1,0 @@
-local panthera = require("panthera.panthera")
-local animation = require("example.example_go_gui_templates.single_go.single_go_panthera")
-
-function init(self)
-	self.animation = panthera.create_go(animation, nil, { [hash("/")] = go.get_id() })
-	panthera.play(self.animation, "default", panthera.OPTIONS_LOOP)
-end

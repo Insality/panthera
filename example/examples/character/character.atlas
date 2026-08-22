@@ -1,0 +1,31 @@
+images {
+  image: "/example/examples/character/assets/facial_part_eye_half_top.png"
+}
+images {
+  image: "/example/examples/character/assets/facial_part_eye_open.png"
+}
+images {
+  image: "/example/examples/character/assets/facial_part_eyebrow_b.png"
+}
+images {
+  image: "/example/examples/character/assets/facial_part_mouth_happy.png"
+}
+images {
+  image: "/example/examples/character/assets/facial_part_mouth_smirk.png"
+}
+images {
+  image: "/example/examples/character/assets/pink_body_squircle.png"
+}
+images {
+  image: "/example/examples/character/assets/pink_hand_closed.png"
+}
+images {
+  image: "/example/examples/character/assets/pink_hand_open.png"
+}
+images {
+  image: "/example/examples/character/assets/pink_hand_point.png"
+}
+images {
+  image: "/example/examples/character/assets/shadow.png"
+}
+extrude_borders: 2

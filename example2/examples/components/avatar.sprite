@@ -1,6 +1,0 @@
-default_animation: "panthera"
-material: "/panthera/materials/sprite.material"
-textures {
-  sampler: "texture_sampler"
-  texture: "/example2/assets/example2.atlas"
-}
