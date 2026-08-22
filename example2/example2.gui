@@ -362,11 +362,11 @@ nodes {
 nodes {
   position {
     x: -220.0
-    y: -60.0
+    y: -110.0
   }
   size {
     x: 440.0
-    y: 665.0
+    y: 615.0
   }
   type: TYPE_BOX
   id: "animations_list_view/scroll_view"
@@ -378,7 +378,7 @@ nodes {
 nodes {
   size {
     x: 440.0
-    y: 665.0
+    y: 615.0
   }
   type: TYPE_BOX
   id: "animations_list_view/scroll_content"
@@ -434,7 +434,7 @@ nodes {
   }
   size {
     x: 16.0
-    y: 650.0
+    y: 620.0
   }
   type: TYPE_BOX
   id: "animations_list_view/scroll_bar_view"
@@ -462,9 +462,14 @@ nodes {
   template_node_child: true
 }
 nodes {
+  position {
+    x: -196.0
+    y: -25.0
+  }
   type: TYPE_TEXT
   id: "animations_list_view/text_header"
   parent: "animations_list_view/header_group"
+  overridden_fields: 1
   template_node_child: true
 }
 nodes {
@@ -478,6 +483,37 @@ nodes {
   id: "animations_list_view/text_button_header"
   parent: "animations_list_view/button_header"
   template_node_child: true
+}
+nodes {
+  position {
+    x: -405.0
+    y: -55.0
+  }
+  scale {
+    x: 0.5
+    y: 0.5
+  }
+  size {
+    x: 700.0
+    y: 100.0
+  }
+  color {
+    x: 0.463
+    y: 0.475
+    z: 0.49
+  }
+  type: TYPE_TEXT
+  text: "Click with Shift button to run animation on second track"
+  font: "text_regular"
+  id: "text_hint_shift"
+  pivot: PIVOT_NW
+  line_break: true
+  parent: "container_animations"
+  layer: "text_regular"
+  inherit_alpha: true
+  alpha: 0.7
+  outline_alpha: 0.0
+  shadow_alpha: 0.0
 }
 nodes {
   position {

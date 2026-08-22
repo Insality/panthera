@@ -11,6 +11,9 @@
 ---@field collectionfactory string? Collection examples: the url of the collectionfactory component
 ---@field factory string? Game object examples: the url of the factory component
 ---@field object_id string? Game object examples: the object id used by the animation nodes
+---@field factories { factory: string, object_id: string }[]? Several objects, one factory each
+---@field scene_objects string[]? The objects that are already in the bootstrap collection
+---@field collection_name string? The name of the collection the animated objects live in
 ---@field widget table? A Druid widget module created over the template, for the examples whose
 ---scene needs its own logic. See `/example2/examples/character/character.lua`
 
@@ -119,6 +122,29 @@ return {
 				animation = require("example2.examples.hierarchy.hierarchy_panthera"),
 				source = "/example2/examples/hierarchy/hierarchy.collection",
 			},
+			{
+				-- The objects are already in the bootstrap collection: `create_go(animation)`
+				name = "Scene Objects",
+				scene_objects = { "/scene_dot_1", "/scene_dot_2", "/scene_dot_3", "/scene_dot_4", "/scene_dot_5" },
+				animation = require("example2.examples.scene_objects.scene_objects_panthera"),
+				source = "/example2/examples/scene_objects/dot.go",
+			},
+			{
+				-- A collection instance of the bootstrap collection: `create_go(animation, "orbit")`
+				name = "Scene Collection",
+				scene_objects = { "/orbit/planet", "/orbit/moon" },
+				collection_name = "orbit",
+				animation = require("example2.examples.orbit.orbit_panthera"),
+				source = "/example2/examples/orbit/orbit.collection",
+			},
+			{
+				-- A spawned collection that holds a nested one: `create_go(animation, "inner", objects)`
+				name = "Nested Collection",
+				collectionfactory = "/scene#nested_collection",
+				collection_name = "inner",
+				animation = require("example2.examples.nested_collection.nested_collection_panthera"),
+				source = "/example2/examples/nested_collection/wrapper.collection",
+			},
 		},
 	},
 	{
@@ -137,6 +163,24 @@ return {
 				object_id = "caption",
 				animation = require("example2.examples.go_label.go_label_panthera"),
 				source = "/example2/examples/go_label/caption.go",
+			},
+			{
+				-- One object with a sprite, a second sprite and a label, animated component by component
+				name = "Components",
+				factory = "/scene#go_avatar",
+				object_id = "avatar",
+				animation = require("example2.examples.components.components_panthera"),
+				source = "/example2/examples/components/avatar.go",
+			},
+			{
+				-- Two objects spawned by two factories into one animation
+				name = "Two Objects",
+				factories = {
+					{ factory = "/scene#go_ball", object_id = "ball" },
+					{ factory = "/scene#go_paddle", object_id = "paddle" },
+				},
+				animation = require("example2.examples.two_objects.two_objects_panthera"),
+				source = "/example2/examples/two_objects/ball.go",
 			},
 		},
 	},

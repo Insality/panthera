@@ -34,10 +34,14 @@ it gets its own color and its own timeline under the first one. The tracks anima
 over two animation states, so they run independently and can be at different times. A plain click
 drops the second track and goes back to a single animation.
 
-The `Loop`, `Easing` and `Speed` settings apply to both tracks. `Loop` and `Speed` are applied to
-the next animation cycle without restarting it, while changing the `Easing` replays the animations:
-the easing switches Panthera between the timer based playback and the tweener based one. Selecting
-an animation resets the easing back to `linear`.
+The playback settings apply to both tracks. The easing is split in two properties: `Ease Mode`
+picks `in` / `out` / `inout` / `outin` and `Ease Type` picks the family, and the two are composed
+into the easing Panthera plays with. A click on the **name** of a property resets it to its default:
+`out` for the mode, `linear` for the type and `x1.00` for the speed.
+
+`Loop` and `Speed` are applied to the next animation cycle without restarting it, while changing the
+easing replays the animations: it switches Panthera between the timer based playback and the tweener
+based one. Selecting an animation resets the ease type back to `linear`.
 
 ## Examples
 
@@ -58,16 +62,29 @@ an animation resets the easing back to `linear`.
 | GUI | Character Blend | Three animation states over the same nodes, two of them blended from the mouse position. Character assets by [Kenney](https://kenney.nl/) |
 | Collections | Shapes | A collection of sprites animated by their object and component properties |
 | Collections | Hierarchy | Child objects following the animated parent through its local transform |
+| Collections | Scene Objects | Objects that are already in the bootstrap collection, with no factory at all |
+| Collections | Scene Collection | A collection instance of the bootstrap collection, addressed by its name |
+| Collections | Nested Collection | A spawned collection that holds a nested one, addressed by the name of the inner |
 | Game Objects | Sprite | A single game object: transform, tint, alpha and flipbook triggers |
 | Game Objects | Label | A label component: text triggers, color, outline and a pop in animation |
+| Game Objects | Components | One object with two sprites and a label, animated component by component |
+| Game Objects | Two Objects | Two objects from two factories, mapped into one animation |
 
 ## How the examples are hosted
 
 A GUI example is a GUI template inside the `examples` node of [example2.gui](example2.gui) and is
 animated with `panthera.create_gui`.
 
-A collection or a game object example is spawned into the world with a `collectionfactory` or a
-`factory` of the `scene` game object and is animated with `panthera.create_go`. The GUI is drawn on
+The world is rendered by an orthographic camera looking at the origin, and every spawned example is
+parented to the `scene_root` object that sits there, so the animations play around the center of the
+screen in their own local space.
+
+A collection or a game object example is animated with `panthera.create_go`, and the examples cover
+every way it can be called: over the objects of the bootstrap collection, over a collection instance
+of it addressed by name, over the objects of a spawned collection, over a spawned collection that
+holds a nested one, and over objects spawned one by one from a factory. The `scene` game object owns
+the factories, and [scene/scene.script](scene/scene.script) picks the variant from the fields of the
+example. The GUI is drawn on
 top of the world, so the center panel does not draw a background of its own — it only clips the GUI
 examples, and the world behind it is painted by the render clear color.
 

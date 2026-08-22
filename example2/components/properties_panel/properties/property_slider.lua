@@ -1,4 +1,7 @@
+local event = require("event.event")
+
 ---@class example2.property_slider: druid.widget
+---@field on_reset event Triggered by a click on the name of the property
 ---@field root druid.container
 ---@field text_name druid.text
 ---@field text_value druid.text
@@ -19,6 +22,11 @@ function M:init()
 
 	self:set_text_function(function(value)
 		return math.floor(value * 100) .. "%"
+	end)
+
+	self.on_reset = event.create()
+	self.druid:new_button("text_name", function()
+		self.on_reset:trigger()
 	end)
 end
 

@@ -18,16 +18,17 @@ local ACCENT_SECONDARY = vmath.vector4(0.6, 0.502, 0.902, 1)
 
 ---The easing is applied over the whole animation timeline. Panthera plays the animation
 ---with a tweener instead of the timer when the easing is not "linear".
-local EASINGS = {
-	"linear",
-	"insine", "outsine", "inoutsine",
-	"inquad", "outquad", "inoutquad",
-	"incubic", "outcubic", "inoutcubic",
-	"inexpo", "outexpo", "inoutexpo",
-	"inback", "outback", "inoutback",
-	"inelastic", "outelastic",
-	"inbounce", "outbounce",
+---
+---Cycling through all forty easings in one property takes too many clicks, so the mode and the
+---type are picked separately and composed into the name the tweener knows
+local EASING_MODES = { "in", "out", "inout", "outin" }
+local EASING_TYPES = {
+	"linear", "sine", "quad", "cubic", "quart", "quint",
+	"expo", "circ", "back", "elastic", "bounce",
 }
+
+local DEFAULT_EASING_MODE = 2 -- out
+local DEFAULT_EASING_TYPE = 1 -- linear
 
 ---An animation track. Both tracks animate the same example over their own animation state, so
 ---they run independently and can be at different times.
@@ -306,18 +307,6 @@ local function set_track_animation(self, track, animation_id)
 end
 
 
----@param self example2.gui_script
----@return vector3 position The world position of the center of the scene area. The GUI is drawn
----on top of the world, so this is where the spawned examples have to be placed
-local function get_scene_position(self)
-	local root = self.container_root:get_position()
-	local center = self.container_center:get_position()
-	local examples = gui.get_position(self.node_examples)
-
-	return vmath.vector3(root.x + center.x + examples.x, root.y + center.y + examples.y, 0)
-end
-
-
 ---Create the animation state of the example. The GUI examples are the templates of this scene,
 ---the collection and the game object examples are spawned into the world by the scene script.
 ---@param self example2.gui_script
@@ -336,7 +325,7 @@ local function create_animation(self, example)
 		return panthera.create_gui(example.animation, example.template)
 	end
 
-	return events.trigger("example2.scene.spawn", example, get_scene_position(self))
+	return events.trigger("example2.scene.spawn", example)
 end
 
 
@@ -395,6 +384,35 @@ local function set_playback_option(self, key, value)
 end
 
 
+---@param self example2.gui_script
+---@return string easing The name of the easing the tweener knows
+local function get_easing(self)
+	local easing_type = EASING_TYPES[self.easing_type_index]
+
+	-- The linear easing has no mode
+	if easing_type == "linear" then
+		return "linear"
+	end
+
+	return EASING_MODES[self.easing_mode_index] .. easing_type
+end
+
+
+---@param self example2.gui_script
+---@param is_replay boolean? True to restart the tracks, the easing changes how they are played
+local function apply_easing(self, is_replay)
+	set_playback_option(self, "easing", get_easing(self))
+	self.easing_mode_button.text_button:set_text(EASING_MODES[self.easing_mode_index])
+	self.easing_type_button.text_button:set_text(EASING_TYPES[self.easing_type_index])
+
+	if is_replay then
+		for index = 1, #self.tracks do
+			play_track(self, self.tracks[index])
+		end
+	end
+end
+
+
 ---The panel is rebuilt for every example, so the widget of the example can append its own
 ---properties after the playback settings. The current values are kept in the playback options
 ---@param self example2.gui_script
@@ -407,15 +425,22 @@ function setup_settings(self)
 		set_playback_option(self, "is_loop", value)
 	end)
 
-	self.easing_button = self.properties_panel:add_button("Easing", EASINGS[self.easing_index], function()
-		self.easing_index = self.easing_index % #EASINGS + 1
-		set_playback_option(self, "easing", EASINGS[self.easing_index])
-		self.easing_button.text_button:set_text(EASINGS[self.easing_index])
+	self.easing_mode_button = self.properties_panel:add_button("Ease Mode", EASING_MODES[self.easing_mode_index], function()
+		self.easing_mode_index = self.easing_mode_index % #EASING_MODES + 1
+		apply_easing(self, true)
+	end)
+	self.easing_mode_button.on_reset:subscribe(function()
+		self.easing_mode_index = DEFAULT_EASING_MODE
+		apply_easing(self, true)
+	end)
 
-		-- The easing switches the playback between the timer and the tweener, replay to see it
-		for index = 1, #self.tracks do
-			play_track(self, self.tracks[index])
-		end
+	self.easing_type_button = self.properties_panel:add_button("Ease Type", EASING_TYPES[self.easing_type_index], function()
+		self.easing_type_index = self.easing_type_index % #EASING_TYPES + 1
+		apply_easing(self, true)
+	end)
+	self.easing_type_button.on_reset:subscribe(function()
+		self.easing_type_index = DEFAULT_EASING_TYPE
+		apply_easing(self, true)
 	end)
 
 	local speed_slider = self.properties_panel:add_slider("Speed", self.speed_value, function(value)
@@ -425,6 +450,11 @@ function setup_settings(self)
 	speed_slider:set_text_function(function(value)
 		return string.format("x%.2f", math.max(value * MAX_SPEED, 0.1))
 	end)
+	speed_slider.on_reset:subscribe(function()
+		self.speed_value = 1 / MAX_SPEED
+		speed_slider:set_value(self.speed_value)
+		set_playback_option(self, "speed", 1)
+	end)
 
 	if self.example_widget and self.example_widget.properties_control then
 		self.example_widget:properties_control(self.properties_panel)
@@ -432,17 +462,16 @@ function setup_settings(self)
 end
 
 
----Cycling through the whole easings list to get back to "linear" takes too many clicks,
----so selecting an animation resets the easing to the default one.
+---Selecting an animation brings the easing back to the default, so a new animation is always
+---shown as it was authored. The mode is kept, the linear type ignores it anyway
 ---@param self example2.gui_script
 local function reset_easing(self)
-	if self.easing_index == 1 then
+	if self.easing_type_index == DEFAULT_EASING_TYPE then
 		return
 	end
 
-	self.easing_index = 1
-	set_playback_option(self, "easing", EASINGS[1])
-	self.easing_button.text_button:set_text(EASINGS[1])
+	self.easing_type_index = DEFAULT_EASING_TYPE
+	apply_easing(self, false)
 end
 
 
@@ -457,7 +486,7 @@ local function create_track(self, index)
 		timeline = self.druid:new_widget(timeline, is_primary and "timeline" or "timeline_second") --[[@as example2.timeline]],
 		options = {
 			is_loop = IS_LOOP_BY_DEFAULT,
-			easing = EASINGS[1],
+			easing = EASING_TYPES[DEFAULT_EASING_TYPE],
 			speed = 1,
 		},
 		animation = nil,
@@ -647,13 +676,13 @@ function init(self)
 	panthera.set_logger(log.get_logger("panthera"))
 
 	self.output = {}
-	self.easing_index = 1
+	self.easing_mode_index = DEFAULT_EASING_MODE
+	self.easing_type_index = DEFAULT_EASING_TYPE
 	self.speed_value = 1 / MAX_SPEED
 
 	self.node_source_path = gui.get_node("text_source_path")
 	self.node_memory_usage = gui.get_node("text_memory_usage")
 	self.node_text_output = gui.get_node("text_output")
-	self.node_examples = gui.get_node("examples")
 	gui.set_text(gui.get_node("text_version"), "Runtime for Defold " .. sys.get_engine_info().version)
 
 	self.druid = druid.new(self)
