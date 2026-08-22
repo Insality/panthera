@@ -83,6 +83,42 @@ local MAX_ANIMATION_NESTING = 16
 local STAGE_START_VALUE = 0
 local STAGE_KEY_VALUE = 1
 
+---@param animation_state panthera.animation
+---@return panthera.collect_buffer
+local function get_collect_buffer(animation_state)
+	local buffer = animation_state.collect_buffer
+	if not buffer then
+		buffer = {
+			values = {},
+			pool = {},
+			depth = 0,
+		}
+		animation_state.collect_buffer = buffer
+	end
+	return buffer
+end
+
+---@param values panthera.animation.state_value[]
+---@param pool panthera.animation.state_value[]
+local function release_state_values(values, pool)
+	local pool_index = #pool
+	for index = #values, 1, -1 do
+		local state_value = values[index]
+		state_value.node = nil
+		state_value.value = nil
+		values[index] = nil
+		pool_index = pool_index + 1
+		pool[pool_index] = state_value
+	end
+end
+
+---Custom easing is a Defold vector after preprocess; tweener accepts it as a curve
+---@param key panthera.animation.data.animation_key
+---@return any
+local function get_key_easing(key)
+	return key.easing_custom or tweener[key.easing] or tweener.linear
+end
+
 --- Use empty function to save a bit of memory
 local EMPTY_FUNCTION = function(_, message, context) end
 
@@ -239,15 +275,14 @@ end
 ---@field stage number
 ---@field order number
 
----Set animation state at time
 ---@param animation_state panthera.animation
 ---@param animation_id string
 ---@param time number
 ---@param event_callback fun(event_id: string, node: node|nil, data: any, end_value: number)|nil
-function M.set_animation_state_at_time(animation_state, animation_id, time, event_callback)
-	---@type panthera.animation.state_value[]
-	local values = {}
-	M.collect_animation_state(animation_state, animation_id, time, event_callback, values, 0, 1, 1)
+---@param values panthera.animation.state_value[]
+---@param pool panthera.animation.state_value[]
+local function collect_and_apply(animation_state, animation_id, time, event_callback, values, pool)
+	M.collect_animation_state(animation_state, animation_id, time, event_callback, values, pool, 0, 1, 1)
 
 	-- Last started key wins, including nested and template
 	table.sort(values, M.sort_state_values_function)
@@ -260,16 +295,40 @@ function M.set_animation_state_at_time(animation_state, animation_id, time, even
 end
 
 
+---Set animation state at time
+---@param animation_state panthera.animation
+---@param animation_id string
+---@param time number
+---@param event_callback fun(event_id: string, node: node|nil, data: any, end_value: number)|nil
+function M.set_animation_state_at_time(animation_state, animation_id, time, event_callback)
+	local buffer = get_collect_buffer(animation_state)
+	buffer.depth = buffer.depth + 1
+	-- Nested collect (event callback) gets a fresh array, the common path reuses the buffer
+	local values = buffer.depth == 1 and buffer.values or {}
+	local pool = buffer.pool
+
+	local is_ok, error_message = pcall(collect_and_apply, animation_state, animation_id, time, event_callback, values, pool)
+
+	release_state_values(values, pool)
+	buffer.depth = buffer.depth - 1
+
+	if not is_ok then
+		error(error_message)
+	end
+end
+
+
 ---Collect animation state at time
 ---@param animation_state panthera.animation
 ---@param animation_id string
 ---@param time number Pass -1 to collect start values only
 ---@param event_callback fun(event_id: string, node: node|nil, data: any, end_value: number)|nil
 ---@param values panthera.animation.state_value[]
+---@param pool panthera.animation.state_value[]
 ---@param time_offset number Start on the root timeline
 ---@param time_scale number Root seconds per one second of this animation
 ---@param depth number
-function M.collect_animation_state(animation_state, animation_id, time, event_callback, values, time_offset, time_scale, depth)
+function M.collect_animation_state(animation_state, animation_id, time, event_callback, values, pool, time_offset, time_scale, depth)
 	local animation_data = M.get_animation_data(animation_state)
 	local animation = animation_data and M.get_animation_by_animation_id(animation_data, animation_id)
 	if not animation then
@@ -299,7 +358,7 @@ function M.collect_animation_state(animation_state, animation_id, time, event_ca
 		local initial_animation = M.get_animation_by_animation_id(animation_data, animation.initial_state)
 		if initial_animation and initial_animation.animation_id ~= animation_id then
 			M.collect_animation_state(animation_state, initial_animation.animation_id, initial_animation.duration,
-				event_callback, values, time_offset, 0, depth + 1)
+				event_callback, values, pool, time_offset, 0, depth + 1)
 		end
 	end
 
@@ -318,7 +377,7 @@ function M.collect_animation_state(animation_state, animation_id, time, event_ca
 					-- Key start time, or animation start if none
 					local priority = key_start_time and (time_offset + key_start_time * time_scale) or time_offset
 					local stage = key_start_time and STAGE_KEY_VALUE or STAGE_START_VALUE
-					M.add_state_value(values, node, property_id, value, priority, stage)
+					M.add_state_value(values, pool, node, property_id, value, priority, stage)
 				end
 			end
 		end
@@ -331,14 +390,14 @@ function M.collect_animation_state(animation_state, animation_id, time, event_ca
 				if node_id == "" then
 					-- Nested
 					M.collect_animation_key_state(animation_state, property_id, keys, time,
-						event_callback, values, time_offset, time_scale, depth)
+						event_callback, values, pool, time_offset, time_scale, depth)
 				else
 					-- Template
 					local template_path = M.get_template_animation_path(animation_data, node_id)
 					if template_path then
 						local template_state = M.get_template_animation_state(animation_state, node_id, template_path)
 						M.collect_animation_key_state(template_state, property_id, keys, time,
-							event_callback, values, time_offset, time_scale, depth)
+							event_callback, values, pool, time_offset, time_scale, depth)
 					end
 				end
 			end
@@ -354,10 +413,11 @@ end
 ---@param time number
 ---@param event_callback fun(event_id: string, node: node|nil, data: any, end_value: number)|nil
 ---@param values panthera.animation.state_value[]
+---@param pool panthera.animation.state_value[]
 ---@param time_offset number
 ---@param time_scale number
 ---@param depth number
-function M.collect_animation_key_state(animation_state, inner_animation_id, keys, time, event_callback, values, time_offset, time_scale, depth)
+function M.collect_animation_key_state(animation_state, inner_animation_id, keys, time, event_callback, values, pool, time_offset, time_scale, depth)
 	local animation_key = nil
 	for index = 1, #keys do
 		local key = keys[index]
@@ -370,7 +430,7 @@ function M.collect_animation_key_state(animation_state, inner_animation_id, keys
 	if not animation_key then
 		-- Not started yet: reset to start values
 		M.collect_animation_state(animation_state, inner_animation_id, -1, event_callback, values,
-			time_offset, 0, depth + 1)
+			pool, time_offset, 0, depth + 1)
 		return
 	end
 
@@ -382,14 +442,14 @@ function M.collect_animation_key_state(animation_state, inner_animation_id, keys
 	local animation_time_to_set = animation_duration
 	local animation_time_scale = 0
 	if animation_key.duration > 0 and animation_duration > 0 then
-		local easing = animation_key.easing_custom or tweener[animation_key.easing] or tweener.linear
+		local easing = get_key_easing(animation_key)
 		local key_progress_time = math.min(time - animation_key.start_time, animation_key.duration)
 		animation_time_to_set = tweener.ease(easing, 0, animation_duration, animation_key.duration, key_progress_time)
 		animation_time_scale = animation_key.duration / animation_duration
 	end
 
 	M.collect_animation_state(animation_state, inner_animation_id, animation_time_to_set, event_callback, values,
-		time_offset + animation_key.start_time * time_scale, time_scale * animation_time_scale, depth + 1)
+		pool, time_offset + animation_key.start_time * time_scale, time_scale * animation_time_scale, depth + 1)
 end
 
 
@@ -421,21 +481,29 @@ end
 
 
 ---@param values panthera.animation.state_value[]
+---@param pool panthera.animation.state_value[]
 ---@param node node
 ---@param property_id string
 ---@param value any
 ---@param priority number
 ---@param stage number
-function M.add_state_value(values, node, property_id, value, priority, stage)
+function M.add_state_value(values, pool, node, property_id, value, priority, stage)
+	local pool_index = #pool
+	local state_value = pool[pool_index]
+	if state_value then
+		pool[pool_index] = nil
+	else
+		state_value = {} --[[@as panthera.animation.state_value]]
+	end
+
 	local index = #values + 1
-	values[index] = {
-		node = node,
-		property_id = property_id,
-		value = value,
-		priority = priority,
-		stage = stage,
-		order = index,
-	}
+	state_value.node = node
+	state_value.property_id = property_id
+	state_value.value = value
+	state_value.priority = priority
+	state_value.stage = stage
+	state_value.order = index
+	values[index] = state_value
 end
 
 
@@ -755,7 +823,7 @@ function M.event_animation_key(node, key, duration, callback_event)
 	if duration == 0 then
 		callback_event(key.event_id, node, key.data, key.end_value)
 	else
-		local easing = key.easing_custom or tweener[key.easing] or tweener.linear
+		local easing = get_key_easing(key)
 		-- TODO: need to keep tween reference to cancel it
 		tweener.tween(easing, key.start_value, key.end_value, duration, function(value)
 			callback_event(key.event_id, node, key.data, value)
@@ -1040,7 +1108,7 @@ function M.get_key_value_at_time(key, time)
 		return key.end_value
 	end
 
-	local easing = key.easing_custom or tweener[key.easing] or tweener.linear
+	local easing = get_key_easing(key)
 	local value = tweener.ease(easing, key.start_value, key.end_value, key.duration, time - key.start_time)
 
 	return value

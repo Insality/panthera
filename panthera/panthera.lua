@@ -3,6 +3,11 @@ local adapter_go = require("panthera.adapters.adapter_go")
 local adapter_gui = require("panthera.adapters.adapter_gui")
 local panthera_internal = require("panthera.panthera_internal")
 
+---@class panthera.collect_buffer
+---@field values table
+---@field pool table
+---@field depth number
+
 ---@class panthera.animation
 ---@field adapter panthera.adapter Adapter to use for animation
 ---@field speed number Animation speed multiplier
@@ -16,6 +21,7 @@ local panthera_internal = require("panthera.panthera_internal")
 ---@field animation_keys_index number Animation keys index
 ---@field events table? List of events triggered in this animation loop
 ---@field template_states table<string, panthera.animation>? Cached animation states of the template nodes
+---@field collect_buffer panthera.collect_buffer? Reused collect buffers of this state
 ---@field timer_id number? Timer ID for animation
 
 ---@class panthera.options
