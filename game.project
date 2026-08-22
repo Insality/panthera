@@ -6,8 +6,18 @@ render = /builtins/render/default.renderc
 shared_state = 1
 
 [display]
-width = 960
-height = 640
+width = 1920
+height = 1080
+high_dpi = 1
+
+[render]
+clear_color_red = 0.129
+clear_color_green = 0.141
+clear_color_blue = 0.157
+clear_color_alpha = 1.0
+
+[input]
+game_binding = /builtins/input/all.input_bindingc
 
 [android]
 input_method = HiddenInputField
@@ -17,11 +27,11 @@ title = Panthera Runtime
 version = 9.0
 publisher = Insality
 developer = Maksim Tuprikov
-dependencies#0 = https://github.com/Insality/defold-log/archive/refs/tags/6.zip
+dependencies#0 = https://github.com/Insality/defold-log/archive/refs/tags/7.zip
 dependencies#1 = https://github.com/Insality/defold-tweener/archive/refs/tags/6.zip
-dependencies#2 = https://github.com/Insality/druid/archive/refs/tags/1.2.5.zip
-dependencies#3 = https://github.com/Insality/defold-event/archive/refs/tags/19.zip
-dependencies#4 = https://github.com/Insality/asset-store/archive/refs/tags/3.zip
+dependencies#2 = https://github.com/Insality/druid/archive/refs/tags/1.2.6.zip
+dependencies#3 = https://github.com/Insality/defold-event/archive/refs/tags/21.zip
+dependencies#4 = https://github.com/Insality/asset-store/archive/refs/tags/4.zip
 
 [library]
 include_dirs = panthera

@@ -1,6 +1,0 @@
-name: "collection_path"
-collection_instances {
-  id: "wrapper"
-  collection: "/example/example_go_collection_path/wrapper.collection"
-}
-scale_along_z: 0

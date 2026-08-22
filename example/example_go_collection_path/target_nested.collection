@@ -1,6 +1,0 @@
-name: "target_nested"
-collection_instances {
-  id: "target"
-  collection: "/example/example_go_collection_path/target.collection"
-}
-scale_along_z: 0

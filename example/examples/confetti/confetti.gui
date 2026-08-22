@@ -1,0 +1,366 @@
+fonts {
+  name: "text_bold"
+  font: "/example/assets/fonts/text_bold.font"
+}
+textures {
+  name: "example"
+  texture: "/example/assets/example.atlas"
+}
+nodes {
+  size {
+    x: 800.0
+    y: 600.0
+  }
+  type: TYPE_BOX
+  texture: "example/empty"
+  id: "root"
+  inherit_alpha: true
+  visible: false
+}
+nodes {
+  size {
+    x: 22.0
+    y: 38.0
+  }
+  color {
+    x: 0.894
+    y: 0.506
+    z: 0.333
+  }
+  type: TYPE_BOX
+  texture: "example/ui_circle_8"
+  id: "piece_0"
+  parent: "root"
+  inherit_alpha: true
+  slice9 {
+    x: 4.000
+    y: 4.000
+    z: 4.000
+    w: 4.000
+  }
+}
+nodes {
+  size {
+    x: 22.0
+    y: 38.0
+  }
+  color {
+    x: 0.600
+    y: 0.502
+    z: 0.902
+  }
+  type: TYPE_BOX
+  texture: "example/ui_circle_8"
+  id: "piece_1"
+  parent: "root"
+  inherit_alpha: true
+  slice9 {
+    x: 4.000
+    y: 4.000
+    z: 4.000
+    w: 4.000
+  }
+}
+nodes {
+  size {
+    x: 22.0
+    y: 38.0
+  }
+  color {
+    x: 0.800
+    y: 0.502
+    z: 0.600
+  }
+  type: TYPE_BOX
+  texture: "example/ui_circle_8"
+  id: "piece_2"
+  parent: "root"
+  inherit_alpha: true
+  slice9 {
+    x: 4.000
+    y: 4.000
+    z: 4.000
+    w: 4.000
+  }
+}
+nodes {
+  size {
+    x: 22.0
+    y: 38.0
+  }
+  color {
+    x: 0.420
+    y: 0.750
+    z: 0.600
+  }
+  type: TYPE_BOX
+  texture: "example/ui_circle_8"
+  id: "piece_3"
+  parent: "root"
+  inherit_alpha: true
+  slice9 {
+    x: 4.000
+    y: 4.000
+    z: 4.000
+    w: 4.000
+  }
+}
+nodes {
+  size {
+    x: 22.0
+    y: 38.0
+  }
+  color {
+    x: 0.722
+    y: 0.741
+    z: 0.761
+  }
+  type: TYPE_BOX
+  texture: "example/ui_circle_8"
+  id: "piece_4"
+  parent: "root"
+  inherit_alpha: true
+  slice9 {
+    x: 4.000
+    y: 4.000
+    z: 4.000
+    w: 4.000
+  }
+}
+nodes {
+  size {
+    x: 22.0
+    y: 38.0
+  }
+  color {
+    x: 0.894
+    y: 0.506
+    z: 0.333
+  }
+  type: TYPE_BOX
+  texture: "example/ui_circle_8"
+  id: "piece_5"
+  parent: "root"
+  inherit_alpha: true
+  slice9 {
+    x: 4.000
+    y: 4.000
+    z: 4.000
+    w: 4.000
+  }
+}
+nodes {
+  size {
+    x: 22.0
+    y: 38.0
+  }
+  color {
+    x: 0.600
+    y: 0.502
+    z: 0.902
+  }
+  type: TYPE_BOX
+  texture: "example/ui_circle_8"
+  id: "piece_6"
+  parent: "root"
+  inherit_alpha: true
+  slice9 {
+    x: 4.000
+    y: 4.000
+    z: 4.000
+    w: 4.000
+  }
+}
+nodes {
+  size {
+    x: 22.0
+    y: 38.0
+  }
+  color {
+    x: 0.800
+    y: 0.502
+    z: 0.600
+  }
+  type: TYPE_BOX
+  texture: "example/ui_circle_8"
+  id: "piece_7"
+  parent: "root"
+  inherit_alpha: true
+  slice9 {
+    x: 4.000
+    y: 4.000
+    z: 4.000
+    w: 4.000
+  }
+}
+nodes {
+  size {
+    x: 22.0
+    y: 38.0
+  }
+  color {
+    x: 0.420
+    y: 0.750
+    z: 0.600
+  }
+  type: TYPE_BOX
+  texture: "example/ui_circle_8"
+  id: "piece_8"
+  parent: "root"
+  inherit_alpha: true
+  slice9 {
+    x: 4.000
+    y: 4.000
+    z: 4.000
+    w: 4.000
+  }
+}
+nodes {
+  size {
+    x: 22.0
+    y: 38.0
+  }
+  color {
+    x: 0.722
+    y: 0.741
+    z: 0.761
+  }
+  type: TYPE_BOX
+  texture: "example/ui_circle_8"
+  id: "piece_9"
+  parent: "root"
+  inherit_alpha: true
+  slice9 {
+    x: 4.000
+    y: 4.000
+    z: 4.000
+    w: 4.000
+  }
+}
+nodes {
+  size {
+    x: 22.0
+    y: 38.0
+  }
+  color {
+    x: 0.894
+    y: 0.506
+    z: 0.333
+  }
+  type: TYPE_BOX
+  texture: "example/ui_circle_8"
+  id: "piece_10"
+  parent: "root"
+  inherit_alpha: true
+  slice9 {
+    x: 4.000
+    y: 4.000
+    z: 4.000
+    w: 4.000
+  }
+}
+nodes {
+  size {
+    x: 22.0
+    y: 38.0
+  }
+  color {
+    x: 0.600
+    y: 0.502
+    z: 0.902
+  }
+  type: TYPE_BOX
+  texture: "example/ui_circle_8"
+  id: "piece_11"
+  parent: "root"
+  inherit_alpha: true
+  slice9 {
+    x: 4.000
+    y: 4.000
+    z: 4.000
+    w: 4.000
+  }
+}
+nodes {
+  size {
+    x: 22.0
+    y: 38.0
+  }
+  color {
+    x: 0.800
+    y: 0.502
+    z: 0.600
+  }
+  type: TYPE_BOX
+  texture: "example/ui_circle_8"
+  id: "piece_12"
+  parent: "root"
+  inherit_alpha: true
+  slice9 {
+    x: 4.000
+    y: 4.000
+    z: 4.000
+    w: 4.000
+  }
+}
+nodes {
+  size {
+    x: 22.0
+    y: 38.0
+  }
+  color {
+    x: 0.420
+    y: 0.750
+    z: 0.600
+  }
+  type: TYPE_BOX
+  texture: "example/ui_circle_8"
+  id: "piece_13"
+  parent: "root"
+  inherit_alpha: true
+  slice9 {
+    x: 4.000
+    y: 4.000
+    z: 4.000
+    w: 4.000
+  }
+}
+nodes {
+  position {
+    x: 0.0
+    y: -270.0
+  }
+  scale {
+    x: 0.550
+    y: 0.550
+  }
+  size {
+    x: 760.0
+    y: 50.0
+  }
+  color {
+    x: 0.463
+    y: 0.475
+    z: 0.490
+  }
+  type: TYPE_TEXT
+  text: "fourteen pieces, one animation, every key authored by hand"
+  font: "text_bold"
+  id: "text_hint"
+  outline {
+    x: 1.000
+    y: 1.000
+    z: 1.000
+  }
+  shadow {
+    x: 1.000
+    y: 1.000
+    z: 1.000
+  }
+  parent: "root"
+  inherit_alpha: true
+  outline_alpha: 0.000
+  shadow_alpha: 0.000
+}
+material: "/builtins/materials/gui.material"
+adjust_reference: ADJUST_REFERENCE_PARENT

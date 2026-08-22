@@ -82,3 +82,15 @@ Initial resease!
 	- The same animation table now always resolves to the same animation path and is preprocessed only once, instead of allocating a new cache entry on every `panthera.create_go` / `create_gui` / `create` call
 	- Nested template animations passed as tables are cached the same way
 - Fix collecting of nested `template_animation_paths`, they were inserted into the table while it was iterated over
+
+## Version v10
+- Collect animation state first, then apply it. The last started key wins (root timeline), including nested and template animations
+	- `initial_state` of a nested/template animation is applied when that animation starts, not with the parent
+	- Properties of a nested/template animation that has not started yet reset to start values (`play`, `set_time`, easing)
+	- Template time is scaled to the animation key length
+- Fix keys skipped by time overflow: apply the final state and do not leak child animation states
+- Fix reset of two template nodes bound to the same template animation
+- Fix template events retriggered on every state update
+- Fix nested animation events not passed to `callback_event` during play
+- Skip an animation key with a missing template path instead of stopping the timeline
+- Fix nested template desync on HTML5: tick every frame, start nested and template animations on the same frame as the parent

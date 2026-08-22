@@ -3,6 +3,11 @@ local adapter_go = require("panthera.adapters.adapter_go")
 local adapter_gui = require("panthera.adapters.adapter_gui")
 local panthera_internal = require("panthera.panthera_internal")
 
+---@class panthera.collect_buffer
+---@field values table
+---@field pool table
+---@field depth number
+
 ---@class panthera.animation
 ---@field adapter panthera.adapter Adapter to use for animation
 ---@field speed number Animation speed multiplier
@@ -15,6 +20,8 @@ local panthera_internal = require("panthera.panthera_internal")
 ---@field animation_path string Animation path to JSON file
 ---@field animation_keys_index number Animation keys index
 ---@field events table? List of events triggered in this animation loop
+---@field template_states table<string, panthera.animation>? Cached animation states of the template nodes
+---@field collect_buffer panthera.collect_buffer? Reused collect buffers of this state
 ---@field timer_id number? Timer ID for animation
 
 ---@class panthera.options
@@ -42,7 +49,8 @@ local M = {
 	SPEED = 1
 }
 
-local TIMER_DELAY = 1/60
+-- 0 = every frame. 1/60 skips frames; nested template timers get a different phase and desync on HTML5
+local TIMER_DELAY = 0
 local EMPTY_OPTIONS = {}
 
 -- Set of predefined options
@@ -134,40 +142,34 @@ function M.play(animation_state, animation_id, options)
 
 	animation_state.animation_id = animation.animation_id
 	animation_state.animation_keys_index = 1
-	animation_state.events = nil
+	panthera_internal.reset_animation_events(animation_state)
 
 	if not options.is_skip_init then
-		-- Reset all previuosly animated nodes to initial state
+		-- Reset all previously animated nodes to initial state
 		if animation_state.previous_animation_id then
 			panthera_internal.reset_animation_state(animation_state, animation_state.previous_animation_id)
 			animation_state.previous_animation_id = nil
 		end
 
-		-- If we have initial animation, we should set up it here?
-		if animation.initial_state then
-			local initial_animation = panthera_internal.get_animation_by_animation_id(animation_data, animation.initial_state)
-			if initial_animation then
-				panthera_internal.set_animation_state_at_time(animation_state, initial_animation.animation_id, initial_animation.duration)
-			end
-		end
-
 		panthera_internal.set_animation_state_at_time(animation_state, animation.animation_id, 0)
 	end
 
-	animation_state.timer_id = timer.delay(TIMER_DELAY, true, function(_, _, time_elapsed)
-		local dt = time_elapsed
+	-- Start keys at the current time now, so nested templates don't wait for the next timer tick
+	M.update_animation(animation, animation_state, options)
+	if not animation_state.animation_id then
+		return
+	end
 
-		-- Weird thing, but when app lose focus for small time, we got a lot of callbacks
-		if dt < 0.001 then
+	animation_state.timer_id = timer.delay(TIMER_DELAY, true, function(_, _, time_elapsed)
+		if time_elapsed < 0.001 then
 			return
 		end
 
 		local speed = (options.speed or 1) * animation_state.speed * M.SPEED
 
-		animation_state.current_time = animation_state.current_time + dt * speed
+		animation_state.current_time = animation_state.current_time + time_elapsed * speed
 		M.update_animation(animation, animation_state, options)
 	end)
-	timer.trigger(animation_state.timer_id)
 end
 
 
@@ -203,7 +205,7 @@ function M.play_tweener(animation_state, animation_id, options)
 	end
 
 	local easing = options.easing or tweener.linear
-	animation_state.events = nil
+	panthera_internal.reset_animation_events(animation_state)
 
 	local total_duration = animation.duration / (options.speed or 1)
 	local from = options.from or 0
@@ -226,7 +228,7 @@ function M.play_tweener(animation_state, animation_id, options)
 
 			if animation_state.current_time > time then
 				-- We count this as a new animation loop, we want to update animation state data
-				animation_state.events = nil
+				panthera_internal.reset_animation_events(animation_state)
 			end
 
 			animation_state.current_time = time
@@ -272,73 +274,7 @@ function M.update_animation(animation, animation_state, options)
 				local speed = (options.speed or 1) * animation_state.speed * M.SPEED
 				panthera_internal.run_timeline_key(animation_state, key, options, speed)
 			else
-				-- check if "" while only animation keys are working now
-				if key.node_id == "" then
-					local child_state = M.clone_state(animation_state)
-					-- Time Overflow
-					local time_overflow = math.max(0, animation_state.current_time - key.start_time)
-					child_state.current_time = time_overflow
-
-					animation_state.childs = animation_state.childs or {}
-					table.insert(animation_state.childs, child_state)
-					local animation_duration = M.get_duration(child_state, key.property_id)
-
-					local key_duration = (key.duration - time_overflow)
-					-- TODO: Do we need set time if key_duration is <= 0?
-					if animation_duration > 0 and key_duration > 0 then
-						local speed = (options.speed or 1) * animation_state.speed * M.SPEED
-						local play_speed = (animation_duration / key_duration) * speed
-
-						M.play(child_state, key.property_id, {
-							easing = key.easing,
-							is_skip_init = false, -- Editor works in "false" mode always, so until editor support this, we should use false
-							speed = play_speed,
-							callback = function()
-								panthera_internal.remove_child_animation(animation_state, child_state)
-							end
-						})
-					end
-				end
-
-				-- This is tempalte animations, the node_id is a template to run the new animations
-				if key.node_id ~= "" then
-					local animation_data = panthera_internal.get_animation_data(animation_state)
-					local paths = animation_data and animation_data.metadata.template_animation_paths
-					if not paths then
-						break
-					end
-					local template_animation_path = paths[key.node_id]
-
-					local get_node = function(node_id)
-						return animation_state.get_node(key.node_id .. "/" .. node_id)
-					end
-					local template_state = panthera_internal.create_animation_state(template_animation_path, animation_state.adapter, get_node)
-
-					local time_overflow = math.max(0, animation_state.current_time - key.start_time)
-					template_state.current_time = time_overflow
-
-					animation_state.childs = animation_state.childs or {}
-					table.insert(animation_state.childs, template_state)
-					local animation_duration = M.get_duration(template_state, key.property_id)
-
-					if animation_duration > 0 and key.duration > 0 then
-						local speed = (options.speed or 1) * animation_state.speed * M.SPEED
-						local key_duration = (key.duration - time_overflow)
-						local play_speed = (animation_duration / key_duration) * speed
-
-						M.play(template_state, key.property_id, {
-							-- TODO: is any cases when we want to use false here? Editor works like it false now
-							-- Real case: looped animation should be reset to correct visuals
-							is_skip_init = false, -- Editor works in "false" mode always, so until editor support this, we should use false
-							easing = key.easing,
-							speed = play_speed,
-							callback = function()
-								panthera_internal.remove_child_animation(animation_state, template_state)
-							end,
-							callback_event = options.callback_event
-						})
-					end
-				end
+				M.start_animation_key(animation_state, key, options)
 			end
 		else
 			break
@@ -361,6 +297,60 @@ function M.update_animation(animation, animation_state, options)
 			animation_state.current_time = time_overflow
 			M.play(animation_state, animation.animation_id, options)
 		end
+	end
+end
+
+
+---Start a nested (`node_id == ""`) or template animation key
+---@private
+---@param animation_state panthera.animation
+---@param key panthera.animation.data.animation_key
+---@param options panthera.options
+function M.start_animation_key(animation_state, key, options)
+	local child_state
+	if key.node_id == "" then
+		child_state = M.clone_state(animation_state)
+	else
+		-- Skip a key with a missing template path, keep processing the next keys
+		local animation_data = panthera_internal.get_animation_data(animation_state)
+		local template_animation_path = animation_data and panthera_internal.get_template_animation_path(animation_data, key.node_id)
+		if not template_animation_path then
+			return
+		end
+
+		local get_node = function(node_id)
+			return animation_state.get_node(key.node_id .. "/" .. node_id)
+		end
+		child_state = panthera_internal.create_animation_state(template_animation_path, animation_state.adapter, get_node)
+	end
+
+	local time_overflow = math.max(0, animation_state.current_time - key.start_time)
+	child_state.current_time = time_overflow
+
+	local animation_duration = M.get_duration(child_state, key.property_id)
+	local key_duration = key.duration - time_overflow
+
+	if animation_duration > 0 and key_duration > 0 then
+		animation_state.childs = animation_state.childs or {}
+		table.insert(animation_state.childs, child_state)
+
+		local speed = (options.speed or 1) * animation_state.speed * M.SPEED
+		local play_speed = (animation_duration / key_duration) * speed
+
+		M.play(child_state, key.property_id, {
+			-- Editor works in "false" mode always, so until editor support this, we should use false
+			-- Real case: looped animation should be reset to correct visuals
+			is_skip_init = false,
+			easing = key.easing,
+			speed = play_speed,
+			callback = function()
+				panthera_internal.remove_child_animation(animation_state, child_state)
+			end,
+			callback_event = options.callback_event
+		})
+	elseif animation_duration > 0 then
+		-- Key already over: set final state
+		panthera_internal.set_animation_state_at_time(child_state, key.property_id, animation_duration, options.callback_event)
 	end
 end
 
@@ -434,7 +424,7 @@ function M.set_time(animation_state, animation_id, time, event_callback)
 
 	if animation_state.current_time > time then
 		-- We count this as a new animation loop, we want to update animation state data
-		animation_state.events = nil
+		panthera_internal.reset_animation_events(animation_state)
 	end
 
 	animation_state.current_time = time

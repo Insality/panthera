@@ -11,3 +11,8 @@ deployer_version_settings.txt
 
 .cache_deployer
 /.editor_settings
+bob*.jar
+
+deployer_version_settings.ini
+
+/.cache_deployer

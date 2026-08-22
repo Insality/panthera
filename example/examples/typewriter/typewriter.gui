@@ -1,0 +1,163 @@
+fonts {
+  name: "text_bold"
+  font: "/example/assets/fonts/text_bold.font"
+}
+fonts {
+  name: "text_regular"
+  font: "/example/assets/fonts/text_regular.font"
+}
+textures {
+  name: "example"
+  texture: "/example/assets/example.atlas"
+}
+nodes {
+  size {
+    x: 800.0
+    y: 600.0
+  }
+  type: TYPE_BOX
+  texture: "example/empty"
+  id: "root"
+  inherit_alpha: true
+  visible: false
+}
+nodes {
+  size {
+    x: 760.0
+    y: 260.0
+  }
+  color {
+    x: 0.173
+    y: 0.184
+    z: 0.204
+  }
+  type: TYPE_BOX
+  texture: "example/ui_circle_32"
+  id: "panel"
+  parent: "root"
+  inherit_alpha: true
+  slice9 {
+    x: 16.000
+    y: 16.000
+    z: 16.000
+    w: 16.000
+  }
+}
+nodes {
+  position {
+    x: -290.0
+    y: 40.0
+  }
+  scale {
+    x: 0.600
+    y: 0.600
+  }
+  color {
+    x: 0.894
+    y: 0.506
+    z: 0.333
+  }
+  type: TYPE_BOX
+  texture: "example/panthera"
+  id: "avatar"
+  parent: "panel"
+  inherit_alpha: true
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  position {
+    x: -290.0
+    y: -60.0
+  }
+  scale {
+    x: 0.500
+    y: 0.500
+  }
+  size {
+    x: 300.0
+    y: 50.0
+  }
+  color {
+    x: 0.894
+    y: 0.506
+    z: 0.333
+  }
+  type: TYPE_TEXT
+  text: "PANTHERA"
+  font: "text_bold"
+  id: "text_name"
+  outline {
+    x: 1.000
+    y: 1.000
+    z: 1.000
+  }
+  shadow {
+    x: 1.000
+    y: 1.000
+    z: 1.000
+  }
+  parent: "panel"
+  inherit_alpha: true
+  outline_alpha: 0.000
+  shadow_alpha: 0.000
+}
+nodes {
+  position {
+    x: -190.0
+    y: 20.0
+  }
+  scale {
+    x: 0.620
+    y: 0.620
+  }
+  size {
+    x: 560.0
+    y: 160.0
+  }
+  color {
+    x: 0.722
+    y: 0.741
+    z: 0.761
+  }
+  type: TYPE_TEXT
+  font: "text_regular"
+  id: "text_line"
+  pivot: PIVOT_W
+  outline {
+    x: 1.000
+    y: 1.000
+    z: 1.000
+  }
+  shadow {
+    x: 1.000
+    y: 1.000
+    z: 1.000
+  }
+  line_break: true
+  parent: "panel"
+  inherit_alpha: true
+  outline_alpha: 0.000
+  shadow_alpha: 0.000
+}
+nodes {
+  position {
+    x: 300.0
+    y: -80.0
+  }
+  size {
+    x: 16.0
+    y: 34.0
+  }
+  color {
+    x: 0.894
+    y: 0.506
+    z: 0.333
+  }
+  type: TYPE_BOX
+  texture: "example/pixel"
+  id: "cursor"
+  parent: "panel"
+  inherit_alpha: true
+}
+material: "/builtins/materials/gui.material"
+adjust_reference: ADJUST_REFERENCE_PARENT

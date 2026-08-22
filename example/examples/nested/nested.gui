@@ -1,0 +1,134 @@
+fonts {
+  name: "text_bold"
+  font: "/example/assets/fonts/text_bold.font"
+}
+textures {
+  name: "example"
+  texture: "/example/assets/example.atlas"
+}
+nodes {
+  size {
+    x: 800.0
+    y: 600.0
+  }
+  type: TYPE_BOX
+  texture: "example/empty"
+  id: "root"
+  inherit_alpha: true
+  visible: false
+}
+nodes {
+  size {
+    x: 260.0
+    y: 260.0
+  }
+  color {
+    x: 0.8
+    y: 0.502
+    z: 0.6
+  }
+  type: TYPE_BOX
+  texture: "example/ui_circle_32"
+  id: "square"
+  parent: "root"
+  inherit_alpha: true
+  slice9 {
+    x: 16.0
+    y: 16.0
+    z: 16.0
+    w: 16.0
+  }
+}
+nodes {
+  scale {
+    x: 0.8
+    y: 0.8
+  }
+  size {
+    x: 260.0
+    y: 60.0
+  }
+  color {
+    x: 0.129
+    y: 0.141
+    z: 0.157
+  }
+  type: TYPE_TEXT
+  text: "Nested"
+  font: "text_bold"
+  id: "text"
+  parent: "square"
+  inherit_alpha: true
+  outline_alpha: 0.0
+  shadow_alpha: 0.0
+}
+nodes {
+  position {
+    y: 220.0
+  }
+  type: TYPE_TEMPLATE
+  id: "dots_top"
+  parent: "root"
+  inherit_alpha: true
+  template: "/example/examples/dots/dots.gui"
+}
+nodes {
+  type: TYPE_BOX
+  id: "dots_top/root"
+  parent: "dots_top"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "dots_top/dot"
+  parent: "dots_top/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "dots_top/dot1"
+  parent: "dots_top/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "dots_top/dot2"
+  parent: "dots_top/root"
+  template_node_child: true
+}
+nodes {
+  position {
+    y: -220.0
+  }
+  type: TYPE_TEMPLATE
+  id: "dots_bottom"
+  parent: "root"
+  inherit_alpha: true
+  template: "/example/examples/dots/dots.gui"
+}
+nodes {
+  type: TYPE_BOX
+  id: "dots_bottom/root"
+  parent: "dots_bottom"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "dots_bottom/dot"
+  parent: "dots_bottom/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "dots_bottom/dot1"
+  parent: "dots_bottom/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "dots_bottom/dot2"
+  parent: "dots_bottom/root"
+  template_node_child: true
+}
+material: "/builtins/materials/gui.material"
+adjust_reference: ADJUST_REFERENCE_PARENT

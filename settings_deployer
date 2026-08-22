@@ -1,8 +1,11 @@
 #!/bin/bash
 # https://github.com/Insality/defold-deployer
 
+# Path to bob folder. It will find and save new bob.jar files inside
+bob_folder=./
+
 # You can point bob version for project in format "[filename]:sha"
-bob_sha=":1aafd0a262ff40214ed7f51302d92fa587c607ef"
+bob_sha="1_13_1:574678c7d44be490d874fbed2d0ae6211feec4d9"
 
 # Select Defold channel. Values: stable, beta, alpha
 bob_channel="stable"
