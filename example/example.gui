@@ -83,17 +83,24 @@ nodes {
   parent: "container_header"
   layer: "druid"
   inherit_alpha: true
+  clipping_mode: CLIPPING_MODE_STENCIL
 }
 nodes {
   position {
-    x: -140.0
+    x: -195.0
+    y: -24.0
   }
   scale {
     x: 0.55
     y: 0.55
   }
+  color {
+    x: 0.85882354
+    y: 0.8666667
+    z: 0.8745098
+  }
   type: TYPE_BOX
-  texture: "example/panthera"
+  texture: "example/icon_panthera_cat"
   id: "logo"
   parent: "panel_header"
   layer: "druid"

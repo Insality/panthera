@@ -28,4 +28,7 @@ images {
 images {
   image: "/example/assets/images/ui_circle_64.png"
 }
+images {
+  image: "/example/assets/images/icon_panthera_cat.png"
+}
 extrude_borders: 2

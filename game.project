@@ -51,3 +51,6 @@ show_made_with_defold = 0
 show_console_banner = 0
 scale_mode = stretch
 
+[native_extension]
+app_manifest = /example/assets/appmanifest.appmanifest
+

@@ -221,9 +221,10 @@ function M.update_animation(animation_state, time_elapsed)
 	local speed = M._playback_speed(options, animation_state)
 	animation_state.current_time = animation_state.current_time + time_elapsed * speed
 
-	-- Finish clips first, an ending one releases its nodes before the next claims them
+	-- Update inner clips
 	M._update_clips(animation_state, time_elapsed)
 
+	-- Start keys
 	local keys = animation.animation_keys
 	for index = animation_state.animation_keys_index, #keys do
 		local key = keys[index]
@@ -239,6 +240,7 @@ function M.update_animation(animation_state, time_elapsed)
 		end
 	end
 
+	-- End of an animation
 	if animation_state.current_time >= animation.duration then
 		local time_overflow = animation_state.current_time - animation.duration
 		panthera_internal.set_animation_state_at_time(animation_state, animation.animation_id, animation.duration, nil, animation_state.play_sample_depth)
