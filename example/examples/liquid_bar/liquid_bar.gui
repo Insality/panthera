@@ -1,0 +1,325 @@
+fonts {
+  name: "text_bold"
+  font: "/example/assets/fonts/text_bold.font"
+}
+textures {
+  name: "example"
+  texture: "/example/assets/example.atlas"
+}
+nodes {
+  size {
+    x: 800.0
+    y: 600.0
+  }
+  type: TYPE_BOX
+  texture: "example/empty"
+  id: "root"
+  inherit_alpha: true
+  visible: false
+}
+nodes {
+  size {
+    x: 728.000
+    y: 380.0
+  }
+  color {
+    x: 0.173
+    y: 0.184
+    z: 0.204
+  }
+  type: TYPE_BOX
+  texture: "example/ui_circle_32"
+  id: "bar_back"
+  parent: "root"
+  inherit_alpha: true
+  slice9 {
+    x: 16.000
+    y: 16.000
+    z: 16.000
+    w: 16.000
+  }
+}
+nodes {
+  size {
+    x: 702.000
+    y: 356.0
+  }
+  type: TYPE_BOX
+  texture: "example/ui_circle_32"
+  id: "mask"
+  parent: "root"
+  inherit_alpha: true
+  slice9 {
+    x: 16.000
+    y: 16.000
+    z: 16.000
+    w: 16.000
+  }
+  clipping_mode: CLIPPING_MODE_STENCIL
+  clipping_visible: false
+}
+nodes {
+  position {
+    x: -312.000
+    y: -178.0
+  }
+  size {
+    x: 80.000
+    y: 260.000
+  }
+  color {
+    x: 0.894
+    y: 0.506
+    z: 0.333
+  }
+  type: TYPE_BOX
+  texture: "example/pixel"
+  id: "slice_0"
+  pivot: PIVOT_S
+  parent: "mask"
+  inherit_alpha: true
+}
+nodes {
+  position {
+    x: -234.000
+    y: -178.0
+  }
+  size {
+    x: 80.000
+    y: 260.000
+  }
+  color {
+    x: 0.894
+    y: 0.506
+    z: 0.333
+  }
+  type: TYPE_BOX
+  texture: "example/pixel"
+  id: "slice_1"
+  pivot: PIVOT_S
+  parent: "mask"
+  inherit_alpha: true
+}
+nodes {
+  position {
+    x: -156.000
+    y: -178.0
+  }
+  size {
+    x: 80.000
+    y: 260.000
+  }
+  color {
+    x: 0.894
+    y: 0.506
+    z: 0.333
+  }
+  type: TYPE_BOX
+  texture: "example/pixel"
+  id: "slice_2"
+  pivot: PIVOT_S
+  parent: "mask"
+  inherit_alpha: true
+}
+nodes {
+  position {
+    x: -78.000
+    y: -178.0
+  }
+  size {
+    x: 80.000
+    y: 260.000
+  }
+  color {
+    x: 0.894
+    y: 0.506
+    z: 0.333
+  }
+  type: TYPE_BOX
+  texture: "example/pixel"
+  id: "slice_3"
+  pivot: PIVOT_S
+  parent: "mask"
+  inherit_alpha: true
+}
+nodes {
+  position {
+    x: 0.000
+    y: -178.0
+  }
+  size {
+    x: 80.000
+    y: 260.000
+  }
+  color {
+    x: 0.894
+    y: 0.506
+    z: 0.333
+  }
+  type: TYPE_BOX
+  texture: "example/pixel"
+  id: "slice_4"
+  pivot: PIVOT_S
+  parent: "mask"
+  inherit_alpha: true
+}
+nodes {
+  position {
+    x: 78.000
+    y: -178.0
+  }
+  size {
+    x: 80.000
+    y: 260.000
+  }
+  color {
+    x: 0.894
+    y: 0.506
+    z: 0.333
+  }
+  type: TYPE_BOX
+  texture: "example/pixel"
+  id: "slice_5"
+  pivot: PIVOT_S
+  parent: "mask"
+  inherit_alpha: true
+}
+nodes {
+  position {
+    x: 156.000
+    y: -178.0
+  }
+  size {
+    x: 80.000
+    y: 260.000
+  }
+  color {
+    x: 0.894
+    y: 0.506
+    z: 0.333
+  }
+  type: TYPE_BOX
+  texture: "example/pixel"
+  id: "slice_6"
+  pivot: PIVOT_S
+  parent: "mask"
+  inherit_alpha: true
+}
+nodes {
+  position {
+    x: 234.000
+    y: -178.0
+  }
+  size {
+    x: 80.000
+    y: 260.000
+  }
+  color {
+    x: 0.894
+    y: 0.506
+    z: 0.333
+  }
+  type: TYPE_BOX
+  texture: "example/pixel"
+  id: "slice_7"
+  pivot: PIVOT_S
+  parent: "mask"
+  inherit_alpha: true
+}
+nodes {
+  position {
+    x: 312.000
+    y: -178.0
+  }
+  size {
+    x: 80.000
+    y: 260.000
+  }
+  color {
+    x: 0.894
+    y: 0.506
+    z: 0.333
+  }
+  type: TYPE_BOX
+  texture: "example/pixel"
+  id: "slice_8"
+  pivot: PIVOT_S
+  parent: "mask"
+  inherit_alpha: true
+}
+nodes {
+  position {
+    x: 0.0
+    y: 250.0
+  }
+  scale {
+    x: 0.900
+    y: 0.900
+  }
+  size {
+    x: 400.0
+    y: 90.0
+  }
+  color {
+    x: 0.722
+    y: 0.741
+    z: 0.761
+  }
+  type: TYPE_TEXT
+  text: "72%"
+  font: "text_bold"
+  id: "text_percent"
+  outline {
+    x: 1.000
+    y: 1.000
+    z: 1.000
+  }
+  shadow {
+    x: 1.000
+    y: 1.000
+    z: 1.000
+  }
+  parent: "root"
+  inherit_alpha: true
+  outline_alpha: 0.000
+  shadow_alpha: 0.000
+}
+nodes {
+  position {
+    x: 0.0
+    y: -250.0
+  }
+  scale {
+    x: 0.550
+    y: 0.550
+  }
+  size {
+    x: 820.0
+    y: 50.0
+  }
+  color {
+    x: 0.463
+    y: 0.475
+    z: 0.490
+  }
+  type: TYPE_TEXT
+  text: "nine slices under one mask make the surface look liquid"
+  font: "text_bold"
+  id: "text_hint"
+  outline {
+    x: 1.000
+    y: 1.000
+    z: 1.000
+  }
+  shadow {
+    x: 1.000
+    y: 1.000
+    z: 1.000
+  }
+  parent: "root"
+  inherit_alpha: true
+  outline_alpha: 0.000
+  shadow_alpha: 0.000
+}
+material: "/builtins/materials/gui.material"
+adjust_reference: ADJUST_REFERENCE_PARENT

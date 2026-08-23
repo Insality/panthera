@@ -1,0 +1,146 @@
+return {
+    data = {
+        animations = {
+            {
+                animation_id = "fly",
+                animation_keys = {
+                    {
+                        duration = 0.7,
+                        easing = "outcubic",
+                        end_value = 300,
+                        key_type = "tween",
+                        node_id = "shape",
+                        property_id = "position_x",
+                    },
+                    {
+                        duration = 0.9,
+                        easing = "outcubic",
+                        end_value = -540,
+                        key_type = "tween",
+                        node_id = "shape",
+                        property_id = "rotation_z",
+                    },
+                    {
+                        duration = 0.45,
+                        easing = "insine",
+                        key_type = "tween",
+                        node_id = "shape",
+                        property_id = "color_a",
+                        start_time = 0.45,
+                        start_value = 1,
+                    },
+                },
+                duration = 0.9,
+            },
+            {
+                animation_id = "arc",
+                animation_keys = {
+                    {
+                        duration = 0.45,
+                        easing = "outsine",
+                        end_value = 360,
+                        key_type = "tween",
+                        node_id = "shape",
+                        property_id = "position_x",
+                    },
+                    {
+                        duration = 1.1,
+                        easing = "linear",
+                        end_value = 360,
+                        key_type = "tween",
+                        node_id = "shape",
+                        property_id = "rotation_z",
+                    },
+                    {
+                        duration = 0.65,
+                        easing = "insine",
+                        end_value = -300,
+                        key_type = "tween",
+                        node_id = "shape",
+                        property_id = "position_x",
+                        start_time = 0.45,
+                        start_value = 360,
+                    },
+                    {
+                        duration = 0.35,
+                        easing = "insine",
+                        key_type = "tween",
+                        node_id = "shape",
+                        property_id = "color_a",
+                        start_time = 0.75,
+                        start_value = 1,
+                    },
+                },
+                duration = 1.1,
+            },
+            {
+                animation_id = "swirl",
+                animation_keys = {
+                    {
+                        duration = 0.5,
+                        easing = "inoutsine",
+                        end_value = 180,
+                        key_type = "tween",
+                        node_id = "shape",
+                        property_id = "position_x",
+                    },
+                    {
+                        duration = 1.1,
+                        easing = "inoutsine",
+                        end_value = 720,
+                        key_type = "tween",
+                        node_id = "shape",
+                        property_id = "rotation_z",
+                    },
+                    {
+                        duration = 0.6,
+                        easing = "inoutsine",
+                        key_type = "tween",
+                        node_id = "shape",
+                        property_id = "position_x",
+                        start_time = 0.5,
+                        start_value = 180,
+                    },
+                    {
+                        duration = 0.6,
+                        easing = "inoutsine",
+                        end_value = 340,
+                        key_type = "tween",
+                        node_id = "shape",
+                        property_id = "position_y",
+                        start_time = 0.5,
+                    },
+                    {
+                        duration = 0.4,
+                        easing = "insine",
+                        key_type = "tween",
+                        node_id = "shape",
+                        property_id = "color_a",
+                        start_time = 0.8,
+                        start_value = 1,
+                    },
+                },
+                duration = 1.1,
+            },
+        },
+        metadata = {
+            fps = 60,
+            gizmo_steps = {
+                time = 0.1,
+            },
+            gui_path = "example/examples/confetti/confetti_piece.gui",
+            layers = {
+            },
+            settings = {
+                font_size = 30,
+            },
+            template_animation_paths = {
+            },
+        },
+        nodes = {
+        },
+    },
+    format = "json",
+    type = "animation_editor",
+    version = 1,
+}

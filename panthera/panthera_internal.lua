@@ -38,6 +38,7 @@ local tweener = require("tweener.tweener")
 ---@field animations panthera.animation.data.animation[]
 ---@field metadata panthera.animation.data.metadata
 ---@field group_animation_keys table<string, table<string, table<string, panthera.animation.data.animation_key[]>>> group_animation_keys[animation_id][node_id][property_id]: keys[]. Value filled at loading animation data
+---@field group_animation_order table<string, panthera.animation.data.animation_key[][]> group_animation_order[animation_id]: key groups sorted like the timeline. Value filled at loading animation data
 ---@field animations_dict table<string, panthera.animation.data.animation> animations_dict[animation_id]: animation. Value filled at loading animation data
 
 ---@class panthera.animation.project_file
@@ -77,47 +78,30 @@ M.KEY_TYPE = {
 
 local TYPE_TABLE = "table"
 
-local MAX_ANIMATION_NESTING = 16
 
--- Same root time: start values first, then keys
-local STAGE_START_VALUE = 0
-local STAGE_KEY_VALUE = 1
-
----@param animation_state panthera.animation
----@return panthera.collect_buffer
-local function get_collect_buffer(animation_state)
-	local buffer = animation_state.collect_buffer
-	if not buffer then
-		buffer = {
-			values = {},
-			pool = {},
-			depth = 0,
-		}
-		animation_state.collect_buffer = buffer
-	end
-	return buffer
-end
-
----@param values panthera.animation.state_value[]
----@param pool panthera.animation.state_value[]
-local function release_state_values(values, pool)
-	local pool_index = #pool
-	for index = #values, 1, -1 do
-		local state_value = values[index]
-		state_value.node = nil
-		state_value.value = nil
-		values[index] = nil
-		pool_index = pool_index + 1
-		pool[pool_index] = state_value
-	end
-end
-
----Custom easing is a Defold vector after preprocess; tweener accepts it as a curve
+---A value key owns [start_time, ...], a clip key owns [start_time, start_time + duration):
+---at the boundary instant the previous clip still holds the pose. The clip at 0 owns its start
 ---@param key panthera.animation.data.animation_key
----@return any
-local function get_key_easing(key)
-	return key.easing_custom or tweener[key.easing] or tweener.linear
+---@param time number
+---@return boolean
+function M.is_key_started(key, time)
+	if key.key_type ~= M.KEY_TYPE.ANIMATION or key.duration <= 0 then
+		return key.start_time <= time
+	end
+	return key.start_time < time or (key.start_time == 0 and time >= 0)
 end
+
+local MAX_ANIMATION_NESTING = 16
+local TIME_UNSTARTED = -1
+local FROZEN_SCALE = 0
+-- Where a collected value came from, breaks a tie between two values of the same root start
+local SOURCE_REST_POSE = 0
+local SOURCE_KEY = 1
+
+-- A clip sample only applies properties with a started key, the rest stay on the previous clip
+M.SAMPLE_DEPTH_ROOT = 1
+M.SAMPLE_DEPTH_CLIP = 2
+local SAMPLE_DEPTH_ROOT = M.SAMPLE_DEPTH_ROOT
 
 --- Use empty function to save a bit of memory
 local EMPTY_FUNCTION = function(_, message, context) end
@@ -271,45 +255,31 @@ end
 ---@field node node
 ---@field property_id string
 ---@field value any
----@field priority number Root time of the key that set this value
----@field stage number
----@field order number
+---@field root_start number Root time of the key that set this value
+---@field source number `SOURCE_REST_POSE` or `SOURCE_KEY`
+---@field order number Collect order, groups are collected in timeline order
 
+---Sample at `time`: collect, sort, apply. Last started key on the root timeline wins,
+---at the same root time start values go before keys, own keys before nested and template ones
 ---@param animation_state panthera.animation
 ---@param animation_id string
 ---@param time number
 ---@param event_callback fun(event_id: string, node: node|nil, data: any, end_value: number)|nil
----@param values panthera.animation.state_value[]
----@param pool panthera.animation.state_value[]
-local function collect_and_apply(animation_state, animation_id, time, event_callback, values, pool)
-	M.collect_animation_state(animation_state, animation_id, time, event_callback, values, pool, 0, 1, 1)
-
-	-- Last started key wins, including nested and template
-	table.sort(values, M.sort_state_values_function)
-
-	local adapter = animation_state.adapter
-	for index = 1, #values do
-		local state_value = values[index]
-		adapter.set_node_property(state_value.node, state_value.property_id, state_value.value)
-	end
-end
-
-
----Set animation state at time
----@param animation_state panthera.animation
----@param animation_id string
----@param time number
----@param event_callback fun(event_id: string, node: node|nil, data: any, end_value: number)|nil
-function M.set_animation_state_at_time(animation_state, animation_id, time, event_callback)
-	local buffer = get_collect_buffer(animation_state)
+---@param depth number? Sample depth, `M.SAMPLE_DEPTH_ROOT` by default
+function M.set_animation_state_at_time(animation_state, animation_id, time, event_callback, depth)
+	local buffer = M._get_collect_buffer(animation_state)
 	buffer.depth = buffer.depth + 1
-	-- Nested collect (event callback) gets a fresh array, the common path reuses the buffer
-	local values = buffer.depth == 1 and buffer.values or {}
-	local pool = buffer.pool
+	-- Nested collect (event callback) gets its own context
+	local context = buffer.context
+	if buffer.depth > 1 then
+		context = { values = {}, pool = buffer.pool }
+	end
+	context.event_callback = event_callback
 
-	local is_ok, error_message = pcall(collect_and_apply, animation_state, animation_id, time, event_callback, values, pool)
+	local is_ok, error_message = pcall(M._collect_and_apply, animation_state, animation_id, time, context, depth or SAMPLE_DEPTH_ROOT)
 
-	release_state_values(values, pool)
+	M._release_state_values(context)
+	context.event_callback = nil
 	buffer.depth = buffer.depth - 1
 
 	if not is_ok then
@@ -318,207 +288,21 @@ function M.set_animation_state_at_time(animation_state, animation_id, time, even
 end
 
 
----Collect animation state at time
+---Reset the previous animation, rewind events if time goes backwards, then sample.
 ---@param animation_state panthera.animation
 ---@param animation_id string
----@param time number Pass -1 to collect start values only
----@param event_callback fun(event_id: string, node: node|nil, data: any, end_value: number)|nil
----@param values panthera.animation.state_value[]
----@param pool panthera.animation.state_value[]
----@param time_offset number Start on the root timeline
----@param time_scale number Root seconds per one second of this animation
----@param depth number
-function M.collect_animation_state(animation_state, animation_id, time, event_callback, values, pool, time_offset, time_scale, depth)
-	local animation_data = M.get_animation_data(animation_state)
-	local animation = animation_data and M.get_animation_by_animation_id(animation_data, animation_id)
-	if not animation then
-		return
-	end
-
-	local group_keys = animation_data.group_animation_keys[animation_id]
-	if not group_keys then
-		return
-	end
-
-	if depth > MAX_ANIMATION_NESTING then
-		-- Collect can run every frame
-		local warning_id = animation_state.animation_path .. "#" .. animation_id
-		if not M.LOGGED_NESTING_WARNINGS[warning_id] then
-			M.LOGGED_NESTING_WARNINGS[warning_id] = true
-			M.logger:warn("Too deep animation nesting, the animation is probably recursive", {
-				animation_path = animation_state.animation_path,
-				animation_id = animation_id,
-			})
-		end
-		return
-	end
-
-	-- initial_state at this animation start (time_scale 0)
-	if animation.initial_state and time >= 0 then
-		local initial_animation = M.get_animation_by_animation_id(animation_data, animation.initial_state)
-		if initial_animation and initial_animation.animation_id ~= animation_id then
-			M.collect_animation_state(animation_state, initial_animation.animation_id, initial_animation.duration,
-				event_callback, values, pool, time_offset, 0, depth + 1)
-		end
-	end
-
-	-- Own keys first, then nested/template
-	for node_id, node_keys in pairs(group_keys) do
-		for property_id, keys in pairs(node_keys) do
-			local first_key = keys[1]
-			local key_type = first_key and first_key.key_type
-
-			if key_type == M.KEY_TYPE.EVENT then
-				M.collect_animation_events(animation_state, keys, time, event_callback)
-			elseif first_key and key_type ~= M.KEY_TYPE.ANIMATION and node_id ~= "" then
-				local node = M.get_node(animation_state, node_id)
-				local value, key_start_time = M.get_node_value_at_time(animation_state, animation_id, node_id, property_id, time)
-				if node and value ~= nil then
-					-- Key start time, or animation start if none
-					local priority = key_start_time and (time_offset + key_start_time * time_scale) or time_offset
-					local stage = key_start_time and STAGE_KEY_VALUE or STAGE_START_VALUE
-					M.add_state_value(values, pool, node, property_id, value, priority, stage)
-				end
-			end
-		end
-	end
-
-	for node_id, node_keys in pairs(group_keys) do
-		for property_id, keys in pairs(node_keys) do
-			local first_key = keys[1]
-			if first_key and first_key.key_type == M.KEY_TYPE.ANIMATION then
-				if node_id == "" then
-					-- Nested
-					M.collect_animation_key_state(animation_state, property_id, keys, time,
-						event_callback, values, pool, time_offset, time_scale, depth)
-				else
-					-- Template
-					local template_path = M.get_template_animation_path(animation_data, node_id)
-					if template_path then
-						local template_state = M.get_template_animation_state(animation_state, node_id, template_path)
-						M.collect_animation_key_state(template_state, property_id, keys, time,
-							event_callback, values, pool, time_offset, time_scale, depth)
-					end
-				end
-			end
-		end
-	end
-end
-
-
----Collect nested or template animation key state
----@param animation_state panthera.animation
----@param inner_animation_id string
----@param keys panthera.animation.data.animation_key[]
 ---@param time number
 ---@param event_callback fun(event_id: string, node: node|nil, data: any, end_value: number)|nil
----@param values panthera.animation.state_value[]
----@param pool panthera.animation.state_value[]
----@param time_offset number
----@param time_scale number
----@param depth number
-function M.collect_animation_key_state(animation_state, inner_animation_id, keys, time, event_callback, values, pool, time_offset, time_scale, depth)
-	local animation_key = nil
-	for index = 1, #keys do
-		local key = keys[index]
-		if key.start_time > time then
-			break
-		end
-		animation_key = key
+---@param depth number? Sample depth, `M.SAMPLE_DEPTH_ROOT` by default
+function M.apply_sample(animation_state, animation_id, time, event_callback, depth)
+	M._reset_previous(animation_state)
+	if animation_state.current_time > time then
+		M.reset_animation_events(animation_state)
 	end
-
-	if not animation_key then
-		-- Not started yet: reset to start values
-		M.collect_animation_state(animation_state, inner_animation_id, -1, event_callback, values,
-			pool, time_offset, 0, depth + 1)
-		return
-	end
-
-	local animation_data = M.get_animation_data(animation_state)
-	local animation_to_play = animation_data and M.get_animation_by_animation_id(animation_data, inner_animation_id)
-	local animation_duration = animation_to_play and animation_to_play.duration or 0
-
-	-- Fit inner animation into the key duration
-	local animation_time_to_set = animation_duration
-	local animation_time_scale = 0
-	if animation_key.duration > 0 and animation_duration > 0 then
-		local easing = get_key_easing(animation_key)
-		local key_progress_time = math.min(time - animation_key.start_time, animation_key.duration)
-		animation_time_to_set = tweener.ease(easing, 0, animation_duration, animation_key.duration, key_progress_time)
-		animation_time_scale = animation_key.duration / animation_duration
-	end
-
-	M.collect_animation_state(animation_state, inner_animation_id, animation_time_to_set, event_callback, values,
-		pool, time_offset + animation_key.start_time * time_scale, time_scale * animation_time_scale, depth + 1)
-end
-
-
----Trigger animation events
----@param animation_state panthera.animation
----@param keys panthera.animation.data.animation_key[]
----@param time number
----@param event_callback fun(event_id: string, node: node|nil, data: any, end_value: number)|nil
-function M.collect_animation_events(animation_state, keys, time, event_callback)
-	for index = 1, #keys do
-		local key = keys[index]
-		if key.start_time > time then
-			break
-		end
-
-		local events = animation_state.events
-		if not events then
-			events = {}
-			animation_state.events = events
-		end
-
-		-- Mark before callback, it can collect again
-		if not events[key] then
-			events[key] = key
-			M.event_animation_key(nil, key, key.duration, event_callback)
-		end
-	end
-end
-
-
----@param values panthera.animation.state_value[]
----@param pool panthera.animation.state_value[]
----@param node node
----@param property_id string
----@param value any
----@param priority number
----@param stage number
-function M.add_state_value(values, pool, node, property_id, value, priority, stage)
-	local pool_index = #pool
-	local state_value = pool[pool_index]
-	if state_value then
-		pool[pool_index] = nil
-	else
-		state_value = {} --[[@as panthera.animation.state_value]]
-	end
-
-	local index = #values + 1
-	state_value.node = node
-	state_value.property_id = property_id
-	state_value.value = value
-	state_value.priority = priority
-	state_value.stage = stage
-	state_value.order = index
-	values[index] = state_value
-end
-
-
----@param a panthera.animation.state_value
----@param b panthera.animation.state_value
-function M.sort_state_values_function(a, b)
-	if a.priority ~= b.priority then
-		return a.priority < b.priority
-	end
-
-	if a.stage ~= b.stage then
-		return a.stage < b.stage
-	end
-
-	return a.order < b.order
+	animation_state.current_time = time
+	animation_state.animation_id = animation_id
+	animation_state.animation_keys_index = 1
+	M.set_animation_state_at_time(animation_state, animation_id, time, event_callback, depth)
 end
 
 
@@ -544,15 +328,15 @@ function M.get_template_animation_state(animation_state, node_id, template_path)
 	end
 
 	local template_state = template_states[node_id]
-	if not template_state then
-		local get_node = function(animation_node_id)
-			return animation_state.get_node(node_id .. "/" .. animation_node_id)
-		end
-
-		template_state = M.create_animation_state(template_path, animation_state.adapter, get_node)
-		template_states[node_id] = template_state
+	if template_state then
+		return template_state
 	end
 
+	local get_node = function(animation_node_id)
+		return animation_state.get_node(node_id .. "/" .. animation_node_id)
+	end
+	template_state = M.create_animation_state(template_path, animation_state.adapter, get_node)
+	template_states[node_id] = template_state
 	return template_state
 end
 
@@ -575,48 +359,40 @@ end
 ---@param animation_id string
 ---@param node_id string
 ---@param property_id string
----@param time number Pass -1 to get initial value
+---@param time number Pass TIME_UNSTARTED to get initial value
 ---@return any|nil
 ---@return number|nil Key start time, or nil if no key started yet
 function M.get_node_value_at_time(animation_state, animation_id, node_id, property_id, time)
 	local animation_data = M.get_animation_data(animation_state) --[[@as panthera.animation.data]]
 	local group_keys = animation_data.group_animation_keys[animation_id]
-
-	local group = group_keys[node_id]
+	local group = group_keys and group_keys[node_id]
 	local keys = group and group[property_id]
 	if not keys or #keys == 0 then
 		return nil
 	end
 
 	local initial_key = keys[1]
-
-	local set_value = nil
+	local set_value
 	if initial_key.key_type == M.KEY_TYPE.TRIGGER then
 		set_value = initial_key.start_data
-	end
-	if initial_key.key_type == M.KEY_TYPE.TWEEN then
+	elseif initial_key.key_type == M.KEY_TYPE.TWEEN then
 		set_value = initial_key.start_value
 	end
 
-	local set_value_time = nil
 	for index = #keys, 1, -1 do
 		local key = keys[index]
-		if key.start_time <= time  then
+		if M.is_key_started(key, time) then
 			if key.key_type == M.KEY_TYPE.TWEEN then
-				set_value = M.get_key_value_at_time(key, time)
-				set_value_time = key.start_time
+				return M.get_key_value_at_time(key, time), key.start_time
 			end
-
 			if key.key_type == M.KEY_TYPE.TRIGGER then
-				set_value = key.data
-				set_value_time = key.start_time
+				return key.data, key.start_time
 			end
-
 			break
 		end
 	end
 
-	return set_value, set_value_time
+	return set_value, nil
 end
 
 
@@ -627,19 +403,18 @@ end
 ---@param time number
 ---@return any|nil
 function M.set_node_value_at_time(animation_state, animation_id, node_id, property_id, time)
-	local adapter = animation_state.adapter
 	local node = M.get_node(animation_state, node_id)
 	if not node then
 		return nil
 	end
 
 	local set_value = M.get_node_value_at_time(animation_state, animation_id, node_id, property_id, time)
-	if set_value ~= nil then
-		adapter.set_node_property(node, property_id, set_value)
-		return set_value
+	if set_value == nil then
+		return nil
 	end
 
-	return nil
+	animation_state.adapter.set_node_property(node, property_id, set_value)
+	return set_value
 end
 
 
@@ -658,15 +433,13 @@ function M.stop_tweens(animation_state, animation_id)
 		return false
 	end
 
-	local group_keys = animation_data.group_animation_keys[animation_id]
-	for node_id, node_keys in pairs(group_keys) do
-		for property_id, keys in pairs(node_keys) do
-			local first_key = keys[1]
-			if first_key and first_key.key_type == M.KEY_TYPE.TWEEN then
-				local node = M.get_node(animation_state, node_id)
-				if node then
-					adapter.stop_tween(node, property_id)
-				end
+	local groups = animation_data.group_animation_order[animation_id]
+	for index = 1, #groups do
+		local first_key = groups[index][1]
+		if first_key.key_type == M.KEY_TYPE.TWEEN then
+			local node = M.get_node(animation_state, first_key.node_id)
+			if node then
+				adapter.stop_tween(node, first_key.property_id)
 			end
 		end
 	end
@@ -685,8 +458,8 @@ function M.reset_animation_state(animation_state, animation_id, visited)
 		return
 	end
 
-	local group_keys = animation_data.group_animation_keys[animation_id]
-	if not group_keys then
+	local groups = animation_data.group_animation_order[animation_id]
+	if not groups then
 		return
 	end
 
@@ -697,28 +470,20 @@ function M.reset_animation_state(animation_state, animation_id, visited)
 		visited_animations = {}
 		visited[animation_state] = visited_animations
 	end
-
 	if visited_animations[animation_id] then
 		return
 	end
 	visited_animations[animation_id] = true
 
-	for node_id, node_keys in pairs(group_keys) do
-		for property_id, keys in pairs(node_keys) do
-			local is_animation_keys = #keys > 0 and keys[1].key_type == M.KEY_TYPE.ANIMATION
-			if not is_animation_keys then
-				M.set_node_value_at_time(animation_state, animation_id, node_id, property_id, -1)
-			elseif node_id == "" then
-				-- Nested
-				M.reset_animation_state(animation_state, property_id, visited)
-			else
-				-- Template
-				local template_path = M.get_template_animation_path(animation_data, node_id)
-				if template_path then
-					local template_state = M.get_template_animation_state(animation_state, node_id, template_path)
-					M.reset_animation_state(template_state, property_id, visited)
-				end
+	for index = 1, #groups do
+		local first_key = groups[index][1]
+		if first_key.key_type == M.KEY_TYPE.ANIMATION then
+			local child_state = M._child_sample_state(animation_state, animation_data, first_key.node_id)
+			if child_state then
+				M.reset_animation_state(child_state, first_key.property_id, visited)
 			end
+		else
+			M.set_node_value_at_time(animation_state, animation_id, first_key.node_id, first_key.property_id, TIME_UNSTARTED)
 		end
 	end
 end
@@ -733,37 +498,27 @@ function M.get_node(animation_state, node_id)
 	end
 
 	local node = animation_state.nodes[node_id]
+	if node == false then
+		return nil
+	end
 
 	if node == nil then
 		local is_ok, result = pcall(animation_state.get_node, node_id)
-		local animation_data = M.get_animation_data(animation_state)
-		local binded_to = animation_data.metadata and animation_data.metadata.gui_path
-
 		if not is_ok then
-			M.logger:warn("Can't get node", {
-				binded_to = binded_to,
-				animation_path = animation_state.animation_path,
-				node_id = node_id,
-			})
-			return
+			M._log_node(animation_state, node_id, "Can't get node")
+			return nil
 		end
 		node = result
 		animation_state.nodes[node_id] = node
 	end
 
-	if node == nil then
-		local animation_data = M.get_animation_data(animation_state)
-		local binded_to = animation_data.metadata and animation_data.metadata.gui_path
-		M.logger:warn("Can't find node", {
-			binded_to = binded_to,
-			animation_path = animation_state.animation_path,
-			node_id = node_id
-		})
+	if not node then
+		M._log_node(animation_state, node_id, "Can't find node")
 		return nil
 	end
 
-	if node and not animation_state.adapter.is_node_valid(node) then
-		animation_state.nodes[node_id] = false -- Mark as deleted if node is invalid
+	if not animation_state.adapter.is_node_valid(node) then
+		animation_state.nodes[node_id] = false
 		return nil
 	end
 
@@ -786,24 +541,21 @@ function M.run_timeline_key(animation_state, key, options, speed)
 	local time_overflow = animation_state.current_time - key.start_time
 	local key_duration = math.max(key.duration - time_overflow, 0) / speed
 
-	if key.key_type == M.KEY_TYPE.TWEEN then
-		if node then
-			local easing = key.easing_custom or adapter.get_easing(key.easing)
-			local delta = key.end_value - key.start_value
-			local start_value = key.start_value
-
-			adapter.tween_animation_key(node, key.property_id, easing, key_duration, start_value + delta)
-			return true
-		end
-		return false
-	elseif key.key_type == M.KEY_TYPE.TRIGGER then
-		if node then
-			adapter.trigger_animation_key(node, key.property_id, key.data)
-			return true
-		end
-		return false
-	elseif key.key_type == M.KEY_TYPE.EVENT then
+	if key.key_type == M.KEY_TYPE.EVENT then
 		M.event_animation_key(node, key, key_duration, options.callback_event)
+		return true
+	end
+	if not node then
+		return false
+	end
+	if key.key_type == M.KEY_TYPE.TWEEN then
+		-- Engine easing, sampling uses `M._get_key_easing`
+		local easing = key.easing_custom or adapter.get_easing(key.easing)
+		adapter.tween_animation_key(node, key.property_id, easing, key_duration, key.start_value + (key.end_value - key.start_value))
+		return true
+	end
+	if key.key_type == M.KEY_TYPE.TRIGGER then
+		adapter.trigger_animation_key(node, key.property_id, key.data)
 		return true
 	end
 
@@ -819,16 +571,16 @@ function M.event_animation_key(node, key, duration, callback_event)
 	if not callback_event then
 		return
 	end
-
 	if duration == 0 then
 		callback_event(key.event_id, node, key.data, key.end_value)
-	else
-		local easing = get_key_easing(key)
-		-- TODO: need to keep tween reference to cancel it
-		tweener.tween(easing, key.start_value, key.end_value, duration, function(value)
-			callback_event(key.event_id, node, key.data, value)
-		end)
+		return
 	end
+
+	local easing = M._get_key_easing(key)
+	-- TODO: need to keep tween reference to cancel it
+	tweener.tween(easing, key.start_value, key.end_value, duration, function(value)
+		callback_event(key.event_id, node, key.data, value)
+	end)
 end
 
 
@@ -859,20 +611,26 @@ end
 ---@return string|nil error_reason
 function M.load_by_path(path)
 	local file = io.open(path)
-	if file then
-		local file_data = file:read("*all")
-		file:close()
-		if file_data then
-			local is_ok, result = pcall(json.decode, file_data)
-			if not is_ok then
-				return nil, "Failed to parse json: " .. path
-			end
-			local parsed_data = result
-			if parsed_data and type(parsed_data) == TYPE_TABLE then
-				return parsed_data, nil
-			end
-		end
+	if not file then
+		return nil, "Failed to load file: " .. path
 	end
+
+	local file_data = file:read("*all")
+	file:close()
+	if not file_data then
+		return nil, "Failed to load file: " .. path
+	end
+
+	local is_ok, result = pcall(json.decode, file_data)
+	if not is_ok then
+		return nil, "Failed to parse json: " .. path
+	end
+	local parsed_data = result
+	if parsed_data and type(parsed_data) == TYPE_TABLE then
+		return parsed_data, nil
+	end
+
+	return nil, "Failed to load file: " .. path
 end
 
 
@@ -918,7 +676,7 @@ function M.get_animation_by_path(path)
 	end
 
 	if not resource then
-		return nil, error
+		return nil, error or ("Failed to load animation: " .. path)
 	end
 
 	resource = resource --[[@as panthera.animation.project_file]]
@@ -1027,6 +785,9 @@ function M.preprocess_animation_keys(data)
 		end
 	end
 
+	-- After the editor only keys are gone, so that an emptied group is left out
+	data.group_animation_order = M.get_group_animation_order(data)
+
 	do -- Include all children metadata template_animation_paths recursive
 		local paths = data.metadata.template_animation_paths
 		if paths then
@@ -1094,6 +855,40 @@ function M.get_group_animation_keys(animation_data)
 end
 
 
+---Order the key groups of every animation the same way the timeline is ordered, so that a sample
+---resolves two groups starting at the same time exactly like the playback does.
+---Holds the key arrays themselves, `keys[1]` carries the node and the property of a group
+---@private
+---@param animation_data panthera.animation.data
+---@return table<string, panthera.animation.data.animation_key[][]>
+function M.get_group_animation_order(animation_data)
+	local group_order = {}
+	for animation_id, group_keys in pairs(animation_data.group_animation_keys) do
+		local groups = {}
+		for _, node_keys in pairs(group_keys) do
+			for _, keys in pairs(node_keys) do
+				if keys[1] then
+					groups[#groups + 1] = keys
+				end
+			end
+		end
+
+		table.sort(groups, M.sort_groups_function)
+		group_order[animation_id] = groups
+	end
+
+	return group_order
+end
+
+
+---@private
+---@param a panthera.animation.data.animation_key[]
+---@param b panthera.animation.data.animation_key[]
+function M.sort_groups_function(a, b)
+	return M.sort_keys_function(a[1], b[1])
+end
+
+
 ---Return animation key value at time. If time is out of range - return start or end value
 ---@private
 ---@param key panthera.animation.data.animation_key
@@ -1108,7 +903,7 @@ function M.get_key_value_at_time(key, time)
 		return key.end_value
 	end
 
-	local easing = get_key_easing(key)
+	local easing = M._get_key_easing(key)
 	local value = tweener.ease(easing, key.start_value, key.end_value, key.duration, time - key.start_time)
 
 	return value
@@ -1152,6 +947,384 @@ local path_counter = 0
 function M.get_fake_animation_path()
 	path_counter = path_counter + 1
 	return "panthera_animation_" .. path_counter
+end
+
+
+---@param animation_state panthera.animation
+---@return panthera.collect_buffer
+function M._get_collect_buffer(animation_state)
+	local buffer = animation_state.collect_buffer
+	if not buffer then
+		local pool = {}
+		buffer = {
+			depth = 0,
+			pool = pool,
+			context = { values = {}, pool = pool },
+		}
+		animation_state.collect_buffer = buffer
+	end
+	return buffer
+end
+
+
+---@param context panthera.collect_context
+function M._release_state_values(context)
+	local values = context.values
+	local pool = context.pool
+	local pool_index = #pool
+	for index = #values, 1, -1 do
+		local state_value = values[index]
+		state_value.node = nil
+		state_value.value = nil
+		values[index] = nil
+		pool_index = pool_index + 1
+		pool[pool_index] = state_value
+	end
+end
+
+
+---Sampling curve. Playback uses `adapter.get_easing`, a custom easing has to exist in both
+---@param key panthera.animation.data.animation_key
+---@return any
+function M._get_key_easing(key)
+	return key.easing_custom or tweener[key.easing] or tweener.linear
+end
+
+
+---@param animation_state panthera.animation
+function M._reset_previous(animation_state)
+	local previous_animation_id = animation_state.previous_animation_id
+	if not previous_animation_id then
+		return
+	end
+	M.reset_animation_state(animation_state, previous_animation_id)
+	animation_state.previous_animation_id = nil
+end
+
+
+---@param animation_state panthera.animation
+---@param node_id string
+---@param message string
+function M._log_node(animation_state, node_id, message)
+	local animation_data = M.get_animation_data(animation_state)
+	M.logger:warn(message, {
+		binded_to = animation_data.metadata and animation_data.metadata.gui_path,
+		animation_path = animation_state.animation_path,
+		node_id = node_id,
+	})
+end
+
+
+---@param keys panthera.animation.data.animation_key[]
+---@param time number
+---@return panthera.animation.data.animation_key|nil
+function M._last_key_at(keys, time)
+	local animation_key
+	for index = 1, #keys do
+		local key = keys[index]
+		if not M.is_key_started(key, time) then
+			break
+		end
+		animation_key = key
+	end
+	return animation_key
+end
+
+
+---Fit the inner animation into the key duration
+---@param key panthera.animation.data.animation_key
+---@param time number
+---@param inner_duration number
+---@return number local_time
+---@return number time_scale
+function M._inner_sample(key, time, inner_duration)
+	if key.duration <= 0 or inner_duration <= 0 then
+		return inner_duration, FROZEN_SCALE
+	end
+	local key_progress = math.min(time - key.start_time, key.duration)
+	local local_time = tweener.ease(M._get_key_easing(key), 0, inner_duration, key.duration, key_progress)
+	return local_time, key.duration / inner_duration
+end
+
+
+---@param animation_state panthera.animation
+---@param animation_data panthera.animation.data
+---@param node_id string
+---@return panthera.animation|nil
+function M._child_sample_state(animation_state, animation_data, node_id)
+	if node_id == "" then
+		return animation_state
+	end
+	local template_path = M.get_template_animation_path(animation_data, node_id)
+	if not template_path then
+		return nil
+	end
+	return M.get_template_animation_state(animation_state, node_id, template_path)
+end
+
+
+---@param context panthera.collect_context
+---@param node node
+---@param property_id string
+---@param value any
+---@param root_start number
+---@param source number
+function M._add_state_value(context, node, property_id, value, root_start, source)
+	local values = context.values
+	local pool = context.pool
+	local pool_index = #pool
+	local state_value = pool[pool_index]
+	local index = #values + 1
+	if state_value then
+		pool[pool_index] = nil
+		state_value.node = node
+		state_value.property_id = property_id
+		state_value.value = value
+		state_value.root_start = root_start
+		state_value.source = source
+		state_value.order = index
+	else
+		state_value = {
+			node = node,
+			property_id = property_id,
+			value = value,
+			root_start = root_start,
+			source = source,
+			order = index,
+		}
+	end
+	values[index] = state_value
+end
+
+
+---Values are applied in this order, so the last one of a node property wins:
+---the later root start, then a started key over a rest pose, then the timeline order of the group
+---@param a panthera.animation.state_value
+---@param b panthera.animation.state_value
+function M._sort_state_values(a, b)
+	if a.root_start ~= b.root_start then
+		return a.root_start < b.root_start
+	end
+	if a.source ~= b.source then
+		return a.source < b.source
+	end
+	return a.order < b.order
+end
+
+
+---@param animation_state panthera.animation
+---@param keys panthera.animation.data.animation_key[]
+---@param time number
+---@param context panthera.collect_context
+function M._collect_animation_events(animation_state, keys, time, context)
+	for index = 1, #keys do
+		local key = keys[index]
+		if not M.is_key_started(key, time) then
+			break
+		end
+
+		-- Mark before callback, it can collect again
+		local events = animation_state.events or {}
+		animation_state.events = events
+		if not events[key] then
+			events[key] = key
+			M.event_animation_key(nil, key, key.duration, context.event_callback)
+		end
+	end
+end
+
+
+---@param animation_state panthera.animation
+---@param animation_id string
+---@param node_id string
+---@param property_id string
+---@param keys panthera.animation.data.animation_key[]
+---@param time number
+---@param context panthera.collect_context
+---@param time_offset number
+---@param time_scale number
+---@param depth number
+function M._collect_own(animation_state, animation_id, node_id, property_id, keys, time, context, time_offset, time_scale, depth)
+	local first_key = keys[1]
+	if not first_key then
+		return
+	end
+
+	local key_type = first_key.key_type
+	if key_type == M.KEY_TYPE.EVENT then
+		M._collect_animation_events(animation_state, keys, time, context)
+		return
+	end
+	if key_type == M.KEY_TYPE.ANIMATION or node_id == "" then
+		return
+	end
+
+	local node = M.get_node(animation_state, node_id)
+	if not node then
+		return
+	end
+
+	local value, key_start_time = M.get_node_value_at_time(animation_state, animation_id, node_id, property_id, time)
+	if value == nil then
+		return
+	end
+
+	local is_owned = key_start_time ~= nil
+	local is_clip_start_pose = time < 0
+	local is_root = depth == SAMPLE_DEPTH_ROOT
+
+	-- A running clip claims only what it owns, the rest stays on the previous clip
+	if not is_owned and not is_clip_start_pose and not is_root then
+		return
+	end
+
+	if is_owned then
+		M._add_state_value(context, node, property_id, value, time_offset + key_start_time * time_scale, SOURCE_KEY)
+	else
+		M._add_state_value(context, node, property_id, value, time_offset, SOURCE_REST_POSE)
+	end
+end
+
+
+---@param animation_state panthera.animation
+---@param animation_data panthera.animation.data
+---@param node_id string
+---@param property_id string
+---@param keys panthera.animation.data.animation_key[]
+---@param time number
+---@param context panthera.collect_context
+---@param time_offset number
+---@param time_scale number
+---@param depth number
+function M._collect_child(animation_state, animation_data, node_id, property_id, keys, time, context, time_offset, time_scale, depth)
+	local first_key = keys[1]
+	if not first_key or first_key.key_type ~= M.KEY_TYPE.ANIMATION then
+		return
+	end
+
+	local child_state = M._child_sample_state(animation_state, animation_data, node_id)
+	if not child_state then
+		return
+	end
+
+	M._collect_animation_key_state(child_state, property_id, keys, time, context, time_offset, time_scale, depth)
+end
+
+
+---@param animation_state panthera.animation
+---@param animation panthera.animation.data.animation
+---@param animation_data panthera.animation.data
+---@param time number
+---@param context panthera.collect_context
+---@param time_offset number
+---@param depth number
+function M._collect_initial_state(animation_state, animation, animation_data, time, context, time_offset, depth)
+	if not animation.initial_state or time < 0 then
+		return
+	end
+	local initial_animation = M.get_animation_by_animation_id(animation_data, animation.initial_state)
+	if not initial_animation or initial_animation.animation_id == animation.animation_id then
+		return
+	end
+	M._collect_animation_state(animation_state, initial_animation.animation_id, initial_animation.duration, context, time_offset, FROZEN_SCALE, depth + 1)
+end
+
+
+---@param animation_state panthera.animation
+---@param animation_id string
+function M._warn_deep_nesting(animation_state, animation_id)
+	local warning_id = animation_state.animation_path .. "#" .. animation_id
+	if M.LOGGED_NESTING_WARNINGS[warning_id] then
+		return
+	end
+	M.LOGGED_NESTING_WARNINGS[warning_id] = true
+	M.logger:warn("Too deep animation nesting, the animation is probably recursive", {
+		animation_path = animation_state.animation_path,
+		animation_id = animation_id,
+	})
+end
+
+
+---@param animation_state panthera.animation
+---@param animation_id string
+---@param time number
+---@param context panthera.collect_context
+---@param time_offset number Start of this animation on the root timeline
+---@param time_scale number Root seconds per one second of this animation
+---@param depth number
+function M._collect_animation_state(animation_state, animation_id, time, context, time_offset, time_scale, depth)
+	local animation_data = M.get_animation_data(animation_state)
+	local animation = animation_data and M.get_animation_by_animation_id(animation_data, animation_id)
+	if not animation then
+		return
+	end
+
+	local groups = animation_data.group_animation_order[animation_id]
+	if not groups then
+		return
+	end
+
+	if depth > MAX_ANIMATION_NESTING then
+		M._warn_deep_nesting(animation_state, animation_id)
+		return
+	end
+
+	M._collect_initial_state(animation_state, animation, animation_data, time, context, time_offset, depth)
+
+	-- Own keys first, then nested/template: later collected wins at the same root time
+	for index = 1, #groups do
+		local keys = groups[index]
+		M._collect_own(animation_state, animation_id, keys[1].node_id, keys[1].property_id, keys, time, context, time_offset, time_scale, depth)
+	end
+	for index = 1, #groups do
+		local keys = groups[index]
+		M._collect_child(animation_state, animation_data, keys[1].node_id, keys[1].property_id, keys, time, context, time_offset, time_scale, depth)
+	end
+end
+
+
+---@param animation_state panthera.animation
+---@param inner_animation_id string
+---@param keys panthera.animation.data.animation_key[]
+---@param time number
+---@param context panthera.collect_context
+---@param time_offset number
+---@param time_scale number
+---@param depth number
+function M._collect_animation_key_state(animation_state, inner_animation_id, keys, time, context, time_offset, time_scale, depth)
+	local animation_key = M._last_key_at(keys, time)
+	if not animation_key then
+		M._collect_animation_state(animation_state, inner_animation_id, TIME_UNSTARTED, context,
+			time_offset, FROZEN_SCALE, depth + 1)
+		return
+	end
+
+	local animation_data = M.get_animation_data(animation_state)
+	local animation_to_play = animation_data and M.get_animation_by_animation_id(animation_data, inner_animation_id)
+	local inner_duration = animation_to_play and animation_to_play.duration or 0
+	local local_time, inner_scale = M._inner_sample(animation_key, time, inner_duration)
+
+	M._collect_animation_state(animation_state, inner_animation_id, local_time, context,
+		time_offset + animation_key.start_time * time_scale, time_scale * inner_scale, depth + 1)
+end
+
+
+---@param animation_state panthera.animation
+---@param animation_id string
+---@param time number
+---@param context panthera.collect_context
+---@param depth number
+function M._collect_and_apply(animation_state, animation_id, time, context, depth)
+	M._collect_animation_state(animation_state, animation_id, time, context, 0, 1, depth)
+
+	local values = context.values
+	table.sort(values, M._sort_state_values)
+
+	local adapter = animation_state.adapter
+	for index = 1, #values do
+		local state_value = values[index]
+		adapter.set_node_property(state_value.node, state_value.property_id, state_value.value)
+	end
 end
 
 

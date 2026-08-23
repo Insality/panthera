@@ -32,6 +32,7 @@ dependencies#1 = https://github.com/Insality/defold-tweener/archive/refs/tags/6.
 dependencies#2 = https://github.com/Insality/druid/archive/refs/tags/1.2.6.zip
 dependencies#3 = https://github.com/Insality/defold-event/archive/refs/tags/21.zip
 dependencies#4 = https://github.com/Insality/asset-store/archive/refs/tags/4.zip
+dependencies#5 = https://github.com/britzl/deftest/archive/refs/tags/2.8.0.zip
 
 [library]
 include_dirs = panthera
@@ -49,4 +50,7 @@ show_fullscreen_button = 0
 show_made_with_defold = 0
 show_console_banner = 0
 scale_mode = stretch
+
+[native_extension]
+app_manifest = /example/assets/appmanifest.appmanifest
 

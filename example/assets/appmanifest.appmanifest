@@ -1,0 +1,100 @@
+platforms:
+  armv7-ios:
+    context:
+      excludeLibs: [physics, LinearMath, BulletDynamics, BulletCollision, box2d_defold, script_box2d_defold, gamesys_model, gamesys_rig, rig, record, vpx, sound, tremolo, liveupdate]
+      excludeSymbols: [ScriptBox2DExt, ScriptModelExt, DefaultSoundDevice, AudioDecoderWav, AudioDecoderStbVorbis, AudioDecoderTremolo]
+      libs: [physics_null, gamesys_rig_null, gamesys_model_null, rig_null, record_null, sound_null, liveupdate_null]
+  arm64-ios:
+    context:
+      excludeLibs: [physics, LinearMath, BulletDynamics, BulletCollision, box2d_defold, script_box2d_defold, gamesys_model, gamesys_rig, rig, record, vpx, sound, tremolo, liveupdate]
+      excludeSymbols: [ScriptBox2DExt, ScriptModelExt, DefaultSoundDevice, AudioDecoderWav, AudioDecoderStbVorbis, AudioDecoderTremolo]
+      symbols: []
+      libs: [physics_null, gamesys_rig_null, gamesys_model_null, rig_null, record_null, sound_null, liveupdate_null]
+      frameworks: []
+      linkFlags: []
+  x86_64-ios:
+    context:
+      excludeLibs: [physics, LinearMath, BulletDynamics, BulletCollision, box2d_defold, script_box2d_defold, gamesys_model, gamesys_rig, rig, record, vpx, sound, tremolo, liveupdate]
+      excludeSymbols: [ScriptBox2DExt, ScriptModelExt, DefaultSoundDevice, AudioDecoderWav, AudioDecoderStbVorbis, AudioDecoderTremolo]
+      symbols: []
+      libs: [physics_null, gamesys_rig_null, gamesys_model_null, rig_null, record_null, sound_null, liveupdate_null]
+      frameworks: []
+      linkFlags: []
+  armv7-android:
+    context:
+      excludeLibs: [physics, LinearMath, BulletDynamics, BulletCollision, box2d_defold, script_box2d_defold, gamesys_model, gamesys_rig, rig, record, vpx, sound, tremolo, liveupdate]
+      excludeJars: []
+      excludeSymbols: [ScriptBox2DExt, ScriptModelExt, DefaultSoundDevice, AudioDecoderWav, AudioDecoderStbVorbis, AudioDecoderTremolo]
+      symbols: []
+      libs: [physics_null, gamesys_rig_null, gamesys_model_null, rig_null, record_null, sound_null, liveupdate_null]
+      linkFlags: []
+      jetifier: true
+  arm64-android:
+    context:
+      excludeLibs: [physics, LinearMath, BulletDynamics, BulletCollision, box2d_defold, script_box2d_defold, gamesys_model, gamesys_rig, rig, record, vpx, sound, tremolo, liveupdate]
+      excludeJars: []
+      excludeSymbols: [ScriptBox2DExt, ScriptModelExt, DefaultSoundDevice, AudioDecoderWav, AudioDecoderStbVorbis, AudioDecoderTremolo]
+      symbols: []
+      libs: [physics_null, gamesys_rig_null, gamesys_model_null, rig_null, record_null, sound_null, liveupdate_null]
+      linkFlags: []
+      jetifier: true
+  arm64-osx:
+    context:
+      excludeLibs: [physics, LinearMath, BulletDynamics, BulletCollision, box2d_defold, script_box2d_defold, gamesys_model, gamesys_rig, rig, record, vpx, sound, tremolo, liveupdate]
+      excludeSymbols: [ScriptBox2DExt, ScriptModelExt, DefaultSoundDevice, AudioDecoderWav, AudioDecoderStbVorbis, AudioDecoderTremolo]
+      symbols: []
+      libs: [physics_null, gamesys_rig_null, gamesys_model_null, rig_null, record_null, sound_null, liveupdate_null]
+      frameworks: []
+      linkFlags: []
+  x86_64-osx:
+    context:
+      excludeLibs: [physics, LinearMath, BulletDynamics, BulletCollision, box2d_defold, script_box2d_defold, gamesys_model, gamesys_rig, rig, record, vpx, sound, tremolo, liveupdate]
+      excludeSymbols: [ScriptBox2DExt, ScriptModelExt, DefaultSoundDevice, AudioDecoderWav, AudioDecoderStbVorbis, AudioDecoderTremolo]
+      symbols: []
+      libs: [physics_null, gamesys_rig_null, gamesys_model_null, rig_null, record_null, sound_null, liveupdate_null]
+      frameworks: []
+      linkFlags: []
+  x86_64-linux:
+    context:
+      excludeLibs: [physics, LinearMath, BulletDynamics, BulletCollision, box2d_defold, script_box2d_defold, gamesys_model, gamesys_rig, rig, record, vpx, sound, tremolo, liveupdate]
+      excludeSymbols: [ScriptBox2DExt, ScriptModelExt, DefaultSoundDevice, AudioDecoderWav, AudioDecoderStbVorbis, AudioDecoderTremolo]
+      symbols: []
+      libs: [physics_null, gamesys_rig_null, gamesys_model_null, rig_null, record_null, sound_null, liveupdate_null]
+      linkFlags: []
+  arm64-linux:
+    context:
+      excludeLibs: [physics, LinearMath, BulletDynamics, BulletCollision, box2d_defold, script_box2d_defold, gamesys_model, gamesys_rig, rig, record, vpx, sound, tremolo, liveupdate]
+      excludeSymbols: [ScriptBox2DExt, ScriptModelExt, DefaultSoundDevice, AudioDecoderWav, AudioDecoderStbVorbis, AudioDecoderTremolo]
+      symbols: []
+      libs: [physics_null, gamesys_rig_null, gamesys_model_null, rig_null, record_null, sound_null, liveupdate_null]
+      linkFlags: []
+  x86-win32:
+    context:
+      excludeLibs: [physics, libLinearMath, libBulletDynamics, libBulletCollision, libbox2d_defold, script_box2d_defold, gamesys_model, gamesys_rig, rig, record, vpx, sound, libtremolo, liveupdate]
+      excludeSymbols: [ScriptBox2DExt, ScriptModelExt, DefaultSoundDevice, AudioDecoderWav, AudioDecoderStbVorbis, AudioDecoderTremolo]
+      symbols: []
+      libs: [physics_null, gamesys_rig_null, gamesys_model_null, rig_null, record_null, sound_null, liveupdate_null]
+      linkFlags: []
+  x86_64-win32:
+    context:
+      excludeLibs: [physics, libLinearMath, libBulletDynamics, libBulletCollision, libbox2d_defold, script_box2d_defold, gamesys_model, gamesys_rig, rig, record, vpx, sound, libtremolo, liveupdate]
+      excludeSymbols: [ScriptBox2DExt, ScriptModelExt, DefaultSoundDevice, AudioDecoderWav, AudioDecoderStbVorbis, AudioDecoderTremolo]
+      symbols: []
+      libs: [physics_null, gamesys_rig_null, gamesys_model_null, rig_null, record_null, sound_null, liveupdate_null]
+      linkFlags: []
+  wasm-web:
+    context:
+      excludeLibs: [physics, LinearMath, BulletDynamics, BulletCollision, box2d_defold, script_box2d_defold, gamesys_model, gamesys_rig, rig, record, vpx, sound, tremolo, liveupdate]
+      excludeJsLibs: []
+      excludeSymbols: [ScriptBox2DExt, ScriptModelExt, DefaultSoundDevice, AudioDecoderWav, AudioDecoderStbVorbis, AudioDecoderTremolo]
+      symbols: []
+      libs: [physics_null, gamesys_rig_null, gamesys_model_null, rig_null, record_null, sound_null, liveupdate_null]
+      linkFlags: []
+  wasm_pthread-web:
+    context:
+      excludeLibs: [physics, LinearMath, BulletDynamics, BulletCollision, box2d_defold, script_box2d_defold, gamesys_model, gamesys_rig, rig, record, vpx, sound, tremolo, liveupdate]
+      excludeJsLibs: []
+      excludeSymbols: [ScriptBox2DExt, ScriptModelExt, DefaultSoundDevice, AudioDecoderWav, AudioDecoderStbVorbis, AudioDecoderTremolo]
+      symbols: []
+      libs: [physics_null, gamesys_rig_null, gamesys_model_null, rig_null, record_null, sound_null, liveupdate_null]
+      linkFlags: []

@@ -18,312 +18,480 @@ nodes {
   visible: false
 }
 nodes {
-  size {
-    x: 22.0
-    y: 38.0
-  }
-  color {
-    x: 0.894
-    y: 0.506
-    z: 0.333
-  }
-  type: TYPE_BOX
-  texture: "example/ui_circle_8"
+  type: TYPE_TEMPLATE
   id: "piece_0"
   parent: "root"
   inherit_alpha: true
-  slice9 {
-    x: 4.000
-    y: 4.000
-    z: 4.000
-    w: 4.000
-  }
+  template: "/example/examples/confetti/confetti_piece.gui"
 }
 nodes {
-  size {
-    x: 22.0
-    y: 38.0
-  }
+  type: TYPE_BOX
+  id: "piece_0/root"
+  parent: "piece_0"
+  inherit_alpha: true
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "piece_0/reach"
+  parent: "piece_0/root"
+  inherit_alpha: true
+  template_node_child: true
+}
+nodes {
   color {
-    x: 0.600
-    y: 0.502
-    z: 0.902
+    x: 0.894
+    y: 0.506
+    z: 0.333
   }
   type: TYPE_BOX
-  texture: "example/ui_circle_8"
+  id: "piece_0/shape"
+  parent: "piece_0/reach"
+  inherit_alpha: true
+  overridden_fields: 5
+  template_node_child: true
+}
+nodes {
+  type: TYPE_TEMPLATE
   id: "piece_1"
   parent: "root"
   inherit_alpha: true
-  slice9 {
-    x: 4.000
-    y: 4.000
-    z: 4.000
-    w: 4.000
-  }
+  template: "/example/examples/confetti/confetti_piece.gui"
 }
 nodes {
-  size {
-    x: 22.0
-    y: 38.0
-  }
+  type: TYPE_BOX
+  id: "piece_1/root"
+  parent: "piece_1"
+  inherit_alpha: true
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "piece_1/reach"
+  parent: "piece_1/root"
+  inherit_alpha: true
+  template_node_child: true
+}
+nodes {
   color {
-    x: 0.800
+    x: 0.600
     y: 0.502
-    z: 0.600
+    z: 0.902
   }
   type: TYPE_BOX
-  texture: "example/ui_circle_8"
+  id: "piece_1/shape"
+  parent: "piece_1/reach"
+  inherit_alpha: true
+  overridden_fields: 5
+  template_node_child: true
+}
+nodes {
+  type: TYPE_TEMPLATE
   id: "piece_2"
   parent: "root"
   inherit_alpha: true
-  slice9 {
-    x: 4.000
-    y: 4.000
-    z: 4.000
-    w: 4.000
-  }
+  template: "/example/examples/confetti/confetti_piece.gui"
 }
 nodes {
-  size {
-    x: 22.0
-    y: 38.0
-  }
+  type: TYPE_BOX
+  id: "piece_2/root"
+  parent: "piece_2"
+  inherit_alpha: true
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "piece_2/reach"
+  parent: "piece_2/root"
+  inherit_alpha: true
+  template_node_child: true
+}
+nodes {
   color {
-    x: 0.420
-    y: 0.750
+    x: 0.800
+    y: 0.502
     z: 0.600
   }
   type: TYPE_BOX
-  texture: "example/ui_circle_8"
+  id: "piece_2/shape"
+  parent: "piece_2/reach"
+  inherit_alpha: true
+  overridden_fields: 5
+  template_node_child: true
+}
+nodes {
+  type: TYPE_TEMPLATE
   id: "piece_3"
   parent: "root"
   inherit_alpha: true
-  slice9 {
-    x: 4.000
-    y: 4.000
-    z: 4.000
-    w: 4.000
-  }
+  template: "/example/examples/confetti/confetti_piece.gui"
 }
 nodes {
-  size {
-    x: 22.0
-    y: 38.0
-  }
+  type: TYPE_BOX
+  id: "piece_3/root"
+  parent: "piece_3"
+  inherit_alpha: true
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "piece_3/reach"
+  parent: "piece_3/root"
+  inherit_alpha: true
+  template_node_child: true
+}
+nodes {
   color {
-    x: 0.722
-    y: 0.741
-    z: 0.761
+    x: 0.420
+    y: 0.750
+    z: 0.600
   }
   type: TYPE_BOX
-  texture: "example/ui_circle_8"
+  id: "piece_3/shape"
+  parent: "piece_3/reach"
+  inherit_alpha: true
+  overridden_fields: 5
+  template_node_child: true
+}
+nodes {
+  type: TYPE_TEMPLATE
   id: "piece_4"
   parent: "root"
   inherit_alpha: true
-  slice9 {
-    x: 4.000
-    y: 4.000
-    z: 4.000
-    w: 4.000
-  }
+  template: "/example/examples/confetti/confetti_piece.gui"
 }
 nodes {
-  size {
-    x: 22.0
-    y: 38.0
-  }
-  color {
-    x: 0.894
-    y: 0.506
-    z: 0.333
-  }
   type: TYPE_BOX
-  texture: "example/ui_circle_8"
-  id: "piece_5"
-  parent: "root"
+  id: "piece_4/root"
+  parent: "piece_4"
   inherit_alpha: true
-  slice9 {
-    x: 4.000
-    y: 4.000
-    z: 4.000
-    w: 4.000
-  }
+  template_node_child: true
 }
 nodes {
-  size {
-    x: 22.0
-    y: 38.0
-  }
-  color {
-    x: 0.600
-    y: 0.502
-    z: 0.902
-  }
   type: TYPE_BOX
-  texture: "example/ui_circle_8"
-  id: "piece_6"
-  parent: "root"
+  id: "piece_4/reach"
+  parent: "piece_4/root"
   inherit_alpha: true
-  slice9 {
-    x: 4.000
-    y: 4.000
-    z: 4.000
-    w: 4.000
-  }
+  template_node_child: true
 }
 nodes {
-  size {
-    x: 22.0
-    y: 38.0
-  }
-  color {
-    x: 0.800
-    y: 0.502
-    z: 0.600
-  }
-  type: TYPE_BOX
-  texture: "example/ui_circle_8"
-  id: "piece_7"
-  parent: "root"
-  inherit_alpha: true
-  slice9 {
-    x: 4.000
-    y: 4.000
-    z: 4.000
-    w: 4.000
-  }
-}
-nodes {
-  size {
-    x: 22.0
-    y: 38.0
-  }
-  color {
-    x: 0.420
-    y: 0.750
-    z: 0.600
-  }
-  type: TYPE_BOX
-  texture: "example/ui_circle_8"
-  id: "piece_8"
-  parent: "root"
-  inherit_alpha: true
-  slice9 {
-    x: 4.000
-    y: 4.000
-    z: 4.000
-    w: 4.000
-  }
-}
-nodes {
-  size {
-    x: 22.0
-    y: 38.0
-  }
   color {
     x: 0.722
     y: 0.741
     z: 0.761
   }
   type: TYPE_BOX
-  texture: "example/ui_circle_8"
-  id: "piece_9"
-  parent: "root"
+  id: "piece_4/shape"
+  parent: "piece_4/reach"
   inherit_alpha: true
-  slice9 {
-    x: 4.000
-    y: 4.000
-    z: 4.000
-    w: 4.000
-  }
+  overridden_fields: 5
+  template_node_child: true
 }
 nodes {
-  size {
-    x: 22.0
-    y: 38.0
-  }
+  type: TYPE_TEMPLATE
+  id: "piece_5"
+  parent: "root"
+  inherit_alpha: true
+  template: "/example/examples/confetti/confetti_piece.gui"
+}
+nodes {
+  type: TYPE_BOX
+  id: "piece_5/root"
+  parent: "piece_5"
+  inherit_alpha: true
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "piece_5/reach"
+  parent: "piece_5/root"
+  inherit_alpha: true
+  template_node_child: true
+}
+nodes {
   color {
     x: 0.894
     y: 0.506
     z: 0.333
   }
   type: TYPE_BOX
-  texture: "example/ui_circle_8"
-  id: "piece_10"
-  parent: "root"
+  id: "piece_5/shape"
+  parent: "piece_5/reach"
   inherit_alpha: true
-  slice9 {
-    x: 4.000
-    y: 4.000
-    z: 4.000
-    w: 4.000
-  }
+  overridden_fields: 5
+  template_node_child: true
 }
 nodes {
-  size {
-    x: 22.0
-    y: 38.0
-  }
+  type: TYPE_TEMPLATE
+  id: "piece_6"
+  parent: "root"
+  inherit_alpha: true
+  template: "/example/examples/confetti/confetti_piece.gui"
+}
+nodes {
+  type: TYPE_BOX
+  id: "piece_6/root"
+  parent: "piece_6"
+  inherit_alpha: true
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "piece_6/reach"
+  parent: "piece_6/root"
+  inherit_alpha: true
+  template_node_child: true
+}
+nodes {
   color {
     x: 0.600
     y: 0.502
     z: 0.902
   }
   type: TYPE_BOX
-  texture: "example/ui_circle_8"
-  id: "piece_11"
-  parent: "root"
+  id: "piece_6/shape"
+  parent: "piece_6/reach"
   inherit_alpha: true
-  slice9 {
-    x: 4.000
-    y: 4.000
-    z: 4.000
-    w: 4.000
-  }
+  overridden_fields: 5
+  template_node_child: true
 }
 nodes {
-  size {
-    x: 22.0
-    y: 38.0
-  }
+  type: TYPE_TEMPLATE
+  id: "piece_7"
+  parent: "root"
+  inherit_alpha: true
+  template: "/example/examples/confetti/confetti_piece.gui"
+}
+nodes {
+  type: TYPE_BOX
+  id: "piece_7/root"
+  parent: "piece_7"
+  inherit_alpha: true
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "piece_7/reach"
+  parent: "piece_7/root"
+  inherit_alpha: true
+  template_node_child: true
+}
+nodes {
   color {
     x: 0.800
     y: 0.502
     z: 0.600
   }
   type: TYPE_BOX
-  texture: "example/ui_circle_8"
-  id: "piece_12"
-  parent: "root"
+  id: "piece_7/shape"
+  parent: "piece_7/reach"
   inherit_alpha: true
-  slice9 {
-    x: 4.000
-    y: 4.000
-    z: 4.000
-    w: 4.000
-  }
+  overridden_fields: 5
+  template_node_child: true
 }
 nodes {
-  size {
-    x: 22.0
-    y: 38.0
-  }
+  type: TYPE_TEMPLATE
+  id: "piece_8"
+  parent: "root"
+  inherit_alpha: true
+  template: "/example/examples/confetti/confetti_piece.gui"
+}
+nodes {
+  type: TYPE_BOX
+  id: "piece_8/root"
+  parent: "piece_8"
+  inherit_alpha: true
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "piece_8/reach"
+  parent: "piece_8/root"
+  inherit_alpha: true
+  template_node_child: true
+}
+nodes {
   color {
     x: 0.420
     y: 0.750
     z: 0.600
   }
   type: TYPE_BOX
-  texture: "example/ui_circle_8"
+  id: "piece_8/shape"
+  parent: "piece_8/reach"
+  inherit_alpha: true
+  overridden_fields: 5
+  template_node_child: true
+}
+nodes {
+  type: TYPE_TEMPLATE
+  id: "piece_9"
+  parent: "root"
+  inherit_alpha: true
+  template: "/example/examples/confetti/confetti_piece.gui"
+}
+nodes {
+  type: TYPE_BOX
+  id: "piece_9/root"
+  parent: "piece_9"
+  inherit_alpha: true
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "piece_9/reach"
+  parent: "piece_9/root"
+  inherit_alpha: true
+  template_node_child: true
+}
+nodes {
+  color {
+    x: 0.722
+    y: 0.741
+    z: 0.761
+  }
+  type: TYPE_BOX
+  id: "piece_9/shape"
+  parent: "piece_9/reach"
+  inherit_alpha: true
+  overridden_fields: 5
+  template_node_child: true
+}
+nodes {
+  type: TYPE_TEMPLATE
+  id: "piece_10"
+  parent: "root"
+  inherit_alpha: true
+  template: "/example/examples/confetti/confetti_piece.gui"
+}
+nodes {
+  type: TYPE_BOX
+  id: "piece_10/root"
+  parent: "piece_10"
+  inherit_alpha: true
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "piece_10/reach"
+  parent: "piece_10/root"
+  inherit_alpha: true
+  template_node_child: true
+}
+nodes {
+  color {
+    x: 0.894
+    y: 0.506
+    z: 0.333
+  }
+  type: TYPE_BOX
+  id: "piece_10/shape"
+  parent: "piece_10/reach"
+  inherit_alpha: true
+  overridden_fields: 5
+  template_node_child: true
+}
+nodes {
+  type: TYPE_TEMPLATE
+  id: "piece_11"
+  parent: "root"
+  inherit_alpha: true
+  template: "/example/examples/confetti/confetti_piece.gui"
+}
+nodes {
+  type: TYPE_BOX
+  id: "piece_11/root"
+  parent: "piece_11"
+  inherit_alpha: true
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "piece_11/reach"
+  parent: "piece_11/root"
+  inherit_alpha: true
+  template_node_child: true
+}
+nodes {
+  color {
+    x: 0.600
+    y: 0.502
+    z: 0.902
+  }
+  type: TYPE_BOX
+  id: "piece_11/shape"
+  parent: "piece_11/reach"
+  inherit_alpha: true
+  overridden_fields: 5
+  template_node_child: true
+}
+nodes {
+  type: TYPE_TEMPLATE
+  id: "piece_12"
+  parent: "root"
+  inherit_alpha: true
+  template: "/example/examples/confetti/confetti_piece.gui"
+}
+nodes {
+  type: TYPE_BOX
+  id: "piece_12/root"
+  parent: "piece_12"
+  inherit_alpha: true
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "piece_12/reach"
+  parent: "piece_12/root"
+  inherit_alpha: true
+  template_node_child: true
+}
+nodes {
+  color {
+    x: 0.800
+    y: 0.502
+    z: 0.600
+  }
+  type: TYPE_BOX
+  id: "piece_12/shape"
+  parent: "piece_12/reach"
+  inherit_alpha: true
+  overridden_fields: 5
+  template_node_child: true
+}
+nodes {
+  type: TYPE_TEMPLATE
   id: "piece_13"
   parent: "root"
   inherit_alpha: true
-  slice9 {
-    x: 4.000
-    y: 4.000
-    z: 4.000
-    w: 4.000
+  template: "/example/examples/confetti/confetti_piece.gui"
+}
+nodes {
+  type: TYPE_BOX
+  id: "piece_13/root"
+  parent: "piece_13"
+  inherit_alpha: true
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "piece_13/reach"
+  parent: "piece_13/root"
+  inherit_alpha: true
+  template_node_child: true
+}
+nodes {
+  color {
+    x: 0.420
+    y: 0.750
+    z: 0.600
   }
+  type: TYPE_BOX
+  id: "piece_13/shape"
+  parent: "piece_13/reach"
+  inherit_alpha: true
+  overridden_fields: 5
+  template_node_child: true
 }
 nodes {
   position {
@@ -344,7 +512,7 @@ nodes {
     z: 0.490
   }
   type: TYPE_TEXT
-  text: "fourteen pieces, one animation, every key authored by hand"
+  text: "one piece widget, three flights, fourteen aims"
   font: "text_bold"
   id: "text_hint"
   outline {

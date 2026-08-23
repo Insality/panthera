@@ -1,0 +1,28 @@
+local event = require("event.event")
+local deftest = require("deftest.deftest")
+
+function init(self)
+	-- Let an assert inside a context switched callback reach the test instead of the log
+	event.set_mode("none")
+
+	deftest.add(require("test.test_panthera"))
+	deftest.add(require("test.test_panthera_keys"))
+	deftest.add(require("test.test_panthera_nested"))
+	deftest.add(require("test.test_panthera_playback"))
+	deftest.add(require("test.test_panthera_api"))
+	deftest.add(require("test.test_panthera_adapter_gui"))
+	deftest.add(require("test.test_panthera_adapter_go"))
+	deftest.add(require("test.test_panthera_spawn"))
+end
+
+
+function update(self, dt)
+	-- On the first frame, so the gui bridge of the collection is subscribed by then
+	if self.is_started then
+		return
+	end
+	self.is_started = true
+
+	local is_report = sys.get_config_int("test.report", 0) == 1
+	deftest.run({ coverage = { enabled = is_report } })
+end

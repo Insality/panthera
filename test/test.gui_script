@@ -1,0 +1,20 @@
+-- Runs whatever the tests hand over in the gui script context, so the gui adapter can be
+-- exercised from the single runner in test.script
+
+local events = require("event.events")
+
+local IN_GUI = "panthera_test.in_gui"
+
+local function call_in_gui(callback)
+	return callback()
+end
+
+
+function init(self)
+	events.subscribe(IN_GUI, call_in_gui)
+end
+
+
+function final(self)
+	events.unsubscribe(IN_GUI, call_in_gui)
+end

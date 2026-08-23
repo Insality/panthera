@@ -1,0 +1,33 @@
+{
+	"type": "animation_editor",
+	"format": "json",
+	"version": 1,
+	"data": {
+		"nodes": {},
+		"animations": [
+			{
+				"animation_id": "from_file",
+				"duration": 1,
+				"animation_keys": [
+					{
+						"key_type": "tween",
+						"node_id": "box",
+						"property_id": "position_x",
+						"easing": "linear",
+						"start_time": 0,
+						"duration": 1,
+						"start_value": 0,
+						"end_value": 300
+					}
+				]
+			}
+		],
+		"metadata": {
+			"fps": 60,
+			"gui_path": "test",
+			"settings": {},
+			"gizmo_steps": {},
+			"template_animation_paths": {}
+		}
+	}
+}

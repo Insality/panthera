@@ -1,0 +1,114 @@
+name: "comet"
+scale_along_z: 0
+instances {
+  id: "segment_0"
+  prototype: "/example/examples/comet/segment.go"
+  position {
+    x: 330.00
+    y: 0.00
+  }
+  rotation {
+    w: 1.0
+  }
+  scale3 {
+    x: 1.60
+    y: 1.60
+    z: 1.0
+  }
+}
+instances {
+  id: "segment_1"
+  prototype: "/example/examples/comet/segment.go"
+  position {
+    x: 298.74
+    y: -131.44
+  }
+  rotation {
+    w: 1.0
+  }
+  scale3 {
+    x: 1.45
+    y: 1.45
+    z: 1.0
+  }
+}
+instances {
+  id: "segment_2"
+  prototype: "/example/examples/comet/segment.go"
+  position {
+    x: 228.63
+    y: -194.34
+  }
+  rotation {
+    w: 1.0
+  }
+  scale3 {
+    x: 1.30
+    y: 1.30
+    z: 1.0
+  }
+}
+instances {
+  id: "segment_3"
+  prototype: "/example/examples/comet/segment.go"
+  position {
+    x: 155.56
+    y: -187.00
+  }
+  rotation {
+    w: 1.0
+  }
+  scale3 {
+    x: 1.15
+    y: 1.15
+    z: 1.0
+  }
+}
+instances {
+  id: "segment_4"
+  prototype: "/example/examples/comet/segment.go"
+  position {
+    x: 94.29
+    y: -138.81
+  }
+  rotation {
+    w: 1.0
+  }
+  scale3 {
+    x: 1.00
+    y: 1.00
+    z: 1.0
+  }
+}
+instances {
+  id: "segment_5"
+  prototype: "/example/examples/comet/segment.go"
+  position {
+    x: 44.19
+    y: -72.56
+  }
+  rotation {
+    w: 1.0
+  }
+  scale3 {
+    x: 0.85
+    y: 0.85
+    z: 1.0
+  }
+}
+instances {
+  id: "segment_6"
+  prototype: "/example/examples/comet/segment.go"
+  position {
+    x: 0.00
+    y: -0.00
+  }
+  rotation {
+    w: 1.0
+  }
+  scale3 {
+    x: 0.70
+    y: 0.70
+    z: 1.0
+  }
+}
