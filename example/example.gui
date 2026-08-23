@@ -1976,87 +1976,339 @@ nodes {
   template_node_child: true
 }
 nodes {
-  type: TYPE_BOX
+  type: TYPE_TEMPLATE
   id: "example_confetti/piece_0"
   parent: "example_confetti/root"
   template_node_child: true
 }
 nodes {
   type: TYPE_BOX
+  id: "example_confetti/piece_0/root"
+  parent: "example_confetti/piece_0"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_confetti/piece_0/reach"
+  parent: "example_confetti/piece_0/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_confetti/piece_0/shape"
+  parent: "example_confetti/piece_0/reach"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_TEMPLATE
   id: "example_confetti/piece_1"
   parent: "example_confetti/root"
   template_node_child: true
 }
 nodes {
   type: TYPE_BOX
+  id: "example_confetti/piece_1/root"
+  parent: "example_confetti/piece_1"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_confetti/piece_1/reach"
+  parent: "example_confetti/piece_1/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_confetti/piece_1/shape"
+  parent: "example_confetti/piece_1/reach"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_TEMPLATE
   id: "example_confetti/piece_2"
   parent: "example_confetti/root"
   template_node_child: true
 }
 nodes {
   type: TYPE_BOX
+  id: "example_confetti/piece_2/root"
+  parent: "example_confetti/piece_2"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_confetti/piece_2/reach"
+  parent: "example_confetti/piece_2/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_confetti/piece_2/shape"
+  parent: "example_confetti/piece_2/reach"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_TEMPLATE
   id: "example_confetti/piece_3"
   parent: "example_confetti/root"
   template_node_child: true
 }
 nodes {
   type: TYPE_BOX
+  id: "example_confetti/piece_3/root"
+  parent: "example_confetti/piece_3"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_confetti/piece_3/reach"
+  parent: "example_confetti/piece_3/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_confetti/piece_3/shape"
+  parent: "example_confetti/piece_3/reach"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_TEMPLATE
   id: "example_confetti/piece_4"
   parent: "example_confetti/root"
   template_node_child: true
 }
 nodes {
   type: TYPE_BOX
+  id: "example_confetti/piece_4/root"
+  parent: "example_confetti/piece_4"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_confetti/piece_4/reach"
+  parent: "example_confetti/piece_4/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_confetti/piece_4/shape"
+  parent: "example_confetti/piece_4/reach"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_TEMPLATE
   id: "example_confetti/piece_5"
   parent: "example_confetti/root"
   template_node_child: true
 }
 nodes {
   type: TYPE_BOX
+  id: "example_confetti/piece_5/root"
+  parent: "example_confetti/piece_5"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_confetti/piece_5/reach"
+  parent: "example_confetti/piece_5/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_confetti/piece_5/shape"
+  parent: "example_confetti/piece_5/reach"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_TEMPLATE
   id: "example_confetti/piece_6"
   parent: "example_confetti/root"
   template_node_child: true
 }
 nodes {
   type: TYPE_BOX
+  id: "example_confetti/piece_6/root"
+  parent: "example_confetti/piece_6"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_confetti/piece_6/reach"
+  parent: "example_confetti/piece_6/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_confetti/piece_6/shape"
+  parent: "example_confetti/piece_6/reach"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_TEMPLATE
   id: "example_confetti/piece_7"
   parent: "example_confetti/root"
   template_node_child: true
 }
 nodes {
   type: TYPE_BOX
+  id: "example_confetti/piece_7/root"
+  parent: "example_confetti/piece_7"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_confetti/piece_7/reach"
+  parent: "example_confetti/piece_7/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_confetti/piece_7/shape"
+  parent: "example_confetti/piece_7/reach"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_TEMPLATE
   id: "example_confetti/piece_8"
   parent: "example_confetti/root"
   template_node_child: true
 }
 nodes {
   type: TYPE_BOX
+  id: "example_confetti/piece_8/root"
+  parent: "example_confetti/piece_8"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_confetti/piece_8/reach"
+  parent: "example_confetti/piece_8/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_confetti/piece_8/shape"
+  parent: "example_confetti/piece_8/reach"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_TEMPLATE
   id: "example_confetti/piece_9"
   parent: "example_confetti/root"
   template_node_child: true
 }
 nodes {
   type: TYPE_BOX
+  id: "example_confetti/piece_9/root"
+  parent: "example_confetti/piece_9"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_confetti/piece_9/reach"
+  parent: "example_confetti/piece_9/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_confetti/piece_9/shape"
+  parent: "example_confetti/piece_9/reach"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_TEMPLATE
   id: "example_confetti/piece_10"
   parent: "example_confetti/root"
   template_node_child: true
 }
 nodes {
   type: TYPE_BOX
+  id: "example_confetti/piece_10/root"
+  parent: "example_confetti/piece_10"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_confetti/piece_10/reach"
+  parent: "example_confetti/piece_10/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_confetti/piece_10/shape"
+  parent: "example_confetti/piece_10/reach"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_TEMPLATE
   id: "example_confetti/piece_11"
   parent: "example_confetti/root"
   template_node_child: true
 }
 nodes {
   type: TYPE_BOX
+  id: "example_confetti/piece_11/root"
+  parent: "example_confetti/piece_11"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_confetti/piece_11/reach"
+  parent: "example_confetti/piece_11/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_confetti/piece_11/shape"
+  parent: "example_confetti/piece_11/reach"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_TEMPLATE
   id: "example_confetti/piece_12"
   parent: "example_confetti/root"
   template_node_child: true
 }
 nodes {
   type: TYPE_BOX
+  id: "example_confetti/piece_12/root"
+  parent: "example_confetti/piece_12"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_confetti/piece_12/reach"
+  parent: "example_confetti/piece_12/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_confetti/piece_12/shape"
+  parent: "example_confetti/piece_12/reach"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_TEMPLATE
   id: "example_confetti/piece_13"
   parent: "example_confetti/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_confetti/piece_13/root"
+  parent: "example_confetti/piece_13"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_confetti/piece_13/reach"
+  parent: "example_confetti/piece_13/root"
+  template_node_child: true
+}
+nodes {
+  type: TYPE_BOX
+  id: "example_confetti/piece_13/shape"
+  parent: "example_confetti/piece_13/reach"
   template_node_child: true
 }
 nodes {
