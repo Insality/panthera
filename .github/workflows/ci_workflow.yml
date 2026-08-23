@@ -18,5 +18,5 @@ jobs:
 
           - name: Build && Run
             run: |
-              deployer_url="https://raw.githubusercontent.com/Insality/defold-deployer/4/deployer.sh"
-              curl -s ${deployer_url} | bash -s lbd --headless --settings ./test/test.ini
+              curl -fsSL -o deployer.sh https://raw.githubusercontent.com/Insality/defold-deployer/4/deployer.sh
+              bash deployer.sh lbd --headless --settings ./test/test.ini
