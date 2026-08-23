@@ -611,20 +611,26 @@ end
 ---@return string|nil error_reason
 function M.load_by_path(path)
 	local file = io.open(path)
-	if file then
-		local file_data = file:read("*all")
-		file:close()
-		if file_data then
-			local is_ok, result = pcall(json.decode, file_data)
-			if not is_ok then
-				return nil, "Failed to parse json: " .. path
-			end
-			local parsed_data = result
-			if parsed_data and type(parsed_data) == TYPE_TABLE then
-				return parsed_data, nil
-			end
-		end
+	if not file then
+		return nil, "Failed to load file: " .. path
 	end
+
+	local file_data = file:read("*all")
+	file:close()
+	if not file_data then
+		return nil, "Failed to load file: " .. path
+	end
+
+	local is_ok, result = pcall(json.decode, file_data)
+	if not is_ok then
+		return nil, "Failed to parse json: " .. path
+	end
+	local parsed_data = result
+	if parsed_data and type(parsed_data) == TYPE_TABLE then
+		return parsed_data, nil
+	end
+
+	return nil, "Failed to load file: " .. path
 end
 
 
@@ -670,7 +676,7 @@ function M.get_animation_by_path(path)
 	end
 
 	if not resource then
-		return nil, error
+		return nil, error or ("Failed to load animation: " .. path)
 	end
 
 	resource = resource --[[@as panthera.animation.project_file]]

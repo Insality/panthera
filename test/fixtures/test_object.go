@@ -1,0 +1,28 @@
+embedded_components {
+  id: "sprite"
+  type: "sprite"
+  data: "default_animation: \"pixel\"\n"
+  "material: \"/panthera/materials/sprite.material\"\n"
+  "size {\n"
+  "  x: 32.0\n"
+  "  y: 32.0\n"
+  "}\n"
+  "size_mode: SIZE_MODE_MANUAL\n"
+  "textures {\n"
+  "  sampler: \"texture_sampler\"\n"
+  "  texture: \"/example/assets/example.atlas\"\n"
+  "}\n"
+  ""
+}
+embedded_components {
+  id: "label"
+  type: "label"
+  data: "size {\n"
+  "  x: 128.0\n"
+  "  y: 32.0\n"
+  "}\n"
+  "text: \"start\"\n"
+  "font: \"/example/assets/fonts/text_bold.font\"\n"
+  "material: \"/builtins/fonts/label-df.material\"\n"
+  ""
+}

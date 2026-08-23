@@ -16,3 +16,6 @@ bob*.jar
 deployer_version_settings.ini
 
 /.cache_deployer
+
+luacov.stats.out
+luacov.report.out

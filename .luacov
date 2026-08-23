@@ -1,0 +1,13 @@
+local reporter = require("luacov.reporter.defold")
+
+return {
+	reporter = reporter,
+	statsfile = "luacov.stats.out",
+	reportfile = "luacov.report.out",
+	runreport = true,
+	deletestats = true,
+	codefromstrings = true,
+	include = { "^panthera%/.+$" },
+	exclude = { "^test%/.+$", "^example%/.+$" },
+	modules = {},
+}
