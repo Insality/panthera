@@ -41,6 +41,7 @@ local DEFAULT_EASING_TYPE = 1 -- linear
 ---@field animation panthera.animation|nil
 ---@field animation_id string|nil
 ---@field display_time number
+---@field playlist string[] Remaining animations, the first one is the current
 
 ---@class example.output_line
 ---@field id string
@@ -68,6 +69,8 @@ local DEFAULT_EASING_TYPE = 1 -- linear
 ---@field node_text_output node
 ---@field memory_timer number
 ---@field is_window_ready boolean
+---@field is_paused boolean True after the user paused, clicks fill the playlist without playing
+---@field is_loop boolean Loop only the last animation of each playlist
 ---@field loop_checkbox example.property_checkbox
 ---@field easing_mode_button example.property_button
 ---@field easing_type_button example.property_button
@@ -165,6 +168,122 @@ local function get_duration(track)
 end
 
 
+---@param positions number[]|nil
+---@return string
+local function format_queue_positions(positions)
+	if not positions or #positions == 0 then
+		return ""
+	end
+
+	local parts = {}
+	local run_start = positions[1]
+	local run_end = positions[1]
+
+	local function flush()
+		if run_start == run_end then
+			parts[#parts + 1] = tostring(run_start)
+		else
+			parts[#parts + 1] = run_start .. "-" .. run_end
+		end
+	end
+
+	for index = 2, #positions do
+		local value = positions[index]
+		if value == run_end + 1 then
+			run_end = value
+		else
+			flush()
+			run_start = value
+			run_end = value
+		end
+	end
+	flush()
+
+	return table.concat(parts, " ")
+end
+
+
+---@param playlist string[]
+---@return table<string, number[]>
+local function collect_queue_positions(playlist)
+	---@type table<string, number[]>
+	local positions = {}
+	if #playlist <= 1 then
+		return positions
+	end
+
+	for index = 1, #playlist do
+		local animation_id = playlist[index]
+		local list = positions[animation_id]
+		if not list then
+			list = {}
+			positions[animation_id] = list
+		end
+		list[#list + 1] = index
+	end
+
+	return positions
+end
+
+
+---Paint the playlist numbers and the current-track bars on the animations list
+---@param self example.gui_script
+local function refresh_animation_list(self)
+	local list = self.animations_list_view
+	if not list then
+		return
+	end
+
+	local primary = self.tracks[1]
+	local secondary = self.tracks[2]
+	local primary_labels = collect_queue_positions(primary.playlist)
+	local secondary_labels = collect_queue_positions(secondary.playlist)
+	local primary_index = nil
+	local secondary_index = nil
+
+	for index = 1, #list.items do
+		local item = list.items[index]
+		local animation_id = item.data
+		local is_primary = animation_id == primary.animation_id
+		local is_secondary = animation_id == secondary.animation_id
+
+		if is_primary then
+			primary_index = index
+		end
+		if is_secondary then
+			secondary_index = index
+		end
+
+		item.widget:set_selected(is_primary or is_secondary, is_secondary and not is_primary)
+		item.widget:set_queue(
+			format_queue_positions(primary_labels[animation_id]),
+			format_queue_positions(secondary_labels[animation_id])
+		)
+	end
+
+	list.selected_index = primary_index
+	list.secondary_index = secondary_index
+end
+
+
+local QUEUE_LABEL_LIMIT = 4
+
+---@param track example.track
+---@return string|nil
+local function get_track_label(track)
+	local playlist = track.playlist
+	if not playlist or #playlist <= 1 then
+		return track.animation_id
+	end
+
+	if #playlist <= QUEUE_LABEL_LIMIT then
+		return table.concat(playlist, " → ")
+	end
+
+	return playlist[1] .. "  +" .. (#playlist - 1)
+end
+
+
 ---The GUI examples are animated right here, while the collection and the game object examples
 ---are animated by `/example/scene/scene.script`: Panthera uses the `go.*` functions for them
 ---and those are not available in the GUI script context. Reading the animation state is fine
@@ -230,6 +349,10 @@ local function play_track(self, track, from_time)
 	from_time = from_time or 0
 	local is_resume = from_time > 0
 
+	-- The playlist callback decides whether to loop the last item. Panthera must not restart
+	-- the animation itself, or it would overwrite the next queued one
+	track.options.is_loop = false
+
 	-- Stop first, `panthera.play` resets the animation time of the playing animation
 	panthera_stop(self, track)
 	track.animation.current_time = from_time
@@ -243,6 +366,37 @@ local function play_track(self, track, from_time)
 	track.options.is_skip_init = nil
 
 	track.display_time = from_time
+end
+
+
+---@param track example.track
+---@return boolean
+local function is_track_playing(track)
+	return track.animation ~= nil and panthera.is_playing(track.animation)
+end
+
+
+---@param self example.gui_script
+---@return boolean
+local function is_any_track_playing(self)
+	for index = 1, #self.tracks do
+		if is_track_playing(self.tracks[index]) then
+			return true
+		end
+	end
+	return false
+end
+
+
+---@param track example.track
+---@return boolean
+local function is_track_finished(track)
+	if not track.animation_id or is_track_playing(track) then
+		return false
+	end
+
+	local duration = get_duration(track)
+	return duration > 0 and track.display_time >= duration
 end
 
 
@@ -265,12 +419,13 @@ local function toggle_track(self, track)
 		return
 	end
 
-	if panthera.is_playing(track.animation) then
+	if is_track_playing(track) then
 		pause_track(self, track)
+		self.is_paused = not is_any_track_playing(self)
 		return
 	end
 
-	-- The finished animation is played from the beginning instead of being resumed
+	self.is_paused = false
 	local time = track.display_time < get_duration(track) and track.display_time or 0
 	play_track(self, track, time)
 end
@@ -279,18 +434,20 @@ end
 ---Pause or resume every track at once
 ---@param self example.gui_script
 local function toggle_playback(self)
-	local is_any_playing = false
-	for index = 1, #self.tracks do
-		local animation = self.tracks[index].animation
-		is_any_playing = is_any_playing or (animation ~= nil and panthera.is_playing(animation))
+	if is_any_track_playing(self) then
+		self.is_paused = true
+		for index = 1, #self.tracks do
+			pause_track(self, self.tracks[index])
+		end
+		return
 	end
 
+	self.is_paused = false
 	for index = 1, #self.tracks do
 		local track = self.tracks[index]
-		if is_any_playing then
-			pause_track(self, track)
-		else
-			toggle_track(self, track)
+		if track.animation and track.animation_id then
+			local time = track.display_time < get_duration(track) and track.display_time or 0
+			play_track(self, track, time)
 		end
 	end
 end
@@ -314,20 +471,86 @@ end
 ---@param track example.track
 ---@param animation_id string|nil Pass nil to turn the track off
 local function set_track_animation(self, track, animation_id)
-	-- Switching to another animation resets the previous one on `play`, only turning the track
-	-- off has to reset it here
 	if not animation_id then
 		reset_track(self, track)
+		track.animation_id = nil
+		track.playlist = {}
+		track.display_time = 0
+		gui.set_enabled(track.timeline.root.node, false)
+		refresh_animation_list(self)
+		return
 	end
 
+	track.playlist = { animation_id }
 	track.animation_id = animation_id
 	track.display_time = 0
+	gui.set_enabled(track.timeline.root.node, true)
 
-	gui.set_enabled(track.timeline.root.node, animation_id ~= nil)
-
-	if animation_id then
+	if self.is_paused then
+		panthera_set_time(self, track, 0)
+	else
 		play_track(self, track)
 	end
+
+	refresh_animation_list(self)
+end
+
+
+---Append the animation to the playlist of the track. A finished track treats the click as the
+---next item and starts it, a paused track only records it until play is pressed.
+---@param self example.gui_script
+---@param track example.track
+---@param animation_id string
+local function enqueue_track(self, track, animation_id)
+	if not animation_id then
+		return
+	end
+
+	gui.set_enabled(track.timeline.root.node, true)
+
+	if #track.playlist == 0 or is_track_finished(track) then
+		track.playlist = { animation_id }
+		track.animation_id = animation_id
+		track.display_time = 0
+		if self.is_paused then
+			panthera_set_time(self, track, 0)
+		else
+			play_track(self, track)
+		end
+	else
+		table.insert(track.playlist, animation_id)
+	end
+
+	refresh_animation_list(self)
+end
+
+
+---Play the next queued animation, or loop the last one when Loop is on
+---@param self example.gui_script
+---@param track example.track
+local function on_track_finished(self, track)
+	if #track.playlist > 1 then
+		table.remove(track.playlist, 1)
+		track.animation_id = track.playlist[1]
+		track.display_time = 0
+		play_track(self, track)
+		refresh_animation_list(self)
+
+		local list = self.animations_list_view
+		local index = track == self.tracks[1] and list.selected_index or list.secondary_index
+		if index and list.items[index] then
+			list:_scroll_to_item(list.items[index])
+		end
+		return
+	end
+
+	if self.is_loop and track.playlist[1] then
+		track.display_time = 0
+		play_track(self, track)
+		return
+	end
+
+	track.display_time = get_duration(track)
 end
 
 
@@ -361,6 +584,9 @@ local function on_example_selected(self, example)
 		reset_track(self, track)
 		track.animation = nil
 		track.animation_id = nil
+		track.playlist = {}
+		track.display_time = 0
+		gui.set_enabled(track.timeline.root.node, false)
 	end
 
 	if self.example_widget then
@@ -377,6 +603,7 @@ local function on_example_selected(self, example)
 	end
 
 	self.example = example
+	self.is_paused = false
 	gui.set_text(self.node_source_path, example.source)
 	clear_output(self)
 
@@ -396,8 +623,8 @@ local function on_example_selected(self, example)
 end
 
 
----The playback options are mutated in place, so the loop and the speed are applied
----to the next animation cycle of both tracks without restarting them.
+---The playback options are mutated in place, so the speed is applied to the next animation
+---cycle of both tracks without restarting them.
 ---@param self example.gui_script
 ---@param key string
 ---@param value any
@@ -431,7 +658,15 @@ local function apply_easing(self, is_replay)
 
 	if is_replay then
 		for index = 1, #self.tracks do
-			play_track(self, self.tracks[index])
+			local track = self.tracks[index]
+			if track.animation_id then
+				if self.is_paused then
+					panthera_set_time(self, track, 0)
+					track.display_time = 0
+				else
+					play_track(self, track)
+				end
+			end
 		end
 	end
 end
@@ -443,10 +678,8 @@ end
 function setup_settings(self)
 	self.properties_panel:clear()
 
-	local options = self.tracks[1].options
-
-	self.loop_checkbox = self.properties_panel:add_checkbox("Loop", options.is_loop, function(value)
-		set_playback_option(self, "is_loop", value)
+	self.loop_checkbox = self.properties_panel:add_checkbox("Loop", self.is_loop, function(value)
+		self.is_loop = value
 	end)
 
 	self.easing_mode_button = self.properties_panel:add_button("Ease Mode", EASING_MODES[self.easing_mode_index], function()
@@ -507,7 +740,6 @@ local function create_track(self, index)
 
 	---@type example.track.options
 	local options = {
-		is_loop = IS_LOOP_BY_DEFAULT,
 		easing = EASING_TYPES[DEFAULT_EASING_TYPE],
 		speed = 1,
 	}
@@ -519,6 +751,7 @@ local function create_track(self, index)
 		animation = nil,
 		animation_id = nil,
 		display_time = 0,
+		playlist = {},
 	}
 
 	track.timeline:set_accent(is_primary and ACCENT_PRIMARY or ACCENT_SECONDARY)
@@ -529,9 +762,7 @@ local function create_track(self, index)
 	-- Events restore the script context of their subscriber, so these callbacks always run
 	-- in the GUI context even when Panthera calls them from the scene script
 	track.options.callback = event.create(function()
-		if not track.options.is_loop then
-			track.display_time = get_duration(track)
-		end
+		on_track_finished(self, track)
 	end) --[[@as fun(animation_id: string)]]
 	track.options.callback_event = event.create(function(event_id, node, string_value, number_value)
 		local text = "event: " .. event_id
@@ -609,7 +840,8 @@ end
 ---@param self example.gui_script
 local function start_play_all(self)
 	self.loop_checkbox:set_value(false)
-	set_playback_option(self, "is_loop", false)
+	self.is_loop = false
+	self.is_paused = false
 
 	self.play_all = {
 		example_index = self.examples_list_view.selected_index or 1,
@@ -657,11 +889,18 @@ local function setup_components(self)
 		stop_play_all_on_user_input(self)
 		reset_easing(self)
 		set_track_animation(self, self.tracks[1], animation_id)
-		set_track_animation(self, self.tracks[2], nil)
 	end)
 	self.animations_list_view.on_select_secondary:subscribe(function(animation_id)
 		stop_play_all_on_user_input(self)
 		set_track_animation(self, self.tracks[2], animation_id)
+	end)
+	self.animations_list_view.on_queue:subscribe(function(animation_id)
+		stop_play_all_on_user_input(self)
+		enqueue_track(self, self.tracks[1], animation_id)
+	end)
+	self.animations_list_view.on_queue_secondary:subscribe(function(animation_id)
+		stop_play_all_on_user_input(self)
+		enqueue_track(self, self.tracks[2], animation_id)
 	end)
 
 	self.properties_panel = self.druid:new_widget(properties_panel, "properties_panel") --[[@as example.properties_panel]]
@@ -710,6 +949,8 @@ function init(self)
 	self.easing_mode_index = DEFAULT_EASING_MODE
 	self.easing_type_index = DEFAULT_EASING_TYPE
 	self.speed_value = 1 / MAX_SPEED
+	self.is_paused = false
+	self.is_loop = IS_LOOP_BY_DEFAULT
 
 	self.node_source_path = gui.get_node("text_source_path")
 	self.node_memory_usage = gui.get_node("text_memory_usage")
@@ -767,7 +1008,7 @@ function update(self, dt)
 				track.display_time = panthera.get_time(track.animation)
 			end
 
-			track.timeline:set_state(track.animation_id, track.display_time, get_duration(track), is_playing)
+			track.timeline:set_state(get_track_label(track), track.display_time, get_duration(track), is_playing)
 		else
 			track.timeline:set_state(nil, 0, 0, false)
 		end

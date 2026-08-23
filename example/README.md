@@ -17,8 +17,15 @@ It is the bootstrap collection of this project, so just run the project to open 
 | --- | --- |
 | `Space` | Pause / resume the playback |
 | `Up` / `Down` | Select the previous / next animation |
-| Click on an animation | Play it as the only track, from the beginning even if it is already selected |
-| `Shift` + click on an animation | Play it as the second track next to the selected one |
+| Click on an animation | Play it now on the primary track, from the beginning even if it is already selected |
+| `Shift` + click on an animation | Queue it after the current animation of the primary track |
+| `Alt` + click on an animation | Play it now on the second track. Click the same one again to drop the track |
+| `Alt` + `Shift` + click on an animation | Queue it after the current animation of the second track |
+
+A click while the playback is paused only fills the playlist. Press play or `Space` when the
+queue is ready. The playlist numbers on the right of an animation show its positions in the
+queue, orange for the primary track and purple for the second one. The same animation can be
+queued several times in a row.
 
 ## Play All
 
@@ -27,12 +34,17 @@ starting from the selected animation of the selected example and going to the en
 plays at the speed set in the panel and turns the loop off, since a looped animation never ends.
 Pressing the button again or clicking anything in the lists takes the control back.
 
-## Two tracks
+## Two tracks and the playlist
 
-An example can play two animations at once. Shift click an animation to put it on the second track:
+An example can play two animations at once. Alt click an animation to put it on the second track:
 it gets its own color and its own timeline under the first one. The tracks animate the same example
-over two animation states, so they run independently and can be at different times. A plain click
-drops the second track and goes back to a single animation.
+over two animation states, so they run independently and can be at different times. Alt click the
+current second animation again to drop that track. A plain click leaves the second track running,
+so the two playlists can be built side by side.
+
+Shift click appends to the playlist of the targeted track, Alt+Shift to the second one. The queued
+animations play one after another. If `Loop` is on, only the last animation of the playlist
+repeats; the ones before it play once.
 
 The playback settings apply to both tracks. The easing is split in two properties: `Ease Mode`
 picks `in` / `out` / `inout` / `outin` and `Ease Type` picks the family, and the two are composed
