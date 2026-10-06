@@ -34,9 +34,31 @@ Welcome to Panthera 2.0 Editor — a cross‑platform animation editor tightly i
 
 ## Install
 
+### From the Defold Editor
+
+Add [Panthera Runtime](https://github.com/Insality/panthera) to your project dependencies. Its editor scripts install and start Panthera Editor for you (Defold 1.13.1 or newer):
+
+1. Right‑click an animation file → `[Panthera] Edit Panthera Animation`, or use `Project → [Panthera] Open Panthera Editor`.
+2. On the first run Defold offers to download the latest editor release from GitHub. It is installed once for all projects on this computer.
+3. Panthera Editor starts with your file. If it is already running, the file opens in the running editor.
+
+Use `Project → [Panthera] Update Panthera Editor` to get a newer release.
+
+The editor is installed into:
+
+| OS | Folder |
+|----|--------|
+| macOS | `~/Library/Application Support/Panthera Editor/` |
+| Windows | `%LOCALAPPDATA%\Panthera Editor\` |
+| Linux | `~/.local/share/panthera-editor/` |
+
+Each release lies in its own subfolder, like `editor.1254`. To reinstall, close Panthera Editor and delete this folder: the next Defold command downloads the editor again.
+
+### Manual
+
 1. Download Panthera 2.0 Editor from the [Releases](https://github.com/Insality/panthera/releases) page.
 2. Unzip and run the application for your OS.
-3. Open your Defold project. Keep Panthera Editor running to use the Defold context‑menu actions.
+3. Open your Defold project. The Defold context‑menu actions send files to the running Panthera Editor.
 
 > Tip: You can use Panthera standalone, but pairing it with the Defold Editor gives you one‑click open/create for animations.
 

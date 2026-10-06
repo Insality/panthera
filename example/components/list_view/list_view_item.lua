@@ -1,5 +1,8 @@
 local COLOR_SECTION = vmath.vector4(0.72, 0.45, 0.32, 1)
+local COLOR_PRIMARY = vmath.vector4(0.894, 0.506, 0.333, 1)
 local COLOR_SECONDARY = vmath.vector4(0.6, 0.502, 0.902, 1)
+local QUEUE_MARGIN = 16
+local QUEUE_GAP = 10
 
 ---@class example.list_view_item: druid.widget
 ---@field root druid.container
@@ -21,9 +24,15 @@ function M:init()
 	self.color_selected.w = 1
 	self.color_bar = gui.get_color(self.selected)
 	self.text_position = gui.get_position(self.text.node)
+	self.item_width = gui.get_size(self.root.node).x
+	self.queue_primary = ""
+	self.queue_secondary = ""
 
 	gui.set_enabled(self.icon, false)
 	gui.set_enabled(self.selected, false)
+
+	self.node_queue = self:_create_queue_node(COLOR_PRIMARY)
+	self.node_queue_secondary = self:_create_queue_node(COLOR_SECONDARY)
 
 	self.button = self.druid:new_button("root") --[[@as druid.button]]
 	self.button:set_style(nil)
@@ -32,6 +41,24 @@ function M:init()
 	self.hover.on_mouse_hover:subscribe(self.on_hover)
 
 	self.on_click = self.button.on_click
+end
+
+
+---@param color vector4
+---@return node
+function M:_create_queue_node(color)
+	local node = gui.clone(self.text.node)
+	gui.set_parent(node, self.root.node)
+	gui.set_pivot(node, gui.PIVOT_E)
+	gui.set_size_mode(node, gui.SIZE_MODE_AUTO)
+	local scale = gui.get_scale(node)
+	scale.x = scale.x * 0.9
+	scale.y = scale.y * 0.9
+	gui.set_scale(node, scale)
+	gui.set_color(node, color)
+	gui.set_text(node, "")
+	gui.set_enabled(node, false)
+	return node
 end
 
 
@@ -55,17 +82,33 @@ end
 
 ---@param width number
 function M:set_width(width)
+	self.item_width = width
 	for _, node in ipairs({ self.root.node, self.highlight }) do
 		local size = gui.get_size(node)
 		size.x = width
 		gui.set_size(node, size)
 	end
+	self:_layout_queue()
 end
 
 
 ---@param text string
 function M:set_text(text)
 	self.text:set_text(text)
+end
+
+
+---Scale the name and the playlist numbers together, then used by a list with a smaller text
+---@param multiplier number
+function M:multiply_text_scale(multiplier)
+	if multiplier == 1 then
+		return
+	end
+
+	self.text:set_scale(gui.get_scale(self.text.node) * multiplier)
+	gui.set_scale(self.node_queue, gui.get_scale(self.node_queue) * multiplier)
+	gui.set_scale(self.node_queue_secondary, gui.get_scale(self.node_queue_secondary) * multiplier)
+	self:_layout_queue()
 end
 
 
@@ -80,6 +123,49 @@ function M:set_selected(is_selected, is_secondary)
 		color = is_secondary and COLOR_SECONDARY or self.color_selected
 	end
 	gui.set_color(self.text.node, color)
+end
+
+
+---Show the playlist positions of this animation on the primary and the second track
+---@param primary_text string|nil
+---@param secondary_text string|nil
+function M:set_queue(primary_text, secondary_text)
+	self.queue_primary = primary_text or ""
+	self.queue_secondary = secondary_text or ""
+	self:_layout_queue()
+end
+
+
+---@param node node
+---@return number width
+function M:_queue_text_width(node)
+	return gui.get_size(node).x * gui.get_scale(node).x
+end
+
+
+function M:_layout_queue()
+	local has_primary = self.queue_primary ~= ""
+	local has_secondary = self.queue_secondary ~= ""
+
+	gui.set_enabled(self.node_queue, has_primary)
+	gui.set_enabled(self.node_queue_secondary, has_secondary)
+
+	local x = self.item_width - QUEUE_MARGIN
+	if has_secondary then
+		gui.set_text(self.node_queue_secondary, self.queue_secondary)
+		gui.set_position(self.node_queue_secondary, vmath.vector3(x, 0, 0))
+		x = x - self:_queue_text_width(self.node_queue_secondary) - QUEUE_GAP
+	end
+	if has_primary then
+		gui.set_text(self.node_queue, self.queue_primary)
+		gui.set_position(self.node_queue, vmath.vector3(x, 0, 0))
+		x = x - self:_queue_text_width(self.node_queue) - QUEUE_GAP
+	end
+
+	-- Keep the name from running into the playlist numbers
+	local text_size = gui.get_size(self.text.node)
+	text_size.x = math.max(x - self.text_position.x, 40)
+	gui.set_size(self.text.node, text_size)
 end
 
 

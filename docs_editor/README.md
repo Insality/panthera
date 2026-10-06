@@ -28,7 +28,7 @@ Defold integration allows you to start create animations directly from the Defol
 
 ## Download
 
-Get the latest release of **Panthera 2.0 Editor** from the [Releases](https://github.com/Insality/panthera/releases) page.
+Get the latest release of **Panthera 2.0 Editor** from the [Releases](https://github.com/Insality/panthera/releases) page, or let the Defold Editor install it for you with [Panthera Runtime](https://github.com/Insality/panthera): see [Install](getting_started.md#install).
 
 
 ## Getting Started Guide

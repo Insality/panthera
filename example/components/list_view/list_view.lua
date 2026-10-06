@@ -7,12 +7,14 @@ local SECTION_TEXT_SCALE = 0.75
 
 local KEY_LSHIFT = hash("key_lshift")
 local KEY_RSHIFT = hash("key_rshift")
+local KEY_LALT = hash("key_lalt")
+local KEY_RALT = hash("key_ralt")
 
 ---A scrollable list of selectable items. Used twice in the example: for the examples list
 ---on the left side and for the animations list of the selected example on the right side.
 ---
----The list keeps two selections: the primary one is set by a click, the secondary one by a
----shift click. The animations list uses them as the two animation tracks.
+---The animations list can play two tracks at once. A click sets the primary track, an alt click
+---sets the second one, and a shift click appends to the playlist of the targeted track.
 ---@class example.list_view: druid.widget
 ---@field root druid.container
 ---@field scroll druid.scroll
@@ -20,6 +22,8 @@ local KEY_RSHIFT = hash("key_rshift")
 ---@field items example.list_view.item[]
 ---@field on_select event fun(data: any, index: number)
 ---@field on_select_secondary event fun(data: any|nil, index: number|nil)
+---@field on_queue event fun(data: any, index: number)
+---@field on_queue_secondary event fun(data: any, index: number)
 local M = {}
 
 ---@class example.list_view.item
@@ -66,12 +70,15 @@ function M:init(text_scale)
 	self.widgets = {}
 	self.has_sections = false
 	self.is_shift_pressed = false
+	self.is_alt_pressed = false
 	self.is_secondary_enabled = false
 	self.selected_index = nil
 	self.secondary_index = nil
 
 	self.on_select = event.create()
 	self.on_select_secondary = event.create()
+	self.on_queue = event.create()
+	self.on_queue_secondary = event.create()
 end
 
 
@@ -86,12 +93,21 @@ function M:on_input(action_id, action)
 		end
 	end
 
+	if action_id == KEY_LALT or action_id == KEY_RALT then
+		if action.pressed then
+			self.is_alt_pressed = true
+		end
+		if action.released then
+			self.is_alt_pressed = false
+		end
+	end
+
 	return false
 end
 
 
----Allow a shift click to mark a second item. Only the animations list uses it, an example is
----a whole scene and only one of them can be loaded at a time
+---Allow alt and shift clicks to target the second track and the playlists. Only the animations
+---list uses it, an example is a whole scene and only one of them can be loaded at a time
 ---@param is_enabled boolean
 function M:set_secondary_enabled(is_enabled)
 	self.is_secondary_enabled = is_enabled
@@ -153,9 +169,7 @@ function M:_create_item(text, scale)
 	widget:set_text(text)
 
 	local text_scale = (self.text_scale or 1) * (scale or 1)
-	if text_scale ~= 1 then
-		widget.text:set_scale(gui.get_scale(widget.text.node) * text_scale)
-	end
+	widget:multiply_text_scale(text_scale)
 
 	table.insert(self.widgets, widget)
 	self.grid:add(widget.root.node)
@@ -188,11 +202,26 @@ function M:add_item(text, data)
 
 	local index = #self.items + 1
 	widget.on_click:subscribe(function()
-		if self.is_shift_pressed and self.is_secondary_enabled then
-			self:select_secondary(index)
-		else
+		if not self.is_secondary_enabled then
 			self:select(index)
+			return
 		end
+
+		if self.is_shift_pressed then
+			if self.is_alt_pressed then
+				self.on_queue_secondary:trigger(self.items[index].data, index)
+			else
+				self.on_queue:trigger(self.items[index].data, index)
+			end
+			return
+		end
+
+		if self.is_alt_pressed then
+			self:select_secondary(index)
+			return
+		end
+
+		self:select(index)
 	end)
 
 	self.items[index] = {
@@ -204,8 +233,8 @@ function M:add_item(text, data)
 end
 
 
----Select the item by index and drop the secondary selection. Selecting the already selected item
----triggers the event again, so the animations can be replayed by the second click.
+---Select the item by index. Selecting the already selected item triggers the event again, so
+---the animations can be replayed by the second click.
 ---@param index number
 ---@param is_silent boolean? If true, the `on_select` event is not triggered
 function M:select(index, is_silent)
@@ -214,18 +243,15 @@ function M:select(index, is_silent)
 		return
 	end
 
-	if self.secondary_index then
-		self.items[self.secondary_index].widget:set_selected(false)
-		self.secondary_index = nil
-		self.on_select_secondary:trigger(nil, nil)
-	end
-
 	if self.selected_index and self.selected_index ~= index then
-		self.items[self.selected_index].widget:set_selected(false)
+		local previous = self.items[self.selected_index]
+		if previous then
+			previous.widget:set_selected(self.selected_index == self.secondary_index, self.selected_index == self.secondary_index)
+		end
 	end
 
 	self.selected_index = index
-	item.widget:set_selected(true)
+	item.widget:set_selected(true, index == self.secondary_index)
 	self:_scroll_to_item(item)
 
 	if not is_silent then
@@ -234,8 +260,8 @@ function M:select(index, is_silent)
 end
 
 
----Select the item as the second track. Selecting the primary or the already selected secondary
----item drops the secondary selection instead.
+---Select the item as the second track. Selecting the already selected secondary item drops
+---the second track instead. The same animation can run on both tracks at once.
 ---@param index number
 function M:select_secondary(index)
 	local item = self.items[index]
@@ -243,18 +269,22 @@ function M:select_secondary(index)
 		return
 	end
 
-	if self.secondary_index then
-		self.items[self.secondary_index].widget:set_selected(false)
-	end
-
-	if index == self.selected_index or index == self.secondary_index then
+	if index == self.secondary_index then
 		self.secondary_index = nil
+		item.widget:set_selected(index == self.selected_index, false)
 		self.on_select_secondary:trigger(nil, nil)
 		return
 	end
 
+	if self.secondary_index then
+		local previous = self.items[self.secondary_index]
+		if previous then
+			previous.widget:set_selected(self.secondary_index == self.selected_index, false)
+		end
+	end
+
 	self.secondary_index = index
-	item.widget:set_selected(true, true)
+	item.widget:set_selected(true, index ~= self.selected_index)
 	self:_scroll_to_item(item)
 	self.on_select_secondary:trigger(item.data, index)
 end

@@ -1,4 +1,6 @@
 ---@diagnostic disable: missing-parameter, param-type-mismatch
+local panthera_editor = require("panthera.editor_scripts.panthera_editor")
+
 local M = {}
 
 
@@ -53,23 +55,7 @@ function M.get_commands()
 			end,
 			run = function(opts)
 				local project_path = editor.external_file_attributes(".").path
-				local absolute_path = project_path .. editor.get(opts.selection, "path")
-
-				print("Send Panthera Editor 2.0 Open Command...")
-				local is_ok, _ = pcall(http.request, "http://localhost:16114/open", {
-					method = "POST",
-					as = "json",
-					body = json.encode({
-						command = "open",
-						path = absolute_path
-					})
-				})
-
-				if not is_ok then
-					print("The Panthera Editor 2.0 is not running, please start it first.")
-					print("Download Editor from https://github.com/Insality/panthera/releases")
-					error("The Panthera Editor 2.0 is not running, please start it first.")
-				end
+				panthera_editor.run("open", project_path .. editor.get(opts.selection, "path"))
 			end
 		},
 
@@ -83,26 +69,31 @@ function M.get_commands()
 			end,
 			run = function(opts)
 				local project_path = editor.external_file_attributes(".").path
-				local absolute_path = project_path .. editor.get(opts.selection, "path")
+				panthera_editor.run("create", project_path .. editor.get(opts.selection, "path"))
+			end
+		},
 
-				print("Send Panthera Editor 2.0 Create Command...")
-				local is_ok, _ = pcall(http.request, "http://localhost:16114/create", {
-					method = "POST",
-					as = "json",
-					body = json.encode({
-						command = "create",
-						path = absolute_path
-					})
-				})
+		{
+			label = "[Panthera] Open Panthera Editor",
+			locations = { "Project" },
+			run = function()
+				panthera_editor.run(nil, nil)
+			end
+		},
 
-				if not is_ok then
-					print("The Panthera Editor 2.0 is not running, please start it first.")
-					print("Download Editor from https://github.com/Insality/panthera/releases")
-					error("The Panthera Editor 2.0 is not running, please start it first.")
-				end
+		{
+			label = "[Panthera] Update Panthera Editor",
+			locations = { "Project" },
+			run = function()
+				panthera_editor.update()
 			end
 		},
 	}
+end
+
+
+function M.get_prefs_schema()
+	return panthera_editor.get_prefs_schema()
 end
 
 
