@@ -94,3 +94,7 @@ Initial resease!
 - Fix nested animation events not passed to `callback_event` during play
 - Skip an animation key with a missing template path instead of stopping the timeline
 - Fix nested template desync on HTML5: tick every frame, start nested and template animations on the same frame as the parent
+
+## Version v11
+- Install and update Panthera Editor from the Defold Editor directly
+- Launch Panthera Editor from Defold; it no longer has to be running before you use the editor scripts
